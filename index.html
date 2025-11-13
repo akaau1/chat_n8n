@@ -467,11 +467,19 @@
                 // Handle different response formats
                 let rows;
                 if (Array.isArray(data)) {
-                    rows = data;
+                    // Check if it's N8N format with "json" property
+                    if (data.length > 0 && data[0].json) {
+                        rows = data.map(item => item.json);
+                    } else {
+                        rows = data;
+                    }
                 } else if (data.data && Array.isArray(data.data)) {
                     rows = data.data;
                 } else if (data.rows && Array.isArray(data.rows)) {
                     rows = data.rows;
+                } else if (data.json) {
+                    // Single N8N item
+                    rows = [data.json];
                 } else if (typeof data === 'object' && data !== null) {
                     // Single object - convert to array
                     rows = [data];
@@ -566,5 +574,6 @@
     </script>
 </body>
 </html>
+
 
 
