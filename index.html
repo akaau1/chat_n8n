@@ -167,16 +167,24 @@
             <div id="tableView" class="hidden absolute inset-0 flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
                 <div class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 flex justify-between items-center">
                     <h2 class="text-xl font-bold text-white">📊 Dati Tabella</h2>
-                    <button
-                        onclick="loadTableData()"
-                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="23 4 23 10 17 10"></polyline>
-                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                        </svg>
-                        Ricarica
-                    </button>
+                    <div class="flex gap-2">
+                        <button
+                            onclick="testConnection()"
+                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                        >
+                            🔍 Test
+                        </button>
+                        <button
+                            onclick="loadTableData()"
+                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                            </svg>
+                            Ricarica
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="flex-1 overflow-auto p-4">
@@ -187,9 +195,14 @@
                         </div>
                     </div>
                     
-                    <div id="tableError" class="hidden bg-red-600/20 border border-red-500/30 rounded-lg p-4 text-red-200">
+                    <div id="tableError" class="hidden bg-red-600/20 border border-red-500/30 rounded-lg p-4 text-red-200 mb-4">
                         <p class="font-bold mb-2">❌ Errore</p>
-                        <p id="tableErrorMessage"></p>
+                        <p id="tableErrorMessage" class="whitespace-pre-wrap"></p>
+                    </div>
+                    
+                    <div id="testResult" class="hidden bg-blue-600/20 border border-blue-500/30 rounded-lg p-4 text-blue-200 mb-4">
+                        <p class="font-bold mb-2">🔍 Risultato Test</p>
+                        <pre id="testResultMessage" class="text-xs overflow-auto max-h-64 whitespace-pre-wrap"></pre>
                     </div>
                     
                     <div id="tableContent" class="bg-slate-800 rounded-lg shadow-xl overflow-hidden">
@@ -361,6 +374,60 @@
         }
 
         // Table Functions
+        async function testConnection() {
+            const testResult = document.getElementById('testResult');
+            const testResultMessage = document.getElementById('testResultMessage');
+            
+            testResult.classList.remove('hidden');
+            testResultMessage.textContent = 'Testing connection...';
+            
+            try {
+                console.log('=== TEST CONNECTION START ===');
+                console.log('URL:', tableApiUrl.value);
+                
+                const response = await fetch(tableApiUrl.value, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                console.log('Response received');
+                console.log('Status:', response.status);
+                console.log('OK:', response.ok);
+                console.log('Headers:', [...response.headers.entries()]);
+                
+                const text = await response.text();
+                console.log('Raw response text:', text);
+                
+                let data;
+                try {
+                    data = JSON.parse(text);
+                    console.log('Parsed JSON:', data);
+                } catch (e) {
+                    console.error('JSON parse error:', e);
+                    throw new Error('Response is not valid JSON: ' + text.substring(0, 200));
+                }
+                
+                const result = {
+                    status: response.status,
+                    ok: response.ok,
+                    dataType: Array.isArray(data) ? 'Array' : typeof data,
+                    dataLength: Array.isArray(data) ? data.length : 'N/A',
+                    data: data,
+                    rawResponse: text.substring(0, 500)
+                };
+                
+                testResultMessage.textContent = JSON.stringify(result, null, 2);
+                console.log('=== TEST CONNECTION END ===');
+                
+            } catch (error) {
+                console.error('Test error:', error);
+                testResultMessage.textContent = `ERROR: ${error.message}\n\nStack: ${error.stack}`;
+            }
+        }
+
         async function loadTableData() {
             const tableLoading = document.getElementById('tableLoading');
             const tableError = document.getElementById('tableError');
@@ -373,6 +440,8 @@
             tableContent.style.opacity = '0.5';
 
             try {
+                console.log('Fetching data from:', tableApiUrl.value);
+                
                 const response = await fetch(tableApiUrl.value, {
                     method: 'GET',
                     mode: 'cors',
@@ -381,14 +450,18 @@
                     }
                 });
 
+                console.log('Response status:', response.status);
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
+                console.log('Received data:', data);
                 
                 // Handle different response formats
                 let rows = Array.isArray(data) ? data : (data.data || data.rows || []);
+                console.log('Processed rows:', rows);
                 
                 if (rows.length === 0) {
                     emptyState.classList.remove('hidden');
@@ -400,9 +473,10 @@
                 }
                 
             } catch (error) {
+                console.error('Table loading error:', error);
                 tableError.classList.remove('hidden');
                 document.getElementById('tableErrorMessage').textContent = 
-                    `Impossibile caricare i dati: ${error.message}\n\nVerifica che il workflow N8N sia attivo su:\n${tableApiUrl.value}`;
+                    `Impossibile caricare i dati: ${error.message}\n\nDettagli: ${error.stack || 'N/A'}\n\nURL: ${tableApiUrl.value}\n\nVerifica:\n1. Il workflow N8N sia attivo\n2. Il nodo "Respond to Webhook" sia configurato\n3. I CORS siano abilitati nel webhook`;
             } finally {
                 tableLoading.classList.add('hidden');
                 tableContent.style.opacity = '1';
