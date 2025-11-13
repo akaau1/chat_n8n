@@ -138,7 +138,6 @@
                 transform: translateY(0);
             }
         }
-        /* Login Screen */
         .login-container {
             min-height: 100vh;
             display: flex;
@@ -257,805 +256,6 @@
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                     </svg>
                 </div>
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-white mb-2">🚪 Conferma Logout</h3>
-                    <p class="text-slate-300 leading-relaxed">
-                        Sei sicuro di voler uscire?
-                    </p>
-                </div>
-            </div>
-            
-            <div class="flex gap-3 justify-end">
-                <button onclick="closeLogoutModal()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium">
-                    Annulla
-                </button>
-                <button onclick="confirmLogout()" class="px-6 py-2.5 text-white rounded-lg transition-colors font-medium flex items-center gap-2 btn-custom-blue">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                    Esci
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success Modal for Table Delete -->
-    <div id="successModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <div class="flex items-start gap-4 mb-6">
-                <div class="flex-shrink-0 w-12 h-12 bg-green-600/20 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-white mb-2">✅ Operazione Completata</h3>
-                    <p class="text-slate-300 leading-relaxed">
-                        Tabella eliminata con successo!
-                    </p>
-                </div>
-            </div>
-            
-            <div class="flex gap-3 justify-end">
-                <button onclick="closeSuccessModal()" class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium">
-                    OK
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Session Management
-        const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
-        const CHAT_HISTORY_KEY = 'n8n_chat_history';
-        const SESSION_KEY = 'n8n_session';
-        const MAX_MESSAGES = 50; // Keep last 50 messages
-
-        // State
-        let currentView = 'chat';
-        let isLoading = false;
-        let currentTableData = [];
-        let currentUser = null;
-
-        // Elements
-        const loginScreen = document.getElementById('loginScreen');
-        const mainApp = document.getElementById('mainApp');
-        const messagesArea = document.getElementById('messagesArea');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-        const webhookUrl = document.getElementById('webhookUrl');
-        const tableApiUrl = document.getElementById('tableApiUrl');
-        const loginApiUrl = document.getElementById('loginApiUrl');
-        const sendIcon = document.getElementById('sendIcon');
-        const loadingIcon = document.getElementById('loadingIcon');
-        const welcomeMessage = document.getElementById('welcomeMessage');
-
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            checkSession();
-        });
-
-        // Session Management Functions
-        function checkSession() {
-            const session = localStorage.getItem(SESSION_KEY);
-            
-            if (session) {
-                try {
-                    const sessionData = JSON.parse(session);
-                    const now = new Date().getTime();
-                    
-                    // Check if session is still valid
-                    if (sessionData.expires > now) {
-                        currentUser = sessionData.username;
-                        showMainApp();
-                        loadChatHistory();
-                        return;
-                    } else {
-                        // Session expired
-                        localStorage.removeItem(SESSION_KEY);
-                    }
-                } catch (e) {
-                    console.error('Session parse error:', e);
-                    localStorage.removeItem(SESSION_KEY);
-                }
-            }
-            
-            // No valid session, show login
-            showLoginScreen();
-        }
-
-        function saveSession(username) {
-            const expires = new Date().getTime() + SESSION_DURATION;
-            const sessionData = {
-                username: username,
-                expires: expires,
-                loginTime: new Date().toISOString()
-            };
-            localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
-        }
-
-        function clearSession() {
-            localStorage.removeItem(SESSION_KEY);
-            currentUser = null;
-        }
-
-        function showLoginScreen() {
-            loginScreen.classList.remove('hidden');
-            mainApp.classList.add('hidden');
-        }
-
-        function showMainApp() {
-            loginScreen.classList.add('hidden');
-            mainApp.classList.remove('hidden');
-            document.getElementById('currentUsername').textContent = currentUser;
-        }
-
-        // Login Handler
-        async function handleLogin(event) {
-            event.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const loginButton = document.getElementById('loginButton');
-            const loginButtonText = document.getElementById('loginButtonText');
-            const loginSpinner = document.getElementById('loginSpinner');
-            const loginError = document.getElementById('loginError');
-            const loginErrorText = document.getElementById('loginErrorText');
-            
-            if (!username || !password) {
-                showLoginError('Inserisci username e password');
-                return;
-            }
-            
-            // Hide previous errors
-            loginError.classList.add('hidden');
-            
-            // Show loading
-            loginButton.disabled = true;
-            loginButtonText.classList.add('hidden');
-            loginSpinner.classList.remove('hidden');
-            
-            try {
-                const response = await fetch(loginApiUrl.value, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        username: username,
-                        password: password,
-                        timestamp: new Date().toISOString()
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                // Check if login was successful
-                if (data.success || data.authenticated || data.status === 'success') {
-                    // Save session
-                    currentUser = username;
-                    saveSession(username);
-                    
-                    // Show main app
-                    showMainApp();
-                    loadChatHistory();
-                } else {
-                    showLoginError(data.message || 'Credenziali non valide');
-                }
-                
-            } catch (error) {
-                console.error('Login error:', error);
-                showLoginError(`Errore di connessione: ${error.message}`);
-            } finally {
-                loginButton.disabled = false;
-                loginButtonText.classList.remove('hidden');
-                loginSpinner.classList.add('hidden');
-            }
-        }
-
-        function showLoginError(message) {
-            const loginError = document.getElementById('loginError');
-            const loginErrorText = document.getElementById('loginErrorText');
-            loginErrorText.textContent = message;
-            loginError.classList.remove('hidden');
-        }
-
-        function handleLogout() {
-            showLogoutModal();
-        }
-        
-        function showLogoutModal() {
-            document.getElementById('logoutModal').classList.remove('hidden');
-        }
-        
-        function closeLogoutModal() {
-            document.getElementById('logoutModal').classList.add('hidden');
-        }
-        
-        function confirmLogout() {
-            closeLogoutModal();
-            clearSession();
-            showLoginScreen();
-            // Clear form
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-        }
-
-        // Chat History Functions
-        function saveChatHistory() {
-            const messages = [];
-            const messageElements = messagesArea.querySelectorAll('.flex');
-            
-            messageElements.forEach(el => {
-                if (el.id === 'welcomeMessage' || el.id === 'loadingMessage') return;
-                
-                const isUser = el.classList.contains('justify-end');
-                const textElement = el.querySelector('p');
-                if (textElement) {
-                    messages.push({
-                        text: textElement.textContent,
-                        sender: isUser ? 'user' : 'bot',
-                        timestamp: Date.now()
-                    });
-                }
-            });
-            
-            // Keep only last MAX_MESSAGES
-            const recentMessages = messages.slice(-MAX_MESSAGES);
-            
-            const historyData = {
-                username: currentUser,
-                messages: recentMessages,
-                lastUpdate: new Date().toISOString()
-            };
-            
-            localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(historyData));
-        }
-
-        function loadChatHistory() {
-            const history = localStorage.getItem(CHAT_HISTORY_KEY);
-            
-            if (!history) return;
-            
-            try {
-                const historyData = JSON.parse(history);
-                
-                // Check if history belongs to current user
-                if (historyData.username !== currentUser) {
-                    return;
-                }
-                
-                // Remove welcome message
-                if (welcomeMessage && welcomeMessage.parentNode) {
-                    welcomeMessage.remove();
-                }
-                
-                // Load messages
-                historyData.messages.forEach(msg => {
-                    addMessage(msg.text, msg.sender, false, false);
-                });
-                
-                scrollToBottom();
-            } catch (e) {
-                console.error('Error loading chat history:', e);
-            }
-        }
-
-        function clearChatHistory() {
-            if (confirm('Vuoi cancellare tutta la cronologia della chat?')) {
-                localStorage.removeItem(CHAT_HISTORY_KEY);
-                
-                // Clear UI
-                messagesArea.innerHTML = `
-                    <div id="welcomeMessage" class="text-center text-slate-400 mt-20">
-                        <p class="text-lg mb-2">👋 Benvenuto!</p>
-                        <p class="text-sm">Invia un messaggio per iniziare a comunicare con n8n</p>
-                    </div>
-                `;
-            }
-        }
-
-        // View Switching
-        function switchView(view) {
-            currentView = view;
-            
-            document.getElementById('navChat').classList.toggle('active', view === 'chat');
-            document.getElementById('navTable').classList.toggle('active', view === 'table');
-            
-            document.getElementById('chatView').classList.toggle('hidden', view !== 'chat');
-            document.getElementById('tableView').classList.toggle('hidden', view !== 'table');
-            
-            if (view === 'table') {
-                loadTableData();
-            }
-        }
-
-        function toggleSettings() {
-            const panel = document.getElementById('settingsPanel');
-            panel.classList.toggle('hidden');
-        }
-
-        // Chat Functions
-        function scrollToBottom() {
-            messagesArea.scrollTop = messagesArea.scrollHeight;
-        }
-
-        function addMessage(text, sender, isError = false, saveHistory = true) {
-            const timestamp = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-            
-            const welcomeMsg = document.getElementById('welcomeMessage');
-            if (welcomeMsg && welcomeMsg.parentNode) {
-                welcomeMsg.remove();
-            }
-
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} message-enter`;
-            
-            const bubbleClass = sender === 'user' 
-                ? 'bg-blue-600 text-white' 
-                : isError 
-                    ? 'bg-red-600/20 text-red-200 border border-red-500/30'
-                    : 'bg-slate-700 text-white';
-            
-            const timeClass = sender === 'user' ? 'text-blue-200' : 'text-slate-400';
-            
-            messageDiv.innerHTML = `
-                <div class="max-w-[70%] rounded-2xl px-4 py-3 shadow-lg ${bubbleClass}">
-                    <p class="whitespace-pre-wrap break-words">${escapeHtml(text)}</p>
-                    <p class="text-xs mt-1 ${timeClass}">${timestamp}</p>
-                </div>
-            `;
-            
-            messagesArea.appendChild(messageDiv);
-            scrollToBottom();
-            
-            if (saveHistory) {
-                saveChatHistory();
-            }
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function addLoadingMessage() {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = 'loadingMessage';
-            loadingDiv.className = 'flex justify-start message-enter';
-            loadingDiv.innerHTML = `
-                <div class="bg-slate-700 text-white rounded-2xl px-4 py-3 shadow-lg flex items-center gap-2">
-                    <div class="spinner"></div>
-                    <span>Elaborazione...</span>
-                </div>
-            `;
-            messagesArea.appendChild(loadingDiv);
-            scrollToBottom();
-        }
-
-        function removeLoadingMessage() {
-            const loading = document.getElementById('loadingMessage');
-            if (loading) loading.remove();
-        }
-
-        async function sendMessage() {
-            const text = messageInput.value.trim();
-            if (!text || isLoading) return;
-
-            addMessage(text, 'user');
-            messageInput.value = '';
-            messageInput.style.height = 'auto';
-            
-            isLoading = true;
-            sendButton.disabled = true;
-            sendIcon.classList.add('hidden');
-            loadingIcon.classList.remove('hidden');
-            addLoadingMessage();
-
-            try {
-                const response = await fetch(webhookUrl.value, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: text,
-                        username: currentUser,
-                        timestamp: new Date().toISOString()
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                removeLoadingMessage();
-                
-                const responseText = data.response || data.message || JSON.stringify(data);
-                addMessage(responseText, 'bot');
-                
-            } catch (error) {
-                removeLoadingMessage();
-                addMessage(
-                    `❌ Errore di connessione: ${error.message}\n\nVerifica che n8n sia in esecuzione su:\n${webhookUrl.value}`,
-                    'bot',
-                    true
-                );
-            } finally {
-                isLoading = false;
-                sendButton.disabled = false;
-                sendIcon.classList.remove('hidden');
-                loadingIcon.classList.add('hidden');
-            }
-        }
-
-        // Table Functions
-        async function loadTableData() {
-            const tableLoading = document.getElementById('tableLoading');
-            const tableError = document.getElementById('tableError');
-            const tableContent = document.getElementById('tableContent');
-            const emptyState = document.getElementById('emptyState');
-            
-            tableLoading.classList.remove('hidden');
-            tableError.classList.add('hidden');
-            tableContent.style.opacity = '0.5';
-
-            try {
-                const response = await fetch(tableApiUrl.value, {
-                    method: 'GET',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const text = await response.text();
-                const data = JSON.parse(text);
-                
-                let rows;
-                if (Array.isArray(data)) {
-                    if (data.length > 0 && data[0].json) {
-                        rows = data.map(item => item.json);
-                    } else {
-                        rows = data;
-                    }
-                } else if (data.data && Array.isArray(data.data)) {
-                    rows = data.data;
-                } else if (data.rows && Array.isArray(data.rows)) {
-                    rows = data.rows;
-                } else if (data.json) {
-                    rows = [data.json];
-                } else if (typeof data === 'object' && data !== null) {
-                    rows = [data];
-                } else {
-                    rows = [];
-                }
-                
-                rows = rows.map(row => {
-                    const cleanRow = {};
-                    Object.entries(row).forEach(([key, value]) => {
-                        const cleanKey = key.trim();
-                        if (cleanKey) {
-                            cleanRow[cleanKey] = value;
-                        }
-                    });
-                    return cleanRow;
-                });
-                
-                currentTableData = rows;
-                
-                if (rows.length === 0) {
-                    emptyState.classList.remove('hidden');
-                    document.getElementById('tableHead').innerHTML = '';
-                    document.getElementById('tableBody').innerHTML = '';
-                } else {
-                    emptyState.classList.add('hidden');
-                    renderTable(rows);
-                }
-                
-            } catch (error) {
-                console.error('Table loading error:', error);
-                tableError.classList.remove('hidden');
-                document.getElementById('tableErrorMessage').textContent = 
-                    `Impossibile caricare i dati: ${error.message}\n\nURL: ${tableApiUrl.value}`;
-            } finally {
-                tableLoading.classList.add('hidden');
-                tableContent.style.opacity = '1';
-            }
-        }
-
-        function renderTable(data) {
-            const tableHead = document.getElementById('tableHead');
-            const tableBody = document.getElementById('tableBody');
-            
-            if (data.length === 0) return;
-            
-            const columns = Object.keys(data[0]);
-            
-            tableHead.innerHTML = `
-                <tr>
-                    ${columns.map(col => `
-                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
-                            ${escapeHtml(col)}
-                        </th>
-                    `).join('')}
-                </tr>
-            `;
-            
-            tableBody.innerHTML = data.map((row, rowIndex) => `
-                <tr class="hover:bg-slate-700/50 transition-colors">
-                    ${columns.map(col => `
-                        <td class="px-6 py-4 text-sm text-white editable-cell" 
-                            data-row="${rowIndex}" 
-                            data-column="${escapeHtml(col)}"
-                            data-original-value="${escapeHtml(String(row[col] || ''))}"
-                            ondblclick="editCell(this)">
-                            ${escapeHtml(String(row[col] || ''))}
-                        </td>
-                    `).join('')}
-                </tr>
-            `).join('');
-        }
-
-        function editCell(cell) {
-            if (cell.classList.contains('editing')) return;
-            
-            const originalValue = cell.getAttribute('data-original-value');
-            const currentText = cell.textContent;
-            
-            cell.classList.add('editing');
-            cell.innerHTML = `<input type="text" class="cell-input" value="${escapeHtml(currentText)}" />`;
-            
-            const input = cell.querySelector('input');
-            input.focus();
-            input.select();
-            
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    input.blur();
-                } else if (e.key === 'Escape') {
-                    cancelEdit(cell, originalValue);
-                }
-            });
-            
-            input.addEventListener('blur', () => {
-                saveCell(cell, input.value);
-            });
-        }
-
-        function cancelEdit(cell, originalValue) {
-            cell.classList.remove('editing');
-            cell.textContent = originalValue;
-        }
-
-        async function saveCell(cell, newValue) {
-            const rowIndex = parseInt(cell.getAttribute('data-row'));
-            const columnName = cell.getAttribute('data-column');
-            const originalValue = cell.getAttribute('data-original-value');
-            
-            if (newValue === originalValue) {
-                cell.classList.remove('editing');
-                cell.textContent = newValue;
-                return;
-            }
-            
-            cell.classList.remove('editing');
-            cell.innerHTML = `${escapeHtml(newValue)}<div class="saving-indicator"></div>`;
-            
-            const updateApiUrl = document.getElementById('updateApiUrl');
-            const rowData = currentTableData[rowIndex];
-            
-            rowData[columnName] = newValue;
-            
-            try {
-                const response = await fetch(updateApiUrl.value, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'update',
-                        rowIndex: rowIndex,
-                        columnName: columnName,
-                        newValue: newValue,
-                        rowData: rowData,
-                        username: currentUser,
-                        timestamp: new Date().toISOString()
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                cell.innerHTML = `${escapeHtml(newValue)}<div class="saved-indicator"></div>`;
-                cell.setAttribute('data-original-value', newValue);
-                
-                setTimeout(() => {
-                    cell.innerHTML = escapeHtml(newValue);
-                }, 1000);
-                
-            } catch (error) {
-                console.error('Update error:', error);
-                cell.innerHTML = escapeHtml(originalValue);
-                rowData[columnName] = originalValue;
-                alert(`❌ Errore durante l'aggiornamento:\n${error.message}`);
-            }
-        }
-
-        async function deleteTable() {
-            document.getElementById('confirmModal').classList.remove('hidden');
-        }
-        
-        function closeConfirmModal() {
-            document.getElementById('confirmModal').classList.add('hidden');
-        }
-        
-        async function confirmDelete() {
-            closeConfirmModal();
-            
-            const deleteApiUrl = document.getElementById('deleteApiUrl');
-            const tableLoading = document.getElementById('tableLoading');
-            const tableError = document.getElementById('tableError');
-            
-            tableLoading.classList.remove('hidden');
-            tableError.classList.add('hidden');
-            
-            try {
-                const response = await fetch(deleteApiUrl.value, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'delete_all',
-                        username: currentUser,
-                        timestamp: new Date().toISOString()
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                showSuccessModal();
-                
-                currentTableData = [];
-                document.getElementById('emptyState').classList.remove('hidden');
-                document.getElementById('tableHead').innerHTML = '';
-                document.getElementById('tableBody').innerHTML = '';
-                
-            } catch (error) {
-                console.error('Delete error:', error);
-                tableError.classList.remove('hidden');
-                document.getElementById('tableErrorMessage').textContent = 
-                    `Impossibile eliminare i dati: ${error.message}`;
-            } finally {
-                tableLoading.classList.add('hidden');
-            }
-        }
-        
-        function showSuccessModal() {
-            document.getElementById('successModal').classList.remove('hidden');
-        }
-        
-        function closeSuccessModal() {
-            document.getElementById('successModal').classList.add('hidden');
-        }
-
-        function exportToCSV() {
-            if (!currentTableData || currentTableData.length === 0) {
-                alert('⚠️ Nessun dato da esportare!');
-                return;
-            }
-            
-            try {
-                const columns = Object.keys(currentTableData[0]);
-                let csv = columns.join(',') + '\n';
-                
-                currentTableData.forEach(row => {
-                    const values = columns.map(col => {
-                        let value = row[col] || '';
-                        value = String(value);
-                        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-                            value = '"' + value.replace(/"/g, '""') + '"';
-                        }
-                        return value;
-                    });
-                    csv += values.join(',') + '\n';
-                });
-                
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                const url = URL.createObjectURL(blob);
-                
-                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-                link.setAttribute('href', url);
-                link.setAttribute('download', `table_export_${timestamp}.csv`);
-                link.style.visibility = 'hidden';
-                
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-            } catch (error) {
-                console.error('CSV export error:', error);
-                alert(`❌ Errore durante l'esportazione:\n${error.message}`);
-            }
-        }
-
-        // Event Listeners
-        sendButton.addEventListener('click', sendMessage);
-        
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
-        });
-
-        document.getElementById('confirmModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeConfirmModal();
-            }
-        });
-        
-        document.getElementById('logoutModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeLogoutModal();
-            }
-        });
-        
-        document.getElementById('successModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeSuccessModal();
-            }
-        });
-        
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                const confirmModal = document.getElementById('confirmModal');
-                const logoutModal = document.getElementById('logoutModal');
-                const successModal = document.getElementById('successModal');
-                
-                if (!confirmModal.classList.contains('hidden')) {
-                    closeConfirmModal();
-                }
-                if (!logoutModal.classList.contains('hidden')) {
-                    closeLogoutModal();
-                }
-                if (!successModal.classList.contains('hidden')) {
-                    closeSuccessModal();
-                }
-            }
-        });
-    </script>
-</body>
-</html></div>
                 <h1 class="text-3xl font-bold text-white mb-2">Benvenuto</h1>
                 <p class="text-slate-400">Accedi per continuare</p>
             </div>
@@ -1101,18 +301,16 @@
         </div>
     </div>
 
-    <!-- Main App (Hidden until logged in) -->
+    <!-- Main App -->
     <div id="mainApp" class="hidden">
         <div class="flex h-screen">
             <!-- Sidebar -->
             <div class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
-                <!-- Logo -->
                 <div class="p-4 border-b border-slate-700">
                     <h1 class="text-xl font-bold text-white">🔗 N8N Interface</h1>
                     <p class="text-xs text-slate-400 mt-1">Utente: <span id="currentUsername" class="text-blue-400"></span></p>
                 </div>
                 
-                <!-- Navigation -->
                 <nav class="flex-1 p-2">
                     <button onclick="switchView('chat')" id="navChat" class="nav-item active w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3 mb-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1131,7 +329,6 @@
                     </button>
                 </nav>
                 
-                <!-- Settings & Logout -->
                 <div class="p-4 border-t border-slate-700 space-y-2">
                     <button onclick="toggleSettings()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors">
                         ⚙️ Impostazioni
@@ -1145,7 +342,7 @@
                 </div>
             </div>
 
-            <!-- Main Content Area -->
+            <!-- Main Content -->
             <div class="flex-1 flex flex-col relative">
                 <!-- Settings Panel -->
                 <div id="settingsPanel" class="hidden bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 absolute top-0 left-0 right-0 z-10">
@@ -1153,48 +350,23 @@
                     <div class="space-y-3">
                         <div>
                             <label class="text-sm text-slate-300 block mb-1">API Login:</label>
-                            <input
-                                type="text"
-                                id="loginApiUrl"
-                                value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/sing-up"
-                                class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
-                            />
+                            <input type="text" id="loginApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/sing-up" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
                         </div>
                         <div>
                             <label class="text-sm text-slate-300 block mb-1">Webhook Chat:</label>
-                            <input
-                                type="text"
-                                id="webhookUrl"
-                                value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/chat"
-                                class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
-                            />
+                            <input type="text" id="webhookUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/chat" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
                         </div>
                         <div>
                             <label class="text-sm text-slate-300 block mb-1">API Tabella:</label>
-                            <input
-                                type="text"
-                                id="tableApiUrl"
-                                value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/data"
-                                class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
-                            />
+                            <input type="text" id="tableApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/data" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
                         </div>
                         <div>
                             <label class="text-sm text-slate-300 block mb-1">API Elimina Tabella:</label>
-                            <input
-                                type="text"
-                                id="deleteApiUrl"
-                                value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/deletetab"
-                                class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
-                            />
+                            <input type="text" id="deleteApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/deletetab" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
                         </div>
                         <div>
                             <label class="text-sm text-slate-300 block mb-1">API Modifica Cella:</label>
-                            <input
-                                type="text"
-                                id="updateApiUrl"
-                                value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/edit-tab"
-                                class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
-                            />
+                            <input type="text" id="updateApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/edit-tab" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
                         </div>
                     </div>
                 </div>
@@ -1214,16 +386,8 @@
 
                     <div class="bg-slate-800/50 backdrop-blur-sm border-t border-slate-700 p-4 flex-shrink-0">
                         <div class="flex gap-2 max-w-4xl mx-auto">
-                            <textarea
-                                id="messageInput"
-                                placeholder="Scrivi un messaggio..."
-                                class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500 focus:outline-none resize-none"
-                                rows="1"
-                            ></textarea>
-                            <button
-                                id="sendButton"
-                                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-xl transition-colors flex items-center gap-2 shadow-lg"
-                            >
+                            <textarea id="messageInput" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500 focus:outline-none resize-none" rows="1"></textarea>
+                            <button id="sendButton" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-xl transition-colors flex items-center gap-2 shadow-lg">
                                 <svg id="sendIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="22" y1="2" x2="11" y2="13"></line>
                                     <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -1280,10 +444,8 @@
                         <div id="tableContent" class="bg-slate-800 rounded-lg shadow-xl overflow-hidden">
                             <div class="overflow-x-auto">
                                 <table class="w-full">
-                                    <thead id="tableHead" class="bg-slate-700">
-                                    </thead>
-                                    <tbody id="tableBody" class="divide-y divide-slate-700">
-                                    </tbody>
+                                    <thead id="tableHead" class="bg-slate-700"></thead>
+                                    <tbody id="tableBody" class="divide-y divide-slate-700"></tbody>
                                 </table>
                             </div>
                             <div id="emptyState" class="text-center py-12 text-slate-400">
@@ -1297,7 +459,7 @@
         </div>
     </div>
 
-    <!-- Delete Table Confirmation Modal -->
+    <!-- Modal Eliminazione Tabella -->
     <div id="confirmModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="flex items-start gap-4 mb-6">
@@ -1310,19 +472,12 @@
                 </div>
                 <div class="flex-1">
                     <h3 class="text-xl font-bold text-white mb-2">⚠️ Conferma Eliminazione</h3>
-                    <p class="text-slate-300 leading-relaxed">
-                        Sei sicuro di voler eliminare <strong>TUTTI i dati</strong> della tabella?
-                    </p>
-                    <p class="text-red-400 text-sm mt-3 font-semibold">
-                        ⚡ Questa operazione è IRREVERSIBILE!
-                    </p>
+                    <p class="text-slate-300 leading-relaxed">Sei sicuro di voler eliminare <strong>TUTTI i dati</strong> della tabella?</p>
+                    <p class="text-red-400 text-sm mt-3 font-semibold">⚡ Questa operazione è IRREVERSIBILE!</p>
                 </div>
             </div>
-            
             <div class="flex gap-3 justify-end">
-                <button onclick="closeConfirmModal()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium">
-                    Annulla
-                </button>
+                <button onclick="closeConfirmModal()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium">Annulla</button>
                 <button onclick="confirmDelete()" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="3 6 5 6 21 6"></polyline>
@@ -1334,7 +489,7 @@
         </div>
     </div>
 
-    <!-- Logout Confirmation Modal -->
+    <!-- Modal Logout -->
     <div id="logoutModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="flex items-start gap-4 mb-6">
@@ -1344,3 +499,632 @@
                         <polyline points="16 17 21 12 16 7"></polyline>
                         <line x1="21" y1="12" x2="9" y2="12"></line>
                     </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold text-white mb-2">🚪 Conferma Logout</h3>
+                    <p class="text-slate-300 leading-relaxed">Sei sicuro di voler uscire?</p>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeLogoutModal()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium">Annulla</button>
+                <button onclick="confirmLogout()" class="px-6 py-2.5 text-white rounded-lg transition-colors font-medium flex items-center gap-2 btn-custom-blue">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Esci
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Successo -->
+    <div id="successModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="flex items-start gap-4 mb-6">
+                <div class="flex-shrink-0 w-12 h-12 bg-green-600/20 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold text-white mb-2">✅ Operazione Completata</h3>
+                    <p class="text-slate-300 leading-relaxed">Tabella eliminata con successo!</p>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeSuccessModal()" class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000;
+        const CHAT_HISTORY_KEY = 'n8n_chat_history';
+        const SESSION_KEY = 'n8n_session';
+        const MAX_MESSAGES = 50;
+
+        let currentView = 'chat';
+        let isLoading = false;
+        let currentTableData = [];
+        let currentUser = null;
+
+        const loginScreen = document.getElementById('loginScreen');
+        const mainApp = document.getElementById('mainApp');
+        const messagesArea = document.getElementById('messagesArea');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const webhookUrl = document.getElementById('webhookUrl');
+        const tableApiUrl = document.getElementById('tableApiUrl');
+        const loginApiUrl = document.getElementById('loginApiUrl');
+        const sendIcon = document.getElementById('sendIcon');
+        const loadingIcon = document.getElementById('loadingIcon');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSession();
+        });
+
+        function checkSession() {
+            const session = localStorage.getItem(SESSION_KEY);
+            if (session) {
+                try {
+                    const sessionData = JSON.parse(session);
+                    const now = new Date().getTime();
+                    if (sessionData.expires > now) {
+                        currentUser = sessionData.username;
+                        showMainApp();
+                        loadChatHistory();
+                        return;
+                    } else {
+                        localStorage.removeItem(SESSION_KEY);
+                    }
+                } catch (e) {
+                    console.error('Session parse error:', e);
+                    localStorage.removeItem(SESSION_KEY);
+                }
+            }
+            showLoginScreen();
+        }
+
+        function saveSession(username) {
+            const expires = new Date().getTime() + SESSION_DURATION;
+            const sessionData = {
+                username: username,
+                expires: expires,
+                loginTime: new Date().toISOString()
+            };
+            localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+        }
+
+        function clearSession() {
+            localStorage.removeItem(SESSION_KEY);
+            currentUser = null;
+        }
+
+        function showLoginScreen() {
+            loginScreen.classList.remove('hidden');
+            mainApp.classList.add('hidden');
+        }
+
+        function showMainApp() {
+            loginScreen.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+            document.getElementById('currentUsername').textContent = currentUser;
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const loginButton = document.getElementById('loginButton');
+            const loginButtonText = document.getElementById('loginButtonText');
+            const loginSpinner = document.getElementById('loginSpinner');
+            const loginError = document.getElementById('loginError');
+            
+            if (!username || !password) {
+                showLoginError('Inserisci username e password');
+                return;
+            }
+            
+            loginError.classList.add('hidden');
+            loginButton.disabled = true;
+            loginButtonText.classList.add('hidden');
+            loginSpinner.classList.remove('hidden');
+            
+            try {
+                const response = await fetch(loginApiUrl.value, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                
+                if (data.success || data.authenticated || data.status === 'success') {
+                    currentUser = username;
+                    saveSession(username);
+                    showMainApp();
+                    loadChatHistory();
+                } else {
+                    showLoginError(data.message || 'Credenziali non valide');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showLoginError(`Errore di connessione: ${error.message}`);
+            } finally {
+                loginButton.disabled = false;
+                loginButtonText.classList.remove('hidden');
+                loginSpinner.classList.add('hidden');
+            }
+        }
+
+        function showLoginError(message) {
+            document.getElementById('loginErrorText').textContent = message;
+            document.getElementById('loginError').classList.remove('hidden');
+        }
+
+        function handleLogout() {
+            showLogoutModal();
+        }
+        
+        function showLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('hidden');
+        }
+        
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.add('hidden');
+        }
+        
+        function confirmLogout() {
+            closeLogoutModal();
+            clearSession();
+            showLoginScreen();
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function saveChatHistory() {
+            const messages = [];
+            messagesArea.querySelectorAll('.flex').forEach(el => {
+                if (el.id === 'welcomeMessage' || el.id === 'loadingMessage') return;
+                const isUser = el.classList.contains('justify-end');
+                const textElement = el.querySelector('p');
+                if (textElement) {
+                    messages.push({
+                        text: textElement.textContent,
+                        sender: isUser ? 'user' : 'bot',
+                        timestamp: Date.now()
+                    });
+                }
+            });
+            
+            const historyData = {
+                username: currentUser,
+                messages: messages.slice(-MAX_MESSAGES),
+                lastUpdate: new Date().toISOString()
+            };
+            localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(historyData));
+        }
+
+        function loadChatHistory() {
+            const history = localStorage.getItem(CHAT_HISTORY_KEY);
+            if (!history) return;
+            
+            try {
+                const historyData = JSON.parse(history);
+                if (historyData.username !== currentUser) return;
+                
+                if (welcomeMessage && welcomeMessage.parentNode) {
+                    welcomeMessage.remove();
+                }
+                
+                historyData.messages.forEach(msg => {
+                    addMessage(msg.text, msg.sender, false, false);
+                });
+                scrollToBottom();
+            } catch (e) {
+                console.error('Error loading chat history:', e);
+            }
+        }
+
+        function clearChatHistory() {
+            if (confirm('Vuoi cancellare tutta la cronologia della chat?')) {
+                localStorage.removeItem(CHAT_HISTORY_KEY);
+                messagesArea.innerHTML = `
+                    <div id="welcomeMessage" class="text-center text-slate-400 mt-20">
+                        <p class="text-lg mb-2">👋 Benvenuto!</p>
+                        <p class="text-sm">Invia un messaggio per iniziare a comunicare con n8n</p>
+                    </div>
+                `;
+            }
+        }
+
+        function switchView(view) {
+            currentView = view;
+            document.getElementById('navChat').classList.toggle('active', view === 'chat');
+            document.getElementById('navTable').classList.toggle('active', view === 'table');
+            document.getElementById('chatView').classList.toggle('hidden', view !== 'chat');
+            document.getElementById('tableView').classList.toggle('hidden', view !== 'table');
+            if (view === 'table') loadTableData();
+        }
+
+        function toggleSettings() {
+            document.getElementById('settingsPanel').classList.toggle('hidden');
+        }
+
+        function scrollToBottom() {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function addMessage(text, sender, isError = false, saveHistory = true) {
+            const timestamp = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+            const welcomeMsg = document.getElementById('welcomeMessage');
+            if (welcomeMsg && welcomeMsg.parentNode) welcomeMsg.remove();
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} message-enter`;
+            
+            const bubbleClass = sender === 'user' ? 'bg-blue-600 text-white' : 
+                                isError ? 'bg-red-600/20 text-red-200 border border-red-500/30' : 
+                                'bg-slate-700 text-white';
+            const timeClass = sender === 'user' ? 'text-blue-200' : 'text-slate-400';
+            
+            messageDiv.innerHTML = `
+                <div class="max-w-[70%] rounded-2xl px-4 py-3 shadow-lg ${bubbleClass}">
+                    <p class="whitespace-pre-wrap break-words">${escapeHtml(text)}</p>
+                    <p class="text-xs mt-1 ${timeClass}">${timestamp}</p>
+                </div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+            scrollToBottom();
+            if (saveHistory) saveChatHistory();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function addLoadingMessage() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loadingMessage';
+            loadingDiv.className = 'flex justify-start message-enter';
+            loadingDiv.innerHTML = `
+                <div class="bg-slate-700 text-white rounded-2xl px-4 py-3 shadow-lg flex items-center gap-2">
+                    <div class="spinner"></div>
+                    <span>Elaborazione...</span>
+                </div>
+            `;
+            messagesArea.appendChild(loadingDiv);
+            scrollToBottom();
+        }
+
+        function removeLoadingMessage() {
+            const loading = document.getElementById('loadingMessage');
+            if (loading) loading.remove();
+        }
+
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || isLoading) return;
+
+            addMessage(text, 'user');
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            
+            isLoading = true;
+            sendButton.disabled = true;
+            sendIcon.classList.add('hidden');
+            loadingIcon.classList.remove('hidden');
+            addLoadingMessage();
+
+            try {
+                const response = await fetch(webhookUrl.value, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        message: text,
+                        username: currentUser,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                removeLoadingMessage();
+                const responseText = data.response || data.message || JSON.stringify(data);
+                addMessage(responseText, 'bot');
+            } catch (error) {
+                removeLoadingMessage();
+                addMessage(`❌ Errore di connessione: ${error.message}\n\nVerifica che n8n sia in esecuzione su:\n${webhookUrl.value}`, 'bot', true);
+            } finally {
+                isLoading = false;
+                sendButton.disabled = false;
+                sendIcon.classList.remove('hidden');
+                loadingIcon.classList.add('hidden');
+            }
+        }
+
+        async function loadTableData() {
+            const tableLoading = document.getElementById('tableLoading');
+            const tableError = document.getElementById('tableError');
+            const tableContent = document.getElementById('tableContent');
+            const emptyState = document.getElementById('emptyState');
+            
+            tableLoading.classList.remove('hidden');
+            tableError.classList.add('hidden');
+            tableContent.style.opacity = '0.5';
+
+            try {
+                const response = await fetch(tableApiUrl.value, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {'Content-Type': 'application/json'}
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = JSON.parse(await response.text());
+                
+                let rows;
+                if (Array.isArray(data)) {
+                    rows = data.length > 0 && data[0].json ? data.map(item => item.json) : data;
+                } else if (data.data && Array.isArray(data.data)) {
+                    rows = data.data;
+                } else if (data.rows && Array.isArray(data.rows)) {
+                    rows = data.rows;
+                } else if (data.json) {
+                    rows = [data.json];
+                } else if (typeof data === 'object' && data !== null) {
+                    rows = [data];
+                } else {
+                    rows = [];
+                }
+                
+                rows = rows.map(row => {
+                    const cleanRow = {};
+                    Object.entries(row).forEach(([key, value]) => {
+                        const cleanKey = key.trim();
+                        if (cleanKey) cleanRow[cleanKey] = value;
+                    });
+                    return cleanRow;
+                });
+                
+                currentTableData = rows;
+                
+                if (rows.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    document.getElementById('tableHead').innerHTML = '';
+                    document.getElementById('tableBody').innerHTML = '';
+                } else {
+                    emptyState.classList.add('hidden');
+                    renderTable(rows);
+                }
+            } catch (error) {
+                console.error('Table loading error:', error);
+                tableError.classList.remove('hidden');
+                document.getElementById('tableErrorMessage').textContent = `Impossibile caricare i dati: ${error.message}\n\nURL: ${tableApiUrl.value}`;
+            } finally {
+                tableLoading.classList.add('hidden');
+                tableContent.style.opacity = '1';
+            }
+        }
+
+        function renderTable(data) {
+            const tableHead = document.getElementById('tableHead');
+            const tableBody = document.getElementById('tableBody');
+            if (data.length === 0) return;
+            
+            const columns = Object.keys(data[0]);
+            tableHead.innerHTML = `<tr>${columns.map(col => `<th class="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">${escapeHtml(col)}</th>`).join('')}</tr>`;
+            tableBody.innerHTML = data.map((row, rowIndex) => `
+                <tr class="hover:bg-slate-700/50 transition-colors">
+                    ${columns.map(col => `
+                        <td class="px-6 py-4 text-sm text-white editable-cell" 
+                            data-row="${rowIndex}" 
+                            data-column="${escapeHtml(col)}"
+                            data-original-value="${escapeHtml(String(row[col] || ''))}"
+                            ondblclick="editCell(this)">
+                            ${escapeHtml(String(row[col] || ''))}
+                        </td>
+                    `).join('')}
+                </tr>
+            `).join('');
+        }
+
+        function editCell(cell) {
+            if (cell.classList.contains('editing')) return;
+            const originalValue = cell.getAttribute('data-original-value');
+            cell.classList.add('editing');
+            cell.innerHTML = `<input type="text" class="cell-input" value="${escapeHtml(cell.textContent)}" />`;
+            const input = cell.querySelector('input');
+            input.focus();
+            input.select();
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') input.blur();
+                else if (e.key === 'Escape') cancelEdit(cell, originalValue);
+            });
+            input.addEventListener('blur', () => saveCell(cell, input.value));
+        }
+
+        function cancelEdit(cell, originalValue) {
+            cell.classList.remove('editing');
+            cell.textContent = originalValue;
+        }
+
+        async function saveCell(cell, newValue) {
+            const rowIndex = parseInt(cell.getAttribute('data-row'));
+            const columnName = cell.getAttribute('data-column');
+            const originalValue = cell.getAttribute('data-original-value');
+            
+            if (newValue === originalValue) {
+                cell.classList.remove('editing');
+                cell.textContent = newValue;
+                return;
+            }
+            
+            cell.classList.remove('editing');
+            cell.innerHTML = `${escapeHtml(newValue)}<div class="saving-indicator"></div>`;
+            const updateApiUrl = document.getElementById('updateApiUrl');
+            const rowData = currentTableData[rowIndex];
+            rowData[columnName] = newValue;
+            
+            try {
+                const response = await fetch(updateApiUrl.value, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        action: 'update',
+                        rowIndex: rowIndex,
+                        columnName: columnName,
+                        newValue: newValue,
+                        rowData: rowData,
+                        username: currentUser,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                cell.innerHTML = `${escapeHtml(newValue)}<div class="saved-indicator"></div>`;
+                cell.setAttribute('data-original-value', newValue);
+                setTimeout(() => { cell.innerHTML = escapeHtml(newValue); }, 1000);
+            } catch (error) {
+                console.error('Update error:', error);
+                cell.innerHTML = escapeHtml(originalValue);
+                rowData[columnName] = originalValue;
+                alert(`❌ Errore durante l'aggiornamento:\n${error.message}`);
+            }
+        }
+
+        function deleteTable() {
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+        
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+        
+        async function confirmDelete() {
+            closeConfirmModal();
+            const deleteApiUrl = document.getElementById('deleteApiUrl');
+            const tableLoading = document.getElementById('tableLoading');
+            const tableError = document.getElementById('tableError');
+            
+            tableLoading.classList.remove('hidden');
+            tableError.classList.add('hidden');
+            
+            try {
+                const response = await fetch(deleteApiUrl.value, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        action: 'delete_all',
+                        username: currentUser,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                showSuccessModal();
+                currentTableData = [];
+                document.getElementById('emptyState').classList.remove('hidden');
+                document.getElementById('tableHead').innerHTML = '';
+                document.getElementById('tableBody').innerHTML = '';
+            } catch (error) {
+                console.error('Delete error:', error);
+                tableError.classList.remove('hidden');
+                document.getElementById('tableErrorMessage').textContent = `Impossibile eliminare i dati: ${error.message}`;
+            } finally {
+                tableLoading.classList.add('hidden');
+            }
+        }
+        
+        function showSuccessModal() {
+            document.getElementById('successModal').classList.remove('hidden');
+        }
+        
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+
+        function exportToCSV() {
+            if (!currentTableData || currentTableData.length === 0) {
+                alert('⚠️ Nessun dato da esportare!');
+                return;
+            }
+            
+            try {
+                const columns = Object.keys(currentTableData[0]);
+                let csv = columns.join(',') + '\n';
+                currentTableData.forEach(row => {
+                    const values = columns.map(col => {
+                        let value = String(row[col] || '');
+                        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+                            value = '"' + value.replace(/"/g, '""') + '"';
+                        }
+                        return value;
+                    });
+                    csv += values.join(',') + '\n';
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `table_export_${timestamp}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error('CSV export error:', error);
+                alert(`❌ Errore durante l'esportazione:\n${error.message}`);
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+        });
+
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) closeConfirmModal();
+        });
+        document.getElementById('logoutModal').addEventListener('click', function(e) {
+            if (e.target === this) closeLogoutModal();
+        });
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) closeSuccessModal();
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (!document.getElementById('confirmModal').classList.contains('hidden')) closeConfirmModal();
+                if (!document.getElementById('logoutModal').classList.contains('hidden')) closeLogoutModal();
+                if (!document.getElementById('successModal').classList.contains('hidden')) closeSuccessModal();
+            }
+        });
+    </script>
+</body>
+</html>
