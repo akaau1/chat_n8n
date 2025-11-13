@@ -101,7 +101,7 @@
             background: #10b981;
             border-radius: 50%;
         }
-       @keyframes pulse {
+        @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
@@ -141,7 +141,6 @@
                 transform: translateY(0);
             }
         }
-    </style>
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -338,6 +337,7 @@
             </div>
         </div>
     </div>
+
     <!-- Confirmation Modal -->
     <div id="confirmModal" class="modal-overlay hidden">
         <div class="modal-content">
@@ -380,6 +380,7 @@
             </div>
         </div>
     </div>
+
     <script>
         // State
         let currentView = 'chat';
@@ -823,15 +824,19 @@
 
         // Delete Table Function
         async function deleteTable() {
+            // Show confirmation modal instead of browser confirm
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+        
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+        
+        async function confirmDelete() {
+            // Close modal
+            closeConfirmModal();
+            
             const deleteApiUrl = document.getElementById('deleteApiUrl');
-            
-            // Show confirmation popup
-            const confirmed = confirm('⚠️ ATTENZIONE!\n\nSei sicuro di voler eliminare TUTTI i dati della tabella?\n\nQuesta operazione è IRREVERSIBILE!');
-            
-            if (!confirmed) {
-                return;
-            }
-            
             const tableLoading = document.getElementById('tableLoading');
             const tableError = document.getElementById('tableError');
             
@@ -943,9 +948,23 @@
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 150) + 'px';
         });
+
+        // Close modal on overlay click
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeConfirmModal();
+            }
+        });
+        
+        // Close modal on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('confirmModal');
+                if (!modal.classList.contains('hidden')) {
+                    closeConfirmModal();
+                }
+            }
+        });
     </script>
 </body>
 </html>
-
-
-
