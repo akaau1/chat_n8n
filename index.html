@@ -51,7 +51,6 @@
             background-color: rgba(59, 130, 246, 0.2);
             border-left: 3px solid #3b82f6;
         }
-        /* Fix per la chat scrollabile */
         #chatView {
             display: flex;
             flex-direction: column;
@@ -62,7 +61,6 @@
             overflow-y: auto;
             overflow-x: hidden;
         }
-        /* Editable cells */
         .editable-cell {
             cursor: pointer;
             position: relative;
@@ -105,7 +103,6 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
-        /* Confirmation Modal */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -141,196 +138,359 @@
                 transform: translateY(0);
             }
         }
+        /* Login Screen */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .login-container::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s linear infinite;
+        }
+        @keyframes float {
+            from { transform: translate(-50px, -50px); }
+            to { transform: translate(0, 0); }
+        }
+        .login-box {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.5s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(15, 23, 42, 0.8);
+        }
+        .input-group svg {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+        }
+        .login-button {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 0.75rem;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        .login-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <div class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
-            <!-- Logo -->
-            <div class="p-4 border-b border-slate-700">
-                <h1 class="text-xl font-bold text-white">🔗 N8N Interface</h1>
-            </div>
-            
-            <!-- Navigation -->
-            <nav class="flex-1 p-2">
-                <button onclick="switchView('chat')" id="navChat" class="nav-item active w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3 mb-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                     </svg>
-                    <span class="font-medium">Chat</span>
-                </button>
-                
-                <button onclick="switchView('table')" id="navTable" class="nav-item w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3">
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">Benvenuto</h1>
+                <p class="text-slate-400">Accedi per continuare</p>
+            </div>
+
+            <div id="loginError" class="error-message hidden">
+                <span id="loginErrorText"></span>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="input-group">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="3" y1="9" x2="21" y2="9"></line>
-                        <line x1="9" y1="21" x2="9" y2="9"></line>
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
                     </svg>
-                    <span class="font-medium">Tabella</span>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        placeholder="Nome utente" 
+                        required
+                        autocomplete="username"
+                    />
+                </div>
+
+                <div class="input-group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="Password" 
+                        required
+                        autocomplete="current-password"
+                    />
+                </div>
+
+                <button type="submit" id="loginButton" class="login-button">
+                    <span id="loginButtonText">Accedi</span>
+                    <div id="loginSpinner" class="spinner hidden mx-auto"></div>
                 </button>
-            </nav>
-            
-            <!-- Settings -->
-            <div class="p-4 border-t border-slate-700">
-                <button onclick="toggleSettings()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors">
-                    ⚙️ Impostazioni
-                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-slate-400 text-sm">
+                    Sessione valida per 7 giorni
+                </p>
             </div>
         </div>
+    </div>
 
-        <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col relative">
-            <!-- Settings Panel (Hidden by default) -->
-            <div id="settingsPanel" class="hidden bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 absolute top-0 left-0 right-0 z-10">
-                <h2 class="text-white font-bold mb-3">Configurazione API</h2>
-                <div class="space-y-3">
-                    <div>
-                        <label class="text-sm text-slate-300 block mb-1">Webhook Chat:</label>
-                        <input
-                            type="text"
-                            id="webhookUrl"
-                            value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/chat"
-                            class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
-                        />
-                    </div>
-                    <div>
-                        <label class="text-sm text-slate-300 block mb-1">API Tabella:</label>
-                        <input
-                            type="text"
-                            id="tableApiUrl"
-                            value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/data"
-                            class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
-                            placeholder="https://your-n8n-url.com/webhook/data"
-                        />
-                    </div>
-                    <div>
-                        <label class="text-sm text-slate-300 block mb-1">API Elimina Tabella:</label>
-                        <input
-                            type="text"
-                            id="deleteApiUrl"
-                            value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/deletetab"
-                            class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
-                            placeholder="https://your-n8n-url.com/webhook/deletetab"
-                        />
-                    </div>
-                    <div>
-                        <label class="text-sm text-slate-300 block mb-1">API Modifica Cella:</label>
-                        <input
-                            type="text"
-                            id="updateApiUrl"
-                            value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/edit-tab"
-                            class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
-                            placeholder="https://your-n8n-url.com/webhook/edit-tab"
-                        />
-                    </div>
+    <!-- Main App (Hidden until logged in) -->
+    <div id="mainApp" class="hidden">
+        <div class="flex h-screen">
+            <!-- Sidebar -->
+            <div class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
+                <!-- Logo -->
+                <div class="p-4 border-b border-slate-700">
+                    <h1 class="text-xl font-bold text-white">🔗 N8N Interface</h1>
+                    <p class="text-xs text-slate-400 mt-1">Utente: <span id="currentUsername" class="text-blue-400"></span></p>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="flex-1 p-2">
+                    <button onclick="switchView('chat')" id="navChat" class="nav-item active w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span class="font-medium">Chat</span>
+                    </button>
+                    
+                    <button onclick="switchView('table')" id="navTable" class="nav-item w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                            <line x1="9" y1="21" x2="9" y2="9"></line>
+                        </svg>
+                        <span class="font-medium">Tabella</span>
+                    </button>
+                </nav>
+                
+                <!-- Settings & Logout -->
+                <div class="p-4 border-t border-slate-700 space-y-2">
+                    <button onclick="toggleSettings()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors">
+                        ⚙️ Impostazioni
+                    </button>
+                    <button onclick="clearChatHistory()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors">
+                        🗑️ Cancella Chat
+                    </button>
+                    <button onclick="handleLogout()" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors">
+                        🚪 Logout
+                    </button>
                 </div>
             </div>
 
-            <!-- Chat View -->
-            <div id="chatView" class="absolute inset-0 flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-                <div class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 flex-shrink-0">
-                    <h2 class="text-xl font-bold text-white">💬 Chat</h2>
-                </div>
-                
-                <div id="messagesArea" class="flex-1 overflow-y-auto p-4 space-y-4">
-                    <div id="welcomeMessage" class="text-center text-slate-400 mt-20">
-                        <p class="text-lg mb-2">👋 Benvenuto!</p>
-                        <p class="text-sm">Invia un messaggio per iniziare a comunicare con n8n</p>
+            <!-- Main Content Area -->
+            <div class="flex-1 flex flex-col relative">
+                <!-- Settings Panel -->
+                <div id="settingsPanel" class="hidden bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 absolute top-0 left-0 right-0 z-10">
+                    <h2 class="text-white font-bold mb-3">Configurazione API</h2>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-sm text-slate-300 block mb-1">API Login:</label>
+                            <input
+                                type="text"
+                                id="loginApiUrl"
+                                value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/sign-up"
+                                class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                            />
+                        </div>
+                        <div>
+                            <label class="text-sm text-slate-300 block mb-1">Webhook Chat:</label>
+                            <input
+                                type="text"
+                                id="webhookUrl"
+                                value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/chat"
+                                class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                            />
+                        </div>
+                        <div>
+                            <label class="text-sm text-slate-300 block mb-1">API Tabella:</label>
+                            <input
+                                type="text"
+                                id="tableApiUrl"
+                                value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/data"
+                                class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                            />
+                        </div>
+                        <div>
+                            <label class="text-sm text-slate-300 block mb-1">API Elimina Tabella:</label>
+                            <input
+                                type="text"
+                                id="deleteApiUrl"
+                                value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/deletetab"
+                                class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                            />
+                        </div>
+                        <div>
+                            <label class="text-sm text-slate-300 block mb-1">API Modifica Cella:</label>
+                            <input
+                                type="text"
+                                id="updateApiUrl"
+                                value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/edit-tab"
+                                class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                            />
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-800/50 backdrop-blur-sm border-t border-slate-700 p-4 flex-shrink-0">
-                    <div class="flex gap-2 max-w-4xl mx-auto">
-                        <textarea
-                            id="messageInput"
-                            placeholder="Scrivi un messaggio..."
-                            class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500 focus:outline-none resize-none"
-                            rows="1"
-                        ></textarea>
-                        <button
-                            id="sendButton"
-                            class="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-xl transition-colors flex items-center gap-2 shadow-lg"
-                        >
-                            <svg id="sendIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="22" y1="2" x2="11" y2="13"></line>
-                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                            </svg>
-                            <div id="loadingIcon" class="spinner hidden"></div>
-                        </button>
+                <!-- Chat View -->
+                <div id="chatView" class="absolute inset-0 flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+                    <div class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 flex-shrink-0">
+                        <h2 class="text-xl font-bold text-white">💬 Chat</h2>
                     </div>
-                </div>
-            </div>
+                    
+                    <div id="messagesArea" class="flex-1 overflow-y-auto p-4 space-y-4">
+                        <div id="welcomeMessage" class="text-center text-slate-400 mt-20">
+                            <p class="text-lg mb-2">👋 Benvenuto!</p>
+                            <p class="text-sm">Invia un messaggio per iniziare a comunicare con n8n</p>
+                        </div>
+                    </div>
 
-            <!-- Table View -->
-            <div id="tableView" class="hidden absolute inset-0 flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-                <div class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-white">📊 Dati Tabella <span class="text-sm text-slate-400">(doppio click per modificare)</span></h2>
-                    <div class="flex gap-2">
-                        <button
-                            onclick="loadTableData()"
-                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="23 4 23 10 17 10"></polyline>
-                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                            </svg>
-                            Ricarica
-                        </button>
-                        <button
-                            onclick="exportToCSV()"
-                            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center gap-2"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                            </svg>
-                            Esporta CSV
-                        </button>
-                        <button
-                            onclick="deleteTable()"
-                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center gap-2"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                            Elimina Tabella
-                        </button>
+                    <div class="bg-slate-800/50 backdrop-blur-sm border-t border-slate-700 p-4 flex-shrink-0">
+                        <div class="flex gap-2 max-w-4xl mx-auto">
+                            <textarea
+                                id="messageInput"
+                                placeholder="Scrivi un messaggio..."
+                                class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500 focus:outline-none resize-none"
+                                rows="1"
+                            ></textarea>
+                            <button
+                                id="sendButton"
+                                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-xl transition-colors flex items-center gap-2 shadow-lg"
+                            >
+                                <svg id="sendIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                                <div id="loadingIcon" class="spinner hidden"></div>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="flex-1 overflow-auto p-4">
-                    <div id="tableLoading" class="hidden flex items-center justify-center h-full">
-                        <div class="text-center">
-                            <div class="spinner mx-auto mb-4" style="width: 40px; height: 40px; border-width: 4px;"></div>
-                            <p class="text-slate-400">Caricamento dati...</p>
+
+                <!-- Table View -->
+                <div id="tableView" class="hidden absolute inset-0 flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+                    <div class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 flex justify-between items-center">
+                        <h2 class="text-xl font-bold text-white">📊 Dati Tabella <span class="text-sm text-slate-400">(doppio click per modificare)</span></h2>
+                        <div class="flex gap-2">
+                            <button onclick="loadTableData()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                </svg>
+                                Ricarica
+                            </button>
+                            <button onclick="exportToCSV()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Esporta CSV
+                            </button>
+                            <button onclick="deleteTable()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                Elimina Tabella
+                            </button>
                         </div>
                     </div>
                     
-                    <div id="tableError" class="hidden bg-red-600/20 border border-red-500/30 rounded-lg p-4 text-red-200 mb-4">
-                        <p class="font-bold mb-2">❌ Errore</p>
-                        <p id="tableErrorMessage" class="whitespace-pre-wrap"></p>
-                    </div>
-                    
-                    <div id="testResult" class="hidden bg-blue-600/20 border border-blue-500/30 rounded-lg p-4 text-blue-200 mb-4">
-                        <p class="font-bold mb-2">🔍 Risultato Test</p>
-                        <pre id="testResultMessage" class="text-xs overflow-auto max-h-64 whitespace-pre-wrap"></pre>
-                    </div>
-                    
-                    <div id="tableContent" class="bg-slate-800 rounded-lg shadow-xl overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead id="tableHead" class="bg-slate-700">
-                                </thead>
-                                <tbody id="tableBody" class="divide-y divide-slate-700">
-                                </tbody>
-                            </table>
+                    <div class="flex-1 overflow-auto p-4">
+                        <div id="tableLoading" class="hidden flex items-center justify-center h-full">
+                            <div class="text-center">
+                                <div class="spinner mx-auto mb-4" style="width: 40px; height: 40px; border-width: 4px;"></div>
+                                <p class="text-slate-400">Caricamento dati...</p>
+                            </div>
                         </div>
-                        <div id="emptyState" class="text-center py-12 text-slate-400">
-                            <p class="text-lg mb-2">📭 Nessun dato disponibile</p>
-                            <p class="text-sm">Clicca "Ricarica" per caricare i dati</p>
+                        
+                        <div id="tableError" class="hidden bg-red-600/20 border border-red-500/30 rounded-lg p-4 text-red-200 mb-4">
+                            <p class="font-bold mb-2">❌ Errore</p>
+                            <p id="tableErrorMessage" class="whitespace-pre-wrap"></p>
+                        </div>
+                        
+                        <div id="tableContent" class="bg-slate-800 rounded-lg shadow-xl overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead id="tableHead" class="bg-slate-700">
+                                    </thead>
+                                    <tbody id="tableBody" class="divide-y divide-slate-700">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="emptyState" class="text-center py-12 text-slate-400">
+                                <p class="text-lg mb-2">📭 Nessun dato disponibile</p>
+                                <p class="text-sm">Clicca "Ricarica" per caricare i dati</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -361,16 +521,10 @@
             </div>
             
             <div class="flex gap-3 justify-end">
-                <button
-                    onclick="closeConfirmModal()"
-                    class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium"
-                >
+                <button onclick="closeConfirmModal()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium">
                     Annulla
                 </button>
-                <button
-                    onclick="confirmDelete()"
-                    class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium flex items-center gap-2"
-                >
+                <button onclick="confirmDelete()" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -382,34 +536,260 @@
     </div>
 
     <script>
+        // Session Management
+        const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
+        const CHAT_HISTORY_KEY = 'n8n_chat_history';
+        const SESSION_KEY = 'n8n_session';
+        const MAX_MESSAGES = 50; // Keep last 50 messages
+
         // State
         let currentView = 'chat';
         let isLoading = false;
-        let currentTableData = []; // Store current table data for CSV export
+        let currentTableData = [];
+        let currentUser = null;
 
         // Elements
+        const loginScreen = document.getElementById('loginScreen');
+        const mainApp = document.getElementById('mainApp');
         const messagesArea = document.getElementById('messagesArea');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
         const webhookUrl = document.getElementById('webhookUrl');
         const tableApiUrl = document.getElementById('tableApiUrl');
+        const loginApiUrl = document.getElementById('loginApiUrl');
         const sendIcon = document.getElementById('sendIcon');
         const loadingIcon = document.getElementById('loadingIcon');
         const welcomeMessage = document.getElementById('welcomeMessage');
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSession();
+        });
+
+        // Session Management Functions
+        function checkSession() {
+            const session = localStorage.getItem(SESSION_KEY);
+            
+            if (session) {
+                try {
+                    const sessionData = JSON.parse(session);
+                    const now = new Date().getTime();
+                    
+                    // Check if session is still valid
+                    if (sessionData.expires > now) {
+                        currentUser = sessionData.username;
+                        showMainApp();
+                        loadChatHistory();
+                        return;
+                    } else {
+                        // Session expired
+                        localStorage.removeItem(SESSION_KEY);
+                    }
+                } catch (e) {
+                    console.error('Session parse error:', e);
+                    localStorage.removeItem(SESSION_KEY);
+                }
+            }
+            
+            // No valid session, show login
+            showLoginScreen();
+        }
+
+        function saveSession(username) {
+            const expires = new Date().getTime() + SESSION_DURATION;
+            const sessionData = {
+                username: username,
+                expires: expires,
+                loginTime: new Date().toISOString()
+            };
+            localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+        }
+
+        function clearSession() {
+            localStorage.removeItem(SESSION_KEY);
+            currentUser = null;
+        }
+
+        function showLoginScreen() {
+            loginScreen.classList.remove('hidden');
+            mainApp.classList.add('hidden');
+        }
+
+        function showMainApp() {
+            loginScreen.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+            document.getElementById('currentUsername').textContent = currentUser;
+        }
+
+        // Login Handler
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const loginButton = document.getElementById('loginButton');
+            const loginButtonText = document.getElementById('loginButtonText');
+            const loginSpinner = document.getElementById('loginSpinner');
+            const loginError = document.getElementById('loginError');
+            const loginErrorText = document.getElementById('loginErrorText');
+            
+            if (!username || !password) {
+                showLoginError('Inserisci username e password');
+                return;
+            }
+            
+            // Hide previous errors
+            loginError.classList.add('hidden');
+            
+            // Show loading
+            loginButton.disabled = true;
+            loginButtonText.classList.add('hidden');
+            loginSpinner.classList.remove('hidden');
+            
+            try {
+                const response = await fetch(loginApiUrl.value, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Check if login was successful
+                if (data.success || data.authenticated || data.status === 'success') {
+                    // Save session
+                    currentUser = username;
+                    saveSession(username);
+                    
+                    // Show main app
+                    showMainApp();
+                    loadChatHistory();
+                } else {
+                    showLoginError(data.message || 'Credenziali non valide');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showLoginError(`Errore di connessione: ${error.message}`);
+            } finally {
+                loginButton.disabled = false;
+                loginButtonText.classList.remove('hidden');
+                loginSpinner.classList.add('hidden');
+            }
+        }
+
+        function showLoginError(message) {
+            const loginError = document.getElementById('loginError');
+            const loginErrorText = document.getElementById('loginErrorText');
+            loginErrorText.textContent = message;
+            loginError.classList.remove('hidden');
+        }
+
+        function handleLogout() {
+            if (confirm('Sei sicuro di voler uscire?')) {
+                clearSession();
+                showLoginScreen();
+                // Clear form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            }
+        }
+
+        // Chat History Functions
+        function saveChatHistory() {
+            const messages = [];
+            const messageElements = messagesArea.querySelectorAll('.flex');
+            
+            messageElements.forEach(el => {
+                if (el.id === 'welcomeMessage' || el.id === 'loadingMessage') return;
+                
+                const isUser = el.classList.contains('justify-end');
+                const textElement = el.querySelector('p');
+                if (textElement) {
+                    messages.push({
+                        text: textElement.textContent,
+                        sender: isUser ? 'user' : 'bot',
+                        timestamp: Date.now()
+                    });
+                }
+            });
+            
+            // Keep only last MAX_MESSAGES
+            const recentMessages = messages.slice(-MAX_MESSAGES);
+            
+            const historyData = {
+                username: currentUser,
+                messages: recentMessages,
+                lastUpdate: new Date().toISOString()
+            };
+            
+            localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(historyData));
+        }
+
+        function loadChatHistory() {
+            const history = localStorage.getItem(CHAT_HISTORY_KEY);
+            
+            if (!history) return;
+            
+            try {
+                const historyData = JSON.parse(history);
+                
+                // Check if history belongs to current user
+                if (historyData.username !== currentUser) {
+                    return;
+                }
+                
+                // Remove welcome message
+                if (welcomeMessage && welcomeMessage.parentNode) {
+                    welcomeMessage.remove();
+                }
+                
+                // Load messages
+                historyData.messages.forEach(msg => {
+                    addMessage(msg.text, msg.sender, false, false);
+                });
+                
+                scrollToBottom();
+            } catch (e) {
+                console.error('Error loading chat history:', e);
+            }
+        }
+
+        function clearChatHistory() {
+            if (confirm('Vuoi cancellare tutta la cronologia della chat?')) {
+                localStorage.removeItem(CHAT_HISTORY_KEY);
+                
+                // Clear UI
+                messagesArea.innerHTML = `
+                    <div id="welcomeMessage" class="text-center text-slate-400 mt-20">
+                        <p class="text-lg mb-2">👋 Benvenuto!</p>
+                        <p class="text-sm">Invia un messaggio per iniziare a comunicare con n8n</p>
+                    </div>
+                `;
+            }
+        }
 
         // View Switching
         function switchView(view) {
             currentView = view;
             
-            // Update navigation
             document.getElementById('navChat').classList.toggle('active', view === 'chat');
             document.getElementById('navTable').classList.toggle('active', view === 'table');
             
-            // Update views
             document.getElementById('chatView').classList.toggle('hidden', view !== 'chat');
             document.getElementById('tableView').classList.toggle('hidden', view !== 'table');
             
-            // Load table data if switching to table
             if (view === 'table') {
                 loadTableData();
             }
@@ -425,11 +805,12 @@
             messagesArea.scrollTop = messagesArea.scrollHeight;
         }
 
-        function addMessage(text, sender, isError = false) {
+        function addMessage(text, sender, isError = false, saveHistory = true) {
             const timestamp = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
             
-            if (welcomeMessage && welcomeMessage.parentNode) {
-                welcomeMessage.remove();
+            const welcomeMsg = document.getElementById('welcomeMessage');
+            if (welcomeMsg && welcomeMsg.parentNode) {
+                welcomeMsg.remove();
             }
 
             const messageDiv = document.createElement('div');
@@ -452,6 +833,10 @@
             
             messagesArea.appendChild(messageDiv);
             scrollToBottom();
+            
+            if (saveHistory) {
+                saveChatHistory();
+            }
         }
 
         function escapeHtml(text) {
@@ -502,6 +887,7 @@
                     },
                     body: JSON.stringify({
                         message: text,
+                        username: currentUser,
                         timestamp: new Date().toISOString()
                     })
                 });
@@ -532,74 +918,17 @@
         }
 
         // Table Functions
-        async function testConnection() {
-            const testResult = document.getElementById('testResult');
-            const testResultMessage = document.getElementById('testResultMessage');
-            
-            testResult.classList.remove('hidden');
-            testResultMessage.textContent = 'Testing connection...';
-            
-            try {
-                console.log('=== TEST CONNECTION START ===');
-                console.log('URL:', tableApiUrl.value);
-                
-                const response = await fetch(tableApiUrl.value, {
-                    method: 'GET',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                
-                console.log('Response received');
-                console.log('Status:', response.status);
-                console.log('OK:', response.ok);
-                console.log('Headers:', [...response.headers.entries()]);
-                
-                const text = await response.text();
-                console.log('Raw response text:', text);
-                
-                let data;
-                try {
-                    data = JSON.parse(text);
-                    console.log('Parsed JSON:', data);
-                } catch (e) {
-                    console.error('JSON parse error:', e);
-                    throw new Error('Response is not valid JSON: ' + text.substring(0, 200));
-                }
-                
-                const result = {
-                    status: response.status,
-                    ok: response.ok,
-                    dataType: Array.isArray(data) ? 'Array' : typeof data,
-                    dataLength: Array.isArray(data) ? data.length : 'N/A',
-                    data: data,
-                    rawResponse: text.substring(0, 500)
-                };
-                
-                testResultMessage.textContent = JSON.stringify(result, null, 2);
-                console.log('=== TEST CONNECTION END ===');
-                
-            } catch (error) {
-                console.error('Test error:', error);
-                testResultMessage.textContent = `ERROR: ${error.message}\n\nStack: ${error.stack}`;
-            }
-        }
-
-       async function loadTableData() {
+        async function loadTableData() {
             const tableLoading = document.getElementById('tableLoading');
             const tableError = document.getElementById('tableError');
             const tableContent = document.getElementById('tableContent');
             const emptyState = document.getElementById('emptyState');
             
-            // Show loading
             tableLoading.classList.remove('hidden');
             tableError.classList.add('hidden');
             tableContent.style.opacity = '0.5';
 
             try {
-                console.log('Fetching data from:', tableApiUrl.value);
-                
                 const response = await fetch(tableApiUrl.value, {
                     method: 'GET',
                     mode: 'cors',
@@ -608,24 +937,15 @@
                     }
                 });
 
-                console.log('Response status:', response.status);
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                // Get raw text first
                 const text = await response.text();
-                console.log('Raw response:', text);
-                
-                // Parse JSON (handles malformed JSON with newlines)
                 const data = JSON.parse(text);
-                console.log('Received data:', data);
                 
-                // Handle different response formats
                 let rows;
                 if (Array.isArray(data)) {
-                    // Check if it's N8N format with "json" property
                     if (data.length > 0 && data[0].json) {
                         rows = data.map(item => item.json);
                     } else {
@@ -636,16 +956,13 @@
                 } else if (data.rows && Array.isArray(data.rows)) {
                     rows = data.rows;
                 } else if (data.json) {
-                    // Single N8N item
                     rows = [data.json];
                 } else if (typeof data === 'object' && data !== null) {
-                    // Single object - convert to array
                     rows = [data];
                 } else {
                     rows = [];
                 }
                 
-                // Clean up rows - remove any empty string keys
                 rows = rows.map(row => {
                     const cleanRow = {};
                     Object.entries(row).forEach(([key, value]) => {
@@ -657,13 +974,6 @@
                     return cleanRow;
                 });
                 
-                console.log('Processed rows:', rows);
-                console.log('Number of rows:', rows.length);
-                if (rows.length > 0) {
-                    console.log('Columns in first row:', Object.keys(rows[0]));
-                }
-                
-                // Store data for CSV export
                 currentTableData = rows;
                 
                 if (rows.length === 0) {
@@ -679,7 +989,7 @@
                 console.error('Table loading error:', error);
                 tableError.classList.remove('hidden');
                 document.getElementById('tableErrorMessage').textContent = 
-                    `Impossibile caricare i dati: ${error.message}\n\nDettagli: ${error.stack || 'N/A'}\n\nURL: ${tableApiUrl.value}\n\nVerifica:\n1. Il workflow N8N sia attivo\n2. Il nodo "Respond to Webhook" sia configurato\n3. I CORS siano abilitati nel webhook`;
+                    `Impossibile caricare i dati: ${error.message}\n\nURL: ${tableApiUrl.value}`;
             } finally {
                 tableLoading.classList.add('hidden');
                 tableContent.style.opacity = '1';
@@ -692,10 +1002,8 @@
             
             if (data.length === 0) return;
             
-            // Get column names from first row
             const columns = Object.keys(data[0]);
             
-            // Render header
             tableHead.innerHTML = `
                 <tr>
                     ${columns.map(col => `
@@ -706,7 +1014,6 @@
                 </tr>
             `;
             
-            // Render body with editable cells
             tableBody.innerHTML = data.map((row, rowIndex) => `
                 <tr class="hover:bg-slate-700/50 transition-colors">
                     ${columns.map(col => `
@@ -722,7 +1029,6 @@
             `).join('');
         }
 
-        // Cell editing functions
         function editCell(cell) {
             if (cell.classList.contains('editing')) return;
             
@@ -736,7 +1042,6 @@
             input.focus();
             input.select();
             
-            // Save on Enter or blur
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     input.blur();
@@ -760,26 +1065,21 @@
             const columnName = cell.getAttribute('data-column');
             const originalValue = cell.getAttribute('data-original-value');
             
-            // If value hasn't changed, just exit edit mode
             if (newValue === originalValue) {
                 cell.classList.remove('editing');
                 cell.textContent = newValue;
                 return;
             }
             
-            // Show saving indicator
             cell.classList.remove('editing');
             cell.innerHTML = `${escapeHtml(newValue)}<div class="saving-indicator"></div>`;
             
             const updateApiUrl = document.getElementById('updateApiUrl');
             const rowData = currentTableData[rowIndex];
             
-            // Update local data
             rowData[columnName] = newValue;
             
             try {
-                console.log('Updating cell:', { rowIndex, columnName, newValue, rowData });
-                
                 const response = await fetch(updateApiUrl.value, {
                     method: 'POST',
                     mode: 'cors',
@@ -792,6 +1092,7 @@
                         columnName: columnName,
                         newValue: newValue,
                         rowData: rowData,
+                        username: currentUser,
                         timestamp: new Date().toISOString()
                     })
                 });
@@ -801,9 +1102,7 @@
                 }
                 
                 const result = await response.json();
-                console.log('Update result:', result);
                 
-                // Show success indicator briefly
                 cell.innerHTML = `${escapeHtml(newValue)}<div class="saved-indicator"></div>`;
                 cell.setAttribute('data-original-value', newValue);
                 
@@ -813,18 +1112,13 @@
                 
             } catch (error) {
                 console.error('Update error:', error);
-                
-                // Revert on error
                 cell.innerHTML = escapeHtml(originalValue);
                 rowData[columnName] = originalValue;
-                
-                alert(`❌ Errore durante l'aggiornamento:\n${error.message}\n\nIl valore è stato ripristinato.`);
+                alert(`❌ Errore durante l'aggiornamento:\n${error.message}`);
             }
         }
 
-        // Delete Table Function
         async function deleteTable() {
-            // Show confirmation modal instead of browser confirm
             document.getElementById('confirmModal').classList.remove('hidden');
         }
         
@@ -833,7 +1127,6 @@
         }
         
         async function confirmDelete() {
-            // Close modal
             closeConfirmModal();
             
             const deleteApiUrl = document.getElementById('deleteApiUrl');
@@ -844,8 +1137,6 @@
             tableError.classList.add('hidden');
             
             try {
-                console.log('Deleting table data via:', deleteApiUrl.value);
-                
                 const response = await fetch(deleteApiUrl.value, {
                     method: 'POST',
                     mode: 'cors',
@@ -854,6 +1145,7 @@
                     },
                     body: JSON.stringify({
                         action: 'delete_all',
+                        username: currentUser,
                         timestamp: new Date().toISOString()
                     })
                 });
@@ -863,12 +1155,8 @@
                 }
                 
                 const result = await response.json();
-                console.log('Delete result:', result);
-                
-                // Show success message
                 alert('✅ Tabella eliminata con successo!');
                 
-                // Reload table data to show empty state
                 currentTableData = [];
                 document.getElementById('emptyState').classList.remove('hidden');
                 document.getElementById('tableHead').innerHTML = '';
@@ -878,31 +1166,25 @@
                 console.error('Delete error:', error);
                 tableError.classList.remove('hidden');
                 document.getElementById('tableErrorMessage').textContent = 
-                    `Impossibile eliminare i dati: ${error.message}\n\nURL: ${deleteApiUrl.value}\n\nVerifica che il webhook sia configurato correttamente.`;
+                    `Impossibile eliminare i dati: ${error.message}`;
             } finally {
                 tableLoading.classList.add('hidden');
             }
         }
 
-        // Export to CSV Function
         function exportToCSV() {
             if (!currentTableData || currentTableData.length === 0) {
-                alert('⚠️ Nessun dato da esportare!\n\nCarica prima i dati della tabella.');
+                alert('⚠️ Nessun dato da esportare!');
                 return;
             }
             
             try {
-                // Get column names
                 const columns = Object.keys(currentTableData[0]);
-                
-                // Create CSV header
                 let csv = columns.join(',') + '\n';
                 
-                // Add rows
                 currentTableData.forEach(row => {
                     const values = columns.map(col => {
                         let value = row[col] || '';
-                        // Escape quotes and wrap in quotes if contains comma, quote or newline
                         value = String(value);
                         if (value.includes(',') || value.includes('"') || value.includes('\n')) {
                             value = '"' + value.replace(/"/g, '""') + '"';
@@ -912,7 +1194,6 @@
                     csv += values.join(',') + '\n';
                 });
                 
-                // Create download link
                 const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
                 const url = URL.createObjectURL(blob);
@@ -925,8 +1206,6 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                
-                console.log('CSV exported successfully');
                 
             } catch (error) {
                 console.error('CSV export error:', error);
@@ -949,14 +1228,12 @@
             this.style.height = Math.min(this.scrollHeight, 150) + 'px';
         });
 
-        // Close modal on overlay click
         document.getElementById('confirmModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeConfirmModal();
             }
         });
         
-        // Close modal on ESC key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 const modal = document.getElementById('confirmModal');
