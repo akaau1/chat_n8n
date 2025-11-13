@@ -460,7 +460,19 @@
                 console.log('Received data:', data);
                 
                 // Handle different response formats
-                let rows = Array.isArray(data) ? data : (data.data || data.rows || []);
+                let rows;
+                if (Array.isArray(data)) {
+                    rows = data;
+                } else if (data.data && Array.isArray(data.data)) {
+                    rows = data.data;
+                } else if (data.rows && Array.isArray(data.rows)) {
+                    rows = data.rows;
+                } else if (typeof data === 'object' && data !== null) {
+                    // Single object - convert to array
+                    rows = [data];
+                } else {
+                    rows = [];
+                }
                 console.log('Processed rows:', rows);
                 
                 if (rows.length === 0) {
