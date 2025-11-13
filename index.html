@@ -719,6 +719,12 @@
             loginScreen.classList.add('hidden');
             mainApp.classList.remove('hidden');
             document.getElementById('currentUsername').textContent = currentUser;
+            
+            // Assicurati che il pulsante Cancella Chat sia visibile all'avvio (sei nella chat)
+            const clearChatBtn = document.getElementById('clearChatBtn');
+            if (clearChatBtn) {
+                clearChatBtn.classList.remove('hidden');
+            }
         }
 
         async function handleLogin(event) {
@@ -881,6 +887,15 @@
             document.getElementById('navTable').classList.toggle('active', view === 'table');
             document.getElementById('chatView').classList.toggle('hidden', view !== 'chat');
             document.getElementById('tableView').classList.toggle('hidden', view !== 'table');
+            
+            // Mostra/nascondi pulsante Cancella Chat
+            const clearChatBtn = document.getElementById('clearChatBtn');
+            if (view === 'chat') {
+                clearChatBtn.classList.remove('hidden');
+            } else {
+                clearChatBtn.classList.add('hidden');
+            }
+            
             if (view === 'table') loadTableData();
         }
 
