@@ -490,13 +490,13 @@
                 <p class="text-slate-300 text-center text-sm">Scegli lo stato da applicare</p>
             </div>
             <div class="space-y-3">
-                <button onclick="selectStatus('Annullare')" class="status-option-btn status-annullare">
-                    ❌ Annullare
+                <button onclick="selectStatus('annullato')" class="status-option-btn status-annullare">
+                    ❌ Annullato
                 </button>
-                <button onclick="selectStatus('Rispedire')" class="status-option-btn status-rispedire">
-                    ✅ Rispedire
+                <button onclick="selectStatus('rispedito')" class="status-option-btn status-rispedire">
+                    ✅ Rispedito
                 </button>
-                <button onclick="selectStatus('Attesa')" class="status-option-btn status-attesa">
+                <button onclick="selectStatus('attesa')" class="status-option-btn status-attesa">
                     ⏳ Attesa
                 </button>
             </div>
@@ -1081,23 +1081,42 @@
         }
 
         async function selectStatus(status) {
-            if (!currentEditingCell) return;
+            if (!currentEditingCell) {
+                console.error('Nessuna cella selezionata');
+                return;
+            }
             
             const rowIndex = parseInt(currentEditingCell.getAttribute('data-row'));
             const columnName = currentEditingCell.getAttribute('data-column');
             const originalValue = currentEditingCell.getAttribute('data-original-value');
             
-            // Converti in minuscolo
-            const statusLowerCase = status.toLowerCase();
+            console.log('Aggiornamento stato:', {
+                rowIndex,
+                columnName,
+                newValue: status,
+                originalValue
+            });
             
             closeStatusModal();
             
-            currentEditingCell.innerHTML = `${escapeHtml(statusLowerCase)}<div class="saving-indicator"></div>`;
+            // Mostra indicatore di salvataggio
+            currentEditingCell.innerHTML = `${escapeHtml(status)}<div class="saving-indicator"></div>`;
             const updateApiUrl = document.getElementById('updateApiUrl');
-            const rowData = currentTableData[rowIndex];
-            rowData[columnName] = statusLowerCase;
+            const rowData = {...currentTableData[rowIndex]};
+            rowData[columnName] = status;
             
             try {
+                console.log('Invio richiesta a:', updateApiUrl.value);
+                console.log('Payload:', {
+                    action: 'update',
+                    rowIndex: rowIndex,
+                    columnName: columnName,
+                    newValue: status,
+                    rowData: rowData,
+                    username: currentUser,
+                    timestamp: new Date().toISOString()
+                });
+                
                 const response = await fetch(updateApiUrl.value, {
                     method: 'POST',
                     mode: 'cors',
@@ -1106,22 +1125,41 @@
                         action: 'update',
                         rowIndex: rowIndex,
                         columnName: columnName,
-                        newValue: statusLowerCase,
+                        newValue: status,
                         rowData: rowData,
                         username: currentUser,
                         timestamp: new Date().toISOString()
                     })
                 });
                 
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                currentEditingCell.innerHTML = `${escapeHtml(statusLowerCase)}<div class="saved-indicator"></div>`;
-                currentEditingCell.setAttribute('data-original-value', statusLowerCase);
-                setTimeout(() => { currentEditingCell.innerHTML = escapeHtml(statusLowerCase); }, 1000);
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Errore response:', errorText);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const responseData = await response.json();
+                console.log('Response data:', responseData);
+                
+                // Aggiorna i dati locali
+                currentTableData[rowIndex][columnName] = status;
+                
+                // Mostra indicatore di successo
+                currentEditingCell.innerHTML = `${escapeHtml(status)}<div class="saved-indicator"></div>`;
+                currentEditingCell.setAttribute('data-original-value', status);
+                
+                // Rimuovi indicatore dopo 1 secondo
+                setTimeout(() => { 
+                    currentEditingCell.innerHTML = escapeHtml(status); 
+                }, 1000);
+                
             } catch (error) {
                 console.error('Update error:', error);
                 currentEditingCell.innerHTML = escapeHtml(originalValue);
                 rowData[columnName] = originalValue;
-                alert(`❌ Errore durante l'aggiornamento:\n${error.message}`);
+                alert(`❌ Errore durante l'aggiornamento:\n${error.message}\n\nControlla la console per più dettagli.`);
             } finally {
                 currentEditingCell = null;
             }
