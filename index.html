@@ -456,7 +456,12 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const data = await response.json();
+                // Get raw text first
+                const text = await response.text();
+                console.log('Raw response:', text);
+                
+                // Parse JSON (handles malformed JSON with newlines)
+                const data = JSON.parse(text);
                 console.log('Received data:', data);
                 
                 // Handle different response formats
@@ -473,7 +478,24 @@
                 } else {
                     rows = [];
                 }
+                
+                // Clean up rows - remove any empty string keys
+                rows = rows.map(row => {
+                    const cleanRow = {};
+                    Object.entries(row).forEach(([key, value]) => {
+                        const cleanKey = key.trim();
+                        if (cleanKey) {
+                            cleanRow[cleanKey] = value;
+                        }
+                    });
+                    return cleanRow;
+                });
+                
                 console.log('Processed rows:', rows);
+                console.log('Number of rows:', rows.length);
+                if (rows.length > 0) {
+                    console.log('Columns in first row:', Object.keys(rows[0]));
+                }
                 
                 if (rows.length === 0) {
                     emptyState.classList.remove('hidden');
@@ -544,3 +566,4 @@
     </script>
 </body>
 </html>
+
