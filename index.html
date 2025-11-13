@@ -62,6 +62,49 @@
             overflow-y: auto;
             overflow-x: hidden;
         }
+        /* Editable cells */
+        .editable-cell {
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+        .editable-cell:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .editable-cell.editing {
+            padding: 0;
+        }
+        .cell-input {
+            width: 100%;
+            background: #1e293b;
+            border: 2px solid #3b82f6;
+            color: white;
+            padding: 0.5rem;
+            outline: none;
+        }
+        .saving-indicator {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            background: #f59e0b;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+        .saved-indicator {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -135,6 +178,16 @@
                             placeholder="https://your-n8n-url.com/webhook/deletetab"
                         />
                     </div>
+                    <div>
+                        <label class="text-sm text-slate-300 block mb-1">API Modifica Cella:</label>
+                        <input
+                            type="text"
+                            id="updateApiUrl"
+                            value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/edit-tab"
+                            class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                            placeholder="https://your-n8n-url.com/webhook/edit-tab"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -176,7 +229,7 @@
             <!-- Table View -->
             <div id="tableView" class="hidden absolute inset-0 flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
                 <div class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-white">📊 Dati Tabella</h2>
+                    <h2 class="text-xl font-bold text-white">📊 Dati Tabella <span class="text-sm text-slate-400">(doppio click per modificare)</span></h2>
                     <div class="flex gap-2">
                         <button
                             onclick="testConnection()"
@@ -580,16 +633,120 @@
                 </tr>
             `;
             
-            // Render body
-            tableBody.innerHTML = data.map(row => `
+            // Render body with editable cells
+            tableBody.innerHTML = data.map((row, rowIndex) => `
                 <tr class="hover:bg-slate-700/50 transition-colors">
                     ${columns.map(col => `
-                        <td class="px-6 py-4 text-sm text-white">
+                        <td class="px-6 py-4 text-sm text-white editable-cell" 
+                            data-row="${rowIndex}" 
+                            data-column="${escapeHtml(col)}"
+                            data-original-value="${escapeHtml(String(row[col] || ''))}"
+                            ondblclick="editCell(this)">
                             ${escapeHtml(String(row[col] || ''))}
                         </td>
                     `).join('')}
                 </tr>
             `).join('');
+        }
+
+        // Cell editing functions
+        function editCell(cell) {
+            if (cell.classList.contains('editing')) return;
+            
+            const originalValue = cell.getAttribute('data-original-value');
+            const currentText = cell.textContent;
+            
+            cell.classList.add('editing');
+            cell.innerHTML = `<input type="text" class="cell-input" value="${escapeHtml(currentText)}" />`;
+            
+            const input = cell.querySelector('input');
+            input.focus();
+            input.select();
+            
+            // Save on Enter or blur
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    input.blur();
+                } else if (e.key === 'Escape') {
+                    cancelEdit(cell, originalValue);
+                }
+            });
+            
+            input.addEventListener('blur', () => {
+                saveCell(cell, input.value);
+            });
+        }
+
+        function cancelEdit(cell, originalValue) {
+            cell.classList.remove('editing');
+            cell.textContent = originalValue;
+        }
+
+        async function saveCell(cell, newValue) {
+            const rowIndex = parseInt(cell.getAttribute('data-row'));
+            const columnName = cell.getAttribute('data-column');
+            const originalValue = cell.getAttribute('data-original-value');
+            
+            // If value hasn't changed, just exit edit mode
+            if (newValue === originalValue) {
+                cell.classList.remove('editing');
+                cell.textContent = newValue;
+                return;
+            }
+            
+            // Show saving indicator
+            cell.classList.remove('editing');
+            cell.innerHTML = `${escapeHtml(newValue)}<div class="saving-indicator"></div>`;
+            
+            const updateApiUrl = document.getElementById('updateApiUrl');
+            const rowData = currentTableData[rowIndex];
+            
+            // Update local data
+            rowData[columnName] = newValue;
+            
+            try {
+                console.log('Updating cell:', { rowIndex, columnName, newValue, rowData });
+                
+                const response = await fetch(updateApiUrl.value, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'update',
+                        rowIndex: rowIndex,
+                        columnName: columnName,
+                        newValue: newValue,
+                        rowData: rowData,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('Update result:', result);
+                
+                // Show success indicator briefly
+                cell.innerHTML = `${escapeHtml(newValue)}<div class="saved-indicator"></div>`;
+                cell.setAttribute('data-original-value', newValue);
+                
+                setTimeout(() => {
+                    cell.innerHTML = escapeHtml(newValue);
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Update error:', error);
+                
+                // Revert on error
+                cell.innerHTML = escapeHtml(originalValue);
+                rowData[columnName] = originalValue;
+                
+                alert(`❌ Errore durante l'aggiornamento:\n${error.message}\n\nIl valore è stato ripristinato.`);
+            }
         }
 
         // Delete Table Function
