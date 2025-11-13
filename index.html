@@ -539,6 +539,63 @@
         </div>
     </div>
 
+    <!-- Modal Conferma Cancellazione Chat -->
+    <div id="clearChatModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="flex items-start gap-4 mb-6">
+                <div class="flex-shrink-0 w-12 h-12 bg-orange-600/20 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-orange-500">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold text-white mb-2">🗑️ Conferma Cancellazione</h3>
+                    <p class="text-slate-300 leading-relaxed">
+                        Sei sicuro di voler cancellare <strong>tutta la cronologia</strong> della chat?
+                    </p>
+                    <p class="text-orange-400 text-sm mt-3 font-semibold">
+                        ⚠️ Tutti i messaggi verranno eliminati definitivamente!
+                    </p>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeClearChatModal()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium">Annulla</button>
+                <button onclick="confirmClearChat()" class="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors font-medium flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Cancella Tutto
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Successo Cancellazione Chat -->
+    <div id="chatClearedModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="flex items-start gap-4 mb-6">
+                <div class="flex-shrink-0 w-12 h-12 bg-green-600/20 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold text-white mb-2">✅ Chat Cancellata</h3>
+                    <p class="text-slate-300 leading-relaxed">
+                        La cronologia della chat è stata eliminata con successo!
+                    </p>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeChatClearedModal()" class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000;
         const CHAT_HISTORY_KEY = 'n8n_chat_history';
@@ -737,15 +794,35 @@
         }
 
         function clearChatHistory() {
-            if (confirm('Vuoi cancellare tutta la cronologia della chat?')) {
-                localStorage.removeItem(CHAT_HISTORY_KEY);
-                messagesArea.innerHTML = `
-                    <div id="welcomeMessage" class="text-center text-slate-400 mt-20">
-                        <p class="text-lg mb-2">👋 Benvenuto!</p>
-                        <p class="text-sm">Invia un messaggio per iniziare a comunicare con n8n</p>
-                    </div>
-                `;
-            }
+            showClearChatModal();
+        }
+        
+        function showClearChatModal() {
+            document.getElementById('clearChatModal').classList.remove('hidden');
+        }
+        
+        function closeClearChatModal() {
+            document.getElementById('clearChatModal').classList.add('hidden');
+        }
+        
+        function confirmClearChat() {
+            closeClearChatModal();
+            localStorage.removeItem(CHAT_HISTORY_KEY);
+            messagesArea.innerHTML = `
+                <div id="welcomeMessage" class="text-center text-slate-400 mt-20">
+                    <p class="text-lg mb-2">👋 Benvenuto!</p>
+                    <p class="text-sm">Invia un messaggio per iniziare a comunicare con n8n</p>
+                </div>
+            `;
+            showChatClearedModal();
+        }
+        
+        function showChatClearedModal() {
+            document.getElementById('chatClearedModal').classList.remove('hidden');
+        }
+        
+        function closeChatClearedModal() {
+            document.getElementById('chatClearedModal').classList.add('hidden');
         }
 
         function switchView(view) {
@@ -1117,12 +1194,20 @@
         document.getElementById('successModal').addEventListener('click', function(e) {
             if (e.target === this) closeSuccessModal();
         });
+        document.getElementById('clearChatModal').addEventListener('click', function(e) {
+            if (e.target === this) closeClearChatModal();
+        });
+        document.getElementById('chatClearedModal').addEventListener('click', function(e) {
+            if (e.target === this) closeChatClearedModal();
+        });
         
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 if (!document.getElementById('confirmModal').classList.contains('hidden')) closeConfirmModal();
                 if (!document.getElementById('logoutModal').classList.contains('hidden')) closeLogoutModal();
                 if (!document.getElementById('successModal').classList.contains('hidden')) closeSuccessModal();
+                if (!document.getElementById('clearChatModal').classList.contains('hidden')) closeClearChatModal();
+                if (!document.getElementById('chatClearedModal').classList.contains('hidden')) closeChatClearedModal();
             }
         });
     </script>
