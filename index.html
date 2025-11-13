@@ -301,7 +301,48 @@
             </div>
         </div>
     </div>
-
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="flex items-start gap-4 mb-6">
+                <div class="flex-shrink-0 w-12 h-12 bg-red-600/20 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold text-white mb-2">⚠️ Conferma Eliminazione</h3>
+                    <p class="text-slate-300 leading-relaxed">
+                        Sei sicuro di voler eliminare <strong>TUTTI i dati</strong> della tabella?
+                    </p>
+                    <p class="text-red-400 text-sm mt-3 font-semibold">
+                        ⚡ Questa operazione è IRREVERSIBILE!
+                    </p>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 justify-end">
+                <button
+                    onclick="closeConfirmModal()"
+                    class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium"
+                >
+                    Annulla
+                </button>
+                <button
+                    onclick="confirmDelete()"
+                    class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium flex items-center gap-2"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Elimina Tutto
+                </button>
+            </div>
+        </div>
+    </div>
     <script>
         // State
         let currentView = 'chat';
@@ -868,4 +909,5 @@
     </script>
 </body>
 </html>
+
 
