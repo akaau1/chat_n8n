@@ -1212,7 +1212,7 @@
             currentDeletingRowIndex = null;
         }
 
-        async function confirmDeleteRow() {
+       async function confirmDeleteRow() {
                 if (currentDeletingRowIndex === null) {
                     console.error('currentDeletingRowIndex è null');
                     closeDeleteRowModal();
@@ -1226,7 +1226,29 @@
                 tableLoading.classList.remove('hidden');
                 
                 try {
+                    console.log('DEBUG - Stato attuale:', {
+                        currentDeletingRowIndex: currentDeletingRowIndex,
+                        currentTableData_length: currentTableData ? currentTableData.length : 'undefined',
+                        currentTableData_exists: !!currentTableData
+                    });
+                    
+                    // Verifica che l'array esista e abbia dati
+                    if (!currentTableData || !Array.isArray(currentTableData) || currentTableData.length === 0) {
+                        throw new Error('Tabella vuota o non caricata. Prova a ricaricare i dati.');
+                    }
+                    
+                    // Verifica che l'indice sia valido
+                    if (currentDeletingRowIndex < 0 || currentDeletingRowIndex >= currentTableData.length) {
+                        throw new Error(`Indice non valido: ${currentDeletingRowIndex} (max: ${currentTableData.length - 1})`);
+                    }
+                    
                     const rowData = currentTableData[currentDeletingRowIndex];
+                    
+                    // Verifica che rowData esista
+                    if (!rowData || typeof rowData !== 'object') {
+                        console.error('rowData non valido:', rowData);
+                        throw new Error('Dati della riga non trovati');
+                    }
                     
                     console.log('Eliminazione riga - Dati completi:', {
                         rowIndex: currentDeletingRowIndex,
@@ -1273,8 +1295,10 @@
                     
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     
+                    // Rimuovi la riga dai dati locali
                     currentTableData.splice(currentDeletingRowIndex, 1);
                     
+                    // Aggiorna la visualizzazione
                     if (currentTableData.length === 0) {
                         document.getElementById('emptyState').classList.remove('hidden');
                         document.getElementById('tableHead').innerHTML = '';
@@ -1290,11 +1314,11 @@
                     const tableError = document.getElementById('tableError');
                     tableError.classList.remove('hidden');
                     document.getElementById('tableErrorMessage').textContent = `Impossibile eliminare la riga: ${error.message}`;
+                    currentDeletingRowIndex = null;
                 } finally {
                     tableLoading.classList.add('hidden');
                 }
             }
-
         function editStatusCell(cell) {
             currentEditingCell = cell;
             document.getElementById('statusModal').classList.remove('hidden');
@@ -1602,5 +1626,6 @@
     </script>
 </body>
 </html>
+
 
 
