@@ -1213,29 +1213,41 @@
         }
 
         async function confirmDeleteRow() {
-            if (currentDeletingRowIndex === null) return;
-            
-            closeDeleteRowModal();
-            const tableLoading = document.getElementById('tableLoading');
-            const deleteRowApiUrl = document.getElementById('deleteRowApiUrl');
-            
-            tableLoading.classList.remove('hidden');
-            
-            try {
-                const rowData = currentTableData[currentDeletingRowIndex];
+                if (currentDeletingRowIndex === null) {
+                    console.error('currentDeletingRowIndex è null');
+                    closeDeleteRowModal();
+                    return;
+                }
                 
-                const response = await fetch(deleteRowApiUrl.value, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        action: 'delete_row',
+                closeDeleteRowModal();
+                const tableLoading = document.getElementById('tableLoading');
+                const deleteRowApiUrl = document.getElementById('deleteRowApiUrl');
+                
+                tableLoading.classList.remove('hidden');
+                
+                try {
+                    const rowData = currentTableData[currentDeletingRowIndex];
+                    
+                    console.log('Eliminazione riga:', {
                         rowIndex: currentDeletingRowIndex,
-                        rowData: rowData,
-                        username: currentUser,
-                        timestamp: new Date().toISOString()
-                    })
-                });
+                        rowData: rowData
+                    });
+                    
+                    const response = await fetch(deleteRowApiUrl.value, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            action: 'delete_row',
+                            rowIndex: currentDeletingRowIndex,
+                            rowData: rowData,
+                            nome: rowData.nome || rowData.Nome,
+                            cognome: rowData.cognome || rowData.Cognome,
+                            telefono: rowData.telefono || rowData.Telefono,
+                            username: currentUser,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
                 
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
@@ -1568,3 +1580,4 @@
     </script>
 </body>
 </html>
+
