@@ -1212,20 +1212,26 @@
             currentDeletingRowIndex = null;
         }
 
-      async function confirmDeleteRow() {
-            if (currentDeletingRowIndex === null || currentDeletingRowIndex === undefined) {
-                console.error('currentDeletingRowIndex non valido:', currentDeletingRowIndex);
+    async function confirmDeleteRow() {
+            // SALVA l'indice PRIMA di chiudere il modal (che lo resetta a null)
+            const rowIndexToDelete = currentDeletingRowIndex;
+            
+            console.log('🎯 confirmDeleteRow chiamata - rowIndexToDelete:', rowIndexToDelete);
+            
+            if (rowIndexToDelete === null || rowIndexToDelete === undefined) {
+                console.error('currentDeletingRowIndex non valido:', rowIndexToDelete);
                 closeDeleteRowModal();
                 alert('❌ Errore: indice riga non valido');
                 return;
             }
             
+            // CHIUDI il modal (questo resetterà currentDeletingRowIndex a null, ma abbiamo già salvato il valore)
             closeDeleteRowModal();
             const tableLoading = document.getElementById('tableLoading');
             const deleteRowApiUrl = document.getElementById('deleteRowApiUrl');
             
             console.log('=== INIZIO ELIMINAZIONE RIGA ===');
-            console.log('Indice riga da eliminare:', currentDeletingRowIndex);
+            console.log('Indice riga da eliminare:', rowIndexToDelete);
             console.log('currentTableData esiste:', !!currentTableData);
             console.log('currentTableData è array:', Array.isArray(currentTableData));
             console.log('currentTableData lunghezza:', currentTableData ? currentTableData.length : 'N/A');
@@ -1239,12 +1245,12 @@
                 }
                 
                 // Verifica che l'indice sia valido
-                if (currentDeletingRowIndex < 0 || currentDeletingRowIndex >= currentTableData.length) {
-                    throw new Error(`❌ Indice non valido: ${currentDeletingRowIndex} (range valido: 0-${currentTableData.length - 1})`);
+                if (rowIndexToDelete < 0 || rowIndexToDelete >= currentTableData.length) {
+                    throw new Error(`❌ Indice non valido: ${rowIndexToDelete} (range valido: 0-${currentTableData.length - 1})`);
                 }
                 
                 // Prendi i dati della riga PRIMA di fare qualsiasi operazione
-                const rowData = currentTableData[currentDeletingRowIndex];
+                const rowData = currentTableData[rowIndexToDelete];
                 
                 console.log('Dati riga estratti:', rowData);
                 console.log('Tipo rowData:', typeof rowData);
@@ -1256,7 +1262,7 @@
                     console.error('❌ rowData non valido:', {
                         rowData: rowData,
                         tipo: typeof rowData,
-                        indice: currentDeletingRowIndex,
+                        indice: rowIndexToDelete,
                         arrayLength: currentTableData.length,
                         primiTreElementi: currentTableData.slice(0, 3)
                     });
@@ -1280,7 +1286,7 @@
                 // Costruisci il payload
                 const payload = {
                     action: 'delete_row',
-                    rowIndex: currentDeletingRowIndex,
+                    rowIndex: rowIndexToDelete,
                     rowData: rowData,
                     username: currentUser || 'unknown',
                     timestamp: new Date().toISOString()
@@ -1321,7 +1327,7 @@
                 console.log('✅ Response data:', responseData);
                 
                 // Rimuovi la riga dai dati locali SOLO DOPO il successo
-                currentTableData.splice(currentDeletingRowIndex, 1);
+                currentTableData.splice(rowIndexToDelete, 1);
                 console.log('✅ Riga rimossa dai dati locali. Nuova lunghezza:', currentTableData.length);
                 
                 // Aggiorna la visualizzazione
@@ -1335,28 +1341,25 @@
                     console.log('✅ Tabella ri-renderizzata con', currentTableData.length, 'righe');
                 }
                 
-                // Reset indice
-                currentDeletingRowIndex = null;
                 console.log('=== ELIMINAZIONE COMPLETATA CON SUCCESSO ===');
                 
             } catch (error) {
                 console.error('❌ ERRORE COMPLETO:', {
                     message: error.message,
                     stack: error.stack,
-                    currentDeletingRowIndex: currentDeletingRowIndex,
+                    rowIndexToDelete: rowIndexToDelete,
                     currentTableDataLength: currentTableData ? currentTableData.length : 'N/A'
                 });
                 
                 const tableError = document.getElementById('tableError');
                 tableError.classList.remove('hidden');
                 document.getElementById('tableErrorMessage').textContent = 
-                    `Impossibile eliminare la riga:\n\n${error.message}\n\nDettagli: Riga ${currentDeletingRowIndex}, Tabella con ${currentTableData ? currentTableData.length : 0} righe`;
-                
-                currentDeletingRowIndex = null;
+                    `Impossibile eliminare la riga:\n\n${error.message}\n\nDettagli: Riga ${rowIndexToDelete}, Tabella con ${currentTableData ? currentTableData.length : 0} righe`;
             } finally {
                 tableLoading.classList.add('hidden');
             }
         }
+        
         function editStatusCell(cell) {
             currentEditingCell = cell;
             document.getElementById('statusModal').classList.remove('hidden');
@@ -1664,6 +1667,7 @@
     </script>
 </body>
 </html>
+
 
 
 
