@@ -1212,113 +1212,151 @@
             currentDeletingRowIndex = null;
         }
 
-       async function confirmDeleteRow() {
-                if (currentDeletingRowIndex === null) {
-                    console.error('currentDeletingRowIndex è null');
-                    closeDeleteRowModal();
-                    return;
-                }
-                
+      async function confirmDeleteRow() {
+            if (currentDeletingRowIndex === null || currentDeletingRowIndex === undefined) {
+                console.error('currentDeletingRowIndex non valido:', currentDeletingRowIndex);
                 closeDeleteRowModal();
-                const tableLoading = document.getElementById('tableLoading');
-                const deleteRowApiUrl = document.getElementById('deleteRowApiUrl');
-                
-                tableLoading.classList.remove('hidden');
-                
-                try {
-                    console.log('DEBUG - Stato attuale:', {
-                        currentDeletingRowIndex: currentDeletingRowIndex,
-                        currentTableData_length: currentTableData ? currentTableData.length : 'undefined',
-                        currentTableData_exists: !!currentTableData
-                    });
-                    
-                    // Verifica che l'array esista e abbia dati
-                    if (!currentTableData || !Array.isArray(currentTableData) || currentTableData.length === 0) {
-                        throw new Error('Tabella vuota o non caricata. Prova a ricaricare i dati.');
-                    }
-                    
-                    // Verifica che l'indice sia valido
-                    if (currentDeletingRowIndex < 0 || currentDeletingRowIndex >= currentTableData.length) {
-                        throw new Error(`Indice non valido: ${currentDeletingRowIndex} (max: ${currentTableData.length - 1})`);
-                    }
-                    
-                    const rowData = currentTableData[currentDeletingRowIndex];
-                    
-                    // Verifica che rowData esista
-                    if (!rowData || typeof rowData !== 'object') {
-                        console.error('rowData non valido:', rowData);
-                        throw new Error('Dati della riga non trovati');
-                    }
-                    
-                    console.log('Eliminazione riga - Dati completi:', {
-                        rowIndex: currentDeletingRowIndex,
-                        rowData: rowData,
-                        colonne_disponibili: Object.keys(rowData)
-                    });
-                    
-                    // Trova i valori indipendentemente dal maiuscolo/minuscolo
-                    function getValue(obj, ...keys) {
-                        for (let key of keys) {
-                            if (obj[key] !== undefined) return obj[key];
-                            // Cerca case-insensitive
-                            const foundKey = Object.keys(obj).find(k => k.toLowerCase() === key.toLowerCase());
-                            if (foundKey && obj[foundKey] !== undefined) return obj[foundKey];
-                        }
-                        return undefined;
-                    }
-                    
-                    const payload = {
-                        action: 'delete_row',
-                        rowIndex: currentDeletingRowIndex,
-                        rowData: rowData,
-                        username: currentUser,
-                        timestamp: new Date().toISOString()
-                    };
-                    
-                    // Aggiungi campi identificativi solo se esistono
-                    const nome = getValue(rowData, 'nome', 'Nome', 'NOME');
-                    const cognome = getValue(rowData, 'cognome', 'Cognome', 'COGNOME');
-                    const telefono = getValue(rowData, 'telefono', 'Telefono', 'TELEFONO', 'phone');
-                    
-                    if (nome !== undefined) payload.nome = nome;
-                    if (cognome !== undefined) payload.cognome = cognome;
-                    if (telefono !== undefined) payload.telefono = telefono;
-                    
-                    console.log('Payload da inviare:', payload);
-                    
-                    const response = await fetch(deleteRowApiUrl.value, {
-                        method: 'POST',
-                        mode: 'cors',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    
-                    // Rimuovi la riga dai dati locali
-                    currentTableData.splice(currentDeletingRowIndex, 1);
-                    
-                    // Aggiorna la visualizzazione
-                    if (currentTableData.length === 0) {
-                        document.getElementById('emptyState').classList.remove('hidden');
-                        document.getElementById('tableHead').innerHTML = '';
-                        document.getElementById('tableBody').innerHTML = '';
-                    } else {
-                        renderTable(currentTableData);
-                    }
-                    
-                    currentDeletingRowIndex = null;
-                    
-                } catch (error) {
-                    console.error('Delete row error:', error);
-                    const tableError = document.getElementById('tableError');
-                    tableError.classList.remove('hidden');
-                    document.getElementById('tableErrorMessage').textContent = `Impossibile eliminare la riga: ${error.message}`;
-                    currentDeletingRowIndex = null;
-                } finally {
-                    tableLoading.classList.add('hidden');
-                }
+                alert('❌ Errore: indice riga non valido');
+                return;
             }
+            
+            closeDeleteRowModal();
+            const tableLoading = document.getElementById('tableLoading');
+            const deleteRowApiUrl = document.getElementById('deleteRowApiUrl');
+            
+            console.log('=== INIZIO ELIMINAZIONE RIGA ===');
+            console.log('Indice riga da eliminare:', currentDeletingRowIndex);
+            console.log('currentTableData esiste:', !!currentTableData);
+            console.log('currentTableData è array:', Array.isArray(currentTableData));
+            console.log('currentTableData lunghezza:', currentTableData ? currentTableData.length : 'N/A');
+            
+            tableLoading.classList.remove('hidden');
+            
+            try {
+                // Verifica che l'array esista e abbia dati
+                if (!currentTableData || !Array.isArray(currentTableData) || currentTableData.length === 0) {
+                    throw new Error('❌ Tabella vuota o non caricata. Clicca "Ricarica" prima di eliminare righe.');
+                }
+                
+                // Verifica che l'indice sia valido
+                if (currentDeletingRowIndex < 0 || currentDeletingRowIndex >= currentTableData.length) {
+                    throw new Error(`❌ Indice non valido: ${currentDeletingRowIndex} (range valido: 0-${currentTableData.length - 1})`);
+                }
+                
+                // Prendi i dati della riga PRIMA di fare qualsiasi operazione
+                const rowData = currentTableData[currentDeletingRowIndex];
+                
+                console.log('Dati riga estratti:', rowData);
+                console.log('Tipo rowData:', typeof rowData);
+                console.log('rowData è null:', rowData === null);
+                console.log('rowData è undefined:', rowData === undefined);
+                
+                // Verifica che rowData esista e sia un oggetto
+                if (!rowData || typeof rowData !== 'object') {
+                    console.error('❌ rowData non valido:', {
+                        rowData: rowData,
+                        tipo: typeof rowData,
+                        indice: currentDeletingRowIndex,
+                        arrayLength: currentTableData.length,
+                        primiTreElementi: currentTableData.slice(0, 3)
+                    });
+                    throw new Error('❌ Dati della riga non trovati o non validi');
+                }
+                
+                console.log('✅ rowData valido - Colonne disponibili:', Object.keys(rowData));
+                
+                // Funzione helper per trovare valori case-insensitive
+                function getValue(obj, ...keys) {
+                    for (let key of keys) {
+                        if (obj[key] !== undefined && obj[key] !== null) return obj[key];
+                        const foundKey = Object.keys(obj).find(k => k.toLowerCase() === key.toLowerCase());
+                        if (foundKey && obj[foundKey] !== undefined && obj[foundKey] !== null) {
+                            return obj[foundKey];
+                        }
+                    }
+                    return undefined;
+                }
+                
+                // Costruisci il payload
+                const payload = {
+                    action: 'delete_row',
+                    rowIndex: currentDeletingRowIndex,
+                    rowData: rowData,
+                    username: currentUser || 'unknown',
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Aggiungi campi identificativi opzionali
+                const nome = getValue(rowData, 'nome', 'Nome', 'NOME');
+                const cognome = getValue(rowData, 'cognome', 'Cognome', 'COGNOME');
+                const telefono = getValue(rowData, 'telefono', 'Telefono', 'TELEFONO', 'phone');
+                
+                if (nome !== undefined) payload.nome = nome;
+                if (cognome !== undefined) payload.cognome = cognome;
+                if (telefono !== undefined) payload.telefono = telefono;
+                
+                console.log('📤 Payload da inviare:', JSON.stringify(payload, null, 2));
+                console.log('📍 URL destinazione:', deleteRowApiUrl.value);
+                
+                // Invia la richiesta
+                const response = await fetch(deleteRowApiUrl.value, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                console.log('📥 Response status:', response.status);
+                console.log('📥 Response ok:', response.ok);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ Errore response:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText || 'Errore sconosciuto'}`);
+                }
+                
+                const responseData = await response.json();
+                console.log('✅ Response data:', responseData);
+                
+                // Rimuovi la riga dai dati locali SOLO DOPO il successo
+                currentTableData.splice(currentDeletingRowIndex, 1);
+                console.log('✅ Riga rimossa dai dati locali. Nuova lunghezza:', currentTableData.length);
+                
+                // Aggiorna la visualizzazione
+                if (currentTableData.length === 0) {
+                    document.getElementById('emptyState').classList.remove('hidden');
+                    document.getElementById('tableHead').innerHTML = '';
+                    document.getElementById('tableBody').innerHTML = '';
+                    console.log('ℹ️ Tabella ora vuota');
+                } else {
+                    renderTable(currentTableData);
+                    console.log('✅ Tabella ri-renderizzata con', currentTableData.length, 'righe');
+                }
+                
+                // Reset indice
+                currentDeletingRowIndex = null;
+                console.log('=== ELIMINAZIONE COMPLETATA CON SUCCESSO ===');
+                
+            } catch (error) {
+                console.error('❌ ERRORE COMPLETO:', {
+                    message: error.message,
+                    stack: error.stack,
+                    currentDeletingRowIndex: currentDeletingRowIndex,
+                    currentTableDataLength: currentTableData ? currentTableData.length : 'N/A'
+                });
+                
+                const tableError = document.getElementById('tableError');
+                tableError.classList.remove('hidden');
+                document.getElementById('tableErrorMessage').textContent = 
+                    `Impossibile eliminare la riga:\n\n${error.message}\n\nDettagli: Riga ${currentDeletingRowIndex}, Tabella con ${currentTableData ? currentTableData.length : 0} righe`;
+                
+                currentDeletingRowIndex = null;
+            } finally {
+                tableLoading.classList.add('hidden');
+            }
+        }
         function editStatusCell(cell) {
             currentEditingCell = cell;
             document.getElementById('statusModal').classList.remove('hidden');
@@ -1626,6 +1664,7 @@
     </script>
 </body>
 </html>
+
 
 
 
