@@ -1228,50 +1228,72 @@
                 try {
                     const rowData = currentTableData[currentDeletingRowIndex];
                     
-                    console.log('Eliminazione riga:', {
+                    console.log('Eliminazione riga - Dati completi:', {
                         rowIndex: currentDeletingRowIndex,
-                        rowData: rowData
+                        rowData: rowData,
+                        colonne_disponibili: Object.keys(rowData)
                     });
+                    
+                    // Trova i valori indipendentemente dal maiuscolo/minuscolo
+                    function getValue(obj, ...keys) {
+                        for (let key of keys) {
+                            if (obj[key] !== undefined) return obj[key];
+                            // Cerca case-insensitive
+                            const foundKey = Object.keys(obj).find(k => k.toLowerCase() === key.toLowerCase());
+                            if (foundKey && obj[foundKey] !== undefined) return obj[foundKey];
+                        }
+                        return undefined;
+                    }
+                    
+                    const payload = {
+                        action: 'delete_row',
+                        rowIndex: currentDeletingRowIndex,
+                        rowData: rowData,
+                        username: currentUser,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    // Aggiungi campi identificativi solo se esistono
+                    const nome = getValue(rowData, 'nome', 'Nome', 'NOME');
+                    const cognome = getValue(rowData, 'cognome', 'Cognome', 'COGNOME');
+                    const telefono = getValue(rowData, 'telefono', 'Telefono', 'TELEFONO', 'phone');
+                    
+                    if (nome !== undefined) payload.nome = nome;
+                    if (cognome !== undefined) payload.cognome = cognome;
+                    if (telefono !== undefined) payload.telefono = telefono;
+                    
+                    console.log('Payload da inviare:', payload);
                     
                     const response = await fetch(deleteRowApiUrl.value, {
                         method: 'POST',
                         mode: 'cors',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            action: 'delete_row',
-                            rowIndex: currentDeletingRowIndex,
-                            rowData: rowData,
-                            nome: rowData.nome || rowData.Nome,
-                            cognome: rowData.cognome || rowData.Cognome,
-                            telefono: rowData.telefono || rowData.Telefono,
-                            username: currentUser,
-                            timestamp: new Date().toISOString()
-                        })
+                        body: JSON.stringify(payload)
                     });
-                
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
-                currentTableData.splice(currentDeletingRowIndex, 1);
-                
-                if (currentTableData.length === 0) {
-                    document.getElementById('emptyState').classList.remove('hidden');
-                    document.getElementById('tableHead').innerHTML = '';
-                    document.getElementById('tableBody').innerHTML = '';
-                } else {
-                    renderTable(currentTableData);
+                    
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    
+                    currentTableData.splice(currentDeletingRowIndex, 1);
+                    
+                    if (currentTableData.length === 0) {
+                        document.getElementById('emptyState').classList.remove('hidden');
+                        document.getElementById('tableHead').innerHTML = '';
+                        document.getElementById('tableBody').innerHTML = '';
+                    } else {
+                        renderTable(currentTableData);
+                    }
+                    
+                    currentDeletingRowIndex = null;
+                    
+                } catch (error) {
+                    console.error('Delete row error:', error);
+                    const tableError = document.getElementById('tableError');
+                    tableError.classList.remove('hidden');
+                    document.getElementById('tableErrorMessage').textContent = `Impossibile eliminare la riga: ${error.message}`;
+                } finally {
+                    tableLoading.classList.add('hidden');
                 }
-                
-                currentDeletingRowIndex = null;
-                
-            } catch (error) {
-                console.error('Delete row error:', error);
-                const tableError = document.getElementById('tableError');
-                tableError.classList.remove('hidden');
-                document.getElementById('tableErrorMessage').textContent = `Impossibile eliminare la riga: ${error.message}`;
-            } finally {
-                tableLoading.classList.add('hidden');
             }
-        }
 
         function editStatusCell(cell) {
             currentEditingCell = cell;
@@ -1580,4 +1602,5 @@
     </script>
 </body>
 </html>
+
 
