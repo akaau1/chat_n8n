@@ -769,7 +769,7 @@
         const welcomeMessage = document.getElementById('welcomeMessage');
 
         // Funzione per troncare il testo
-        function truncateText(text, maxLength = 10) {
+        function truncateText(text, maxLength = 20) {
             if (!text) return '';
             const str = String(text);
             return str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
@@ -1662,3 +1662,4 @@
     </script>
 </body>
 </html>
+
