@@ -384,7 +384,7 @@
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="input-group">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <path d="M20 21v-2a4 4 4 0 0 0-4-4H8a4 4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
                     <input
@@ -831,13 +831,13 @@
                 }
 
                 const data = await response.json();
+                console.log('RISPOSTA WEBHOOK RICEVUTA:', data); // LOG DI DEBUG
 
-                // CORREZIONE V4: Estrazione del ruolo dal payload che è un array
                 let userRole = 'user'; // Ruolo di default
                 let loggedInUser = null;
 
                 if (Array.isArray(data) && data.length > 0) {
-                    // Cerca l'utente con il nome utente fornito (anche se il tuo webhook sembra restituire solo l'utente loggato)
+                    // Cerca l'utente con il nome utente fornito (il tuo campo è 'utente', non 'username')
                     loggedInUser = data.find(u => u.utente === usernameInput) || data[0];
                 } else if (data.role) {
                     // Fallback per un oggetto singolo che contiene il ruolo
