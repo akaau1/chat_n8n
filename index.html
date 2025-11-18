@@ -1178,7 +1178,7 @@
             if (data.length === 0) return;
             
             const columns = Object.keys(data[0]);
-            const textEditableColumns = ['indirizzo', 'cap', 'provincia', 'città', 'citta'];
+            const textEditableColumns = ['indirizzo', 'cap', 'provincia', 'città', 'citta','prodotto'];
             const nonEditableColumns = ['nome', 'cognome', 'telefono'];
             const truncatedColumns = ['prodotto', 'indirizzo'];
             
@@ -1192,7 +1192,7 @@
                         const isNonEditable = nonEditableColumns.includes(colLower);
                         const shouldTruncate = truncatedColumns.includes(colLower);
                         const fullValue = String(row[col] || '');
-                        const displayValue = shouldTruncate ? truncateText(fullValue, 10) : fullValue;
+                        const displayValue = shouldTruncate ? truncateText(fullValue, 25) : fullValue;
                         
                         if (isStatoColumn) {
                             return `
@@ -1662,6 +1662,7 @@
     </script>
 </body>
 </html>
+
 
 
 
