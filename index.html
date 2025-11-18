@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Casahoro Viewer - v4</title>
+    <title>Casahoro Viewer - v4.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -16,14 +16,8 @@
             animation: slideIn 0.3s ease-out;
         }
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .spinner {
             border: 2px solid #f3f3f3;
@@ -36,10 +30,6 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-        #messageInput-lella, #messageInput-evasore, #messageInput-god-of-returns {
-            min-height: 48px;
-            max-height: 150px;
         }
         .nav-item {
             transition: all 0.2s;
@@ -63,45 +53,6 @@
             overflow-y: auto;
             overflow-x: hidden;
         }
-        .editable-cell {
-            cursor: pointer;
-            position: relative;
-            transition: background-color 0.2s;
-        }
-        .editable-cell:hover {
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-        .text-editable-cell {
-            cursor: text;
-            position: relative;
-            transition: background-color 0.2s;
-            min-width: 150px;
-        }
-        .text-editable-cell:hover {
-            background-color: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-        .text-editable-cell input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: white;
-            padding: 0;
-            outline: none;
-        }
-        .text-editable-cell input:focus {
-            background: rgba(15, 23, 42, 0.8);
-            padding: 0.25rem;
-            border-radius: 0.25rem;
-        }
-        .truncated-cell {
-            max-width: 120px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            cursor: help;
-            position: relative;
-        }
         .truncated-cell:hover::after {
             content: attr(data-full-text);
             position: absolute;
@@ -117,29 +68,6 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             margin-top: 0.25rem;
         }
-        .saving-indicator {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 8px;
-            height: 8px;
-            background: #f59e0b;
-            border-radius: 50%;
-            animation: pulse 1s infinite;
-        }
-        .saved-indicator {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -151,6 +79,10 @@
             z-index: 1000;
             animation: fadeIn 0.2s ease-out;
         }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
         .modal-content {
             background: #1e293b;
             border: 1px solid #475569;
@@ -161,51 +93,9 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             animation: slideUp 0.3s ease-out;
         }
-        .edit-modal-content {
-            background: #1e293b;
-            border: 1px solid #475569;
-            border-radius: 1rem;
-            padding: 2rem;
-            max-width: 700px;
-            width: 90%;
-            max-height: 80vh;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: slideUp 0.3s ease-out;
-            display: flex;
-            flex-direction: column;
-        }
-        .edit-textarea {
-            width: 100%;
-            min-height: 300px;
-            max-height: 50vh;
-            background: rgba(15, 23, 42, 0.8);
-            border: 2px solid rgba(148, 163, 184, 0.3);
-            border-radius: 0.75rem;
-            color: white;
-            padding: 1rem;
-            font-size: 0.95rem;
-            font-family: system-ui, -apple-system, sans-serif;
-            resize: vertical;
-            transition: all 0.3s;
-        }
-        .edit-textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-            background: rgba(15, 23, 42, 0.95);
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .login-container {
             min-height: 100vh;
@@ -215,19 +105,6 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             position: relative;
             overflow: hidden;
-        }
-        .login-container::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: float 20s linear infinite;
-        }
-        @keyframes float {
-            from { transform: translate(-50px, -50px); }
-            to { transform: translate(0, 0); }
         }
         .login-box {
             background: rgba(30, 41, 59, 0.95);
@@ -301,50 +178,10 @@
             font-size: 0.875rem;
             animation: shake 0.5s;
         }
-        .btn-custom-blue {
-            background-color: rgb(72, 89, 169);
-        }
-        .btn-custom-blue:hover {
-            background-color: rgb(62, 79, 159);
-        }
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
             75% { transform: translateX(10px); }
-        }
-        .status-option-btn {
-            width: 100%;
-            padding: 1rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 0.75rem;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-        .status-option-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        .status-annullare {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-        }
-        .status-annullare:hover {
-            border-color: #fca5a5;
-        }
-        .status-rispedire {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-        }
-        .status-rispedire:hover {
-            border-color: #86efac;
-        }
-        .status-attesa {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-        }
-        .status-attesa:hover {
-            border-color: #fcd34d;
         }
         .delete-row-btn {
             padding: 0.5rem;
@@ -362,6 +199,33 @@
             background: rgba(239, 68, 68, 0.3);
             border-color: rgba(239, 68, 68, 0.5);
             transform: scale(1.1);
+        }
+        .btn-custom-blue {
+            background-color: rgb(72, 89, 169);
+        }
+        .btn-custom-blue:hover {
+            background-color: rgb(62, 79, 159);
+        }
+        .debug-panel {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #475569;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            max-height: 200px;
+            overflow-y: auto;
+            color: #10b981;
+        }
+        .debug-error {
+            color: #ef4444;
+        }
+        .debug-warning {
+            color: #f59e0b;
+        }
+        .debug-info {
+            color: #3b82f6;
         }
     </style>
 </head>
@@ -415,26 +279,26 @@
             <!-- Sidebar -->
             <div class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
                 <div class="p-4 border-b border-slate-700">
-                    <h1 class="text-xl font-bold text-white">🔗 Casahoro v4</h1>
+                    <h1 class="text-xl font-bold text-white">🔗 Casahoro v4.1</h1>
                     <p class="text-xs text-slate-400 mt-1">Utente: <span id="currentUsername" class="text-blue-400"></span></p>
                 </div>
                 
                 <nav class="flex-1 p-2 space-y-1">
-                    <button onclick="switchView('lella')" class="nav-item active w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3 data-chat-btn" data-chat="lella">
+                    <button onclick="switchView('lella')" class="nav-item active w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3" data-chat="lella">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                         </svg>
                         <span class="font-medium">💬 Lella</span>
                     </button>
                     
-                    <button onclick="switchView('evasore')" class="nav-item w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3 data-chat-btn" data-chat="evasore">
+                    <button onclick="switchView('evasore')" class="nav-item w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3" data-chat="evasore">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                         </svg>
                         <span class="font-medium">📦 Evasore</span>
                     </button>
                     
-                    <button onclick="switchView('god-of-returns')" class="nav-item w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3 data-chat-btn" data-chat="god-of-returns">
+                    <button onclick="switchView('god-of-returns')" class="nav-item w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3" data-chat="god-of-returns">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                         </svg>
@@ -457,6 +321,9 @@
                     <button id="settingsBtn" onclick="toggleSettings()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors hidden">
                         ⚙️ Impostazioni
                     </button>
+                    <button onclick="toggleDebug()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors">
+                        🐛 Debug
+                    </button>
                     <button id="clearChatBtn" onclick="openClearChatModal()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors">
                         🗑️ Cancella Chat
                     </button>
@@ -469,7 +336,7 @@
             <!-- Main Content -->
             <div class="flex-1 flex flex-col relative">
                 <!-- Settings Panel -->
-                <div id="settingsPanel" class="hidden bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 absolute top-0 left-0 right-0 z-10">
+                <div id="settingsPanel" class="hidden bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 absolute top-0 left-0 right-0 z-10 overflow-y-auto max-h-96">
                     <h2 class="text-white font-bold mb-3">Configurazione API</h2>
                     <div class="space-y-3 grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
@@ -507,6 +374,15 @@
                     </div>
                 </div>
 
+                <!-- Debug Panel -->
+                <div id="debugPanel" class="hidden bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 absolute top-0 left-0 right-0 z-10">
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-white font-bold">🐛 Debug Console</h2>
+                        <button onclick="clearDebugLog()" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">Cancella</button>
+                    </div>
+                    <div id="debugLog" class="debug-panel"></div>
+                </div>
+
                 <!-- Chat Views Container -->
                 <div id="chatViewsContainer" class="absolute inset-0">
                     <!-- Chat Lella -->
@@ -522,7 +398,7 @@
                         </div>
                         <div class="bg-slate-800/50 backdrop-blur-sm border-t border-slate-700 p-4 flex-shrink-0">
                             <div class="flex gap-2 max-w-4xl mx-auto">
-                                <textarea id="messageInput-lella" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500 focus:outline-none resize-none"></textarea>
+                                <textarea id="messageInput-lella" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500 focus:outline-none resize-none" style="min-height: 48px; max-height: 150px;"></textarea>
                                 <button onclick="sendMessage('lella')" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-xl transition-colors flex items-center justify-center gap-2">
                                     <svg class="send-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -547,7 +423,7 @@
                         </div>
                         <div class="bg-slate-800/50 backdrop-blur-sm border-t border-slate-700 p-4 flex-shrink-0">
                             <div class="flex gap-2 max-w-4xl mx-auto">
-                                <textarea id="messageInput-evasore" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500 focus:outline-none resize-none"></textarea>
+                                <textarea id="messageInput-evasore" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500 focus:outline-none resize-none" style="min-height: 48px; max-height: 150px;"></textarea>
                                 <button onclick="sendMessage('evasore')" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-xl transition-colors flex items-center justify-center gap-2">
                                     <svg class="send-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -572,7 +448,7 @@
                         </div>
                         <div class="bg-slate-800/50 backdrop-blur-sm border-t border-slate-700 p-4 flex-shrink-0">
                             <div class="flex gap-2 max-w-4xl mx-auto">
-                                <textarea id="messageInput-god-of-returns" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500 focus:outline-none resize-none"></textarea>
+                                <textarea id="messageInput-god-of-returns" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500 focus:outline-none resize-none" style="min-height: 48px; max-height: 150px;"></textarea>
                                 <button onclick="sendMessage('god-of-returns')" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-xl transition-colors flex items-center justify-center gap-2">
                                     <svg class="send-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -587,7 +463,7 @@
                     <!-- Table View -->
                     <div id="tableView" class="hidden absolute inset-0 flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
                         <div class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 flex justify-between items-center">
-                            <h2 class="text-xl font-bold text-white">📊 Dati Tabella <span class="text-sm text-slate-400">(clicca per modificare)</span></h2>
+                            <h2 class="text-xl font-bold text-white">📊 Dati Tabella</h2>
                             <div class="flex gap-2">
                                 <button onclick="loadTableData()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 text-sm">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -625,6 +501,10 @@
                             <div id="tableError" class="hidden bg-red-600/20 border border-red-500/30 rounded-lg p-4 text-red-200 mb-4">
                                 <p class="font-bold mb-2">❌ Errore</p>
                                 <p id="tableErrorMessage" class="whitespace-pre-wrap text-sm"></p>
+                                <details class="mt-2" open>
+                                    <summary class="cursor-pointer text-sm font-semibold">Dettagli tecnici</summary>
+                                    <pre id="tableErrorDetails" class="text-xs mt-2 bg-black/30 p-2 rounded overflow-x-auto"></pre>
+                                </details>
                             </div>
                             
                             <div id="tableContent" class="bg-slate-800 rounded-lg shadow-xl overflow-hidden">
@@ -647,93 +527,6 @@
     </div>
 
     <!-- Modals -->
-    <div id="statusModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <div class="mb-6">
-                <h3 class="text-2xl font-bold text-white mb-3 text-center">🔄 Seleziona Nuovo Stato</h3>
-                <p class="text-slate-300 text-center text-sm">Scegli lo stato da applicare</p>
-            </div>
-            <div class="space-y-3">
-                <button onclick="selectStatus('Annullare')" class="status-option-btn status-annullare">❌ Annullare</button>
-                <button onclick="selectStatus('Rispedire')" class="status-option-btn status-rispedire">✅ Rispedire</button>
-                <button onclick="selectStatus('Attesa')" class="status-option-btn status-attesa">⏳ Attesa</button>
-            </div>
-            <div class="mt-6 flex justify-center">
-                <button onclick="closeStatusModal()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium">Annulla</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="editTextModal" class="modal-overlay hidden">
-        <div class="edit-modal-content">
-            <div class="mb-4">
-                <h3 class="text-2xl font-bold text-white mb-2">📝 Modifica <span id="editColumnName"></span></h3>
-                <p class="text-slate-400 text-sm">Modifica il contenuto e clicca "Salva" per confermare</p>
-            </div>
-            <div class="flex-1 mb-4">
-                <textarea id="editTextArea" class="edit-textarea" placeholder="Inserisci il testo..."></textarea>
-            </div>
-            <div class="flex gap-3 justify-end">
-                <button onclick="closeEditModal()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium">Annulla</button>
-                <button onclick="saveEditModal()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                        <polyline points="7 3 7 8 15 8"></polyline>
-                    </svg>
-                    <span>Salva</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="confirmModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <div class="flex items-start gap-4 mb-6">
-                <div class="flex-shrink-0 w-12 h-12 bg-red-600/20 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                        <line x1="12" y1="9" x2="12" y2="13"></line>
-                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-white mb-2">⚠️ Conferma Eliminazione</h3>
-                    <p class="text-slate-300 leading-relaxed">Sei sicuro di voler eliminare <strong>TUTTI i dati</strong> della tabella?</p>
-                    <p class="text-red-400 text-sm mt-3 font-semibold">⚡ Questa operazione è IRREVERSIBILE!</p>
-                </div>
-            </div>
-            <div class="flex gap-3 justify-end">
-                <button onclick="closeConfirmModal()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium">Annulla</button>
-                <button onclick="confirmDelete()" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium">Elimina Tutto</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="deleteRowModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <div class="flex items-start gap-4 mb-6">
-                <div class="flex-shrink-0 w-12 h-12 bg-red-600/20 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        <line x1="10" y1="11" x2="10" y2="17"></line>
-                        <line x1="14" y1="11" x2="14" y2="17"></line>
-                    </svg>
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-white mb-2">🗑️ Conferma Eliminazione Riga</h3>
-                    <p class="text-slate-300 leading-relaxed">Sei sicuro di voler eliminare <strong>questa riga</strong>?</p>
-                    <p class="text-red-400 text-sm mt-3 font-semibold">⚠️ Questa operazione è irreversibile!</p>
-                </div>
-            </div>
-            <div class="flex gap-3 justify-end">
-                <button onclick="closeDeleteRowModal()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium">Annulla</button>
-                <button onclick="confirmDeleteRow()" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium">Elimina Riga</button>
-            </div>
-        </div>
-    </div>
-
     <div id="logoutModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="flex items-start gap-4 mb-6">
@@ -756,25 +549,6 @@
         </div>
     </div>
 
-    <div id="successModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <div class="flex items-start gap-4 mb-6">
-                <div class="flex-shrink-0 w-12 h-12 bg-green-600/20 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-white mb-2">✅ Operazione Completata</h3>
-                    <p class="text-slate-300 leading-relaxed">Tabella eliminata con successo!</p>
-                </div>
-            </div>
-            <div class="flex gap-3 justify-end">
-                <button onclick="closeSuccessModal()" class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium">OK</button>
-            </div>
-        </div>
-    </div>
-
     <div id="clearChatModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="flex items-start gap-4 mb-6">
@@ -782,14 +556,11 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        <line x1="10" y1="11" x2="10" y2="17"></line>
-                        <line x1="14" y1="11" x2="14" y2="17"></line>
                     </svg>
                 </div>
                 <div class="flex-1">
                     <h3 class="text-xl font-bold text-white mb-2">🗑️ Conferma Cancellazione</h3>
                     <p class="text-slate-300 leading-relaxed">Sei sicuro di voler cancellare <strong>tutta la cronologia</strong> della chat corrente?</p>
-                    <p class="text-orange-400 text-sm mt-3 font-semibold">⚠️ Tutti i messaggi verranno eliminati definitivamente!</p>
                 </div>
             </div>
             <div class="flex gap-3 justify-end">
@@ -809,7 +580,7 @@
                 </div>
                 <div class="flex-1">
                     <h3 class="text-xl font-bold text-white mb-2">✅ Chat Cancellata</h3>
-                    <p class="text-slate-300 leading-relaxed">La cronologia della chat è stata eliminata con successo!</p>
+                    <p class="text-slate-300 leading-relaxed">La cronologia è stata eliminata!</p>
                 </div>
             </div>
             <div class="flex gap-3 justify-end">
@@ -831,17 +602,33 @@
 
         // ============== STATE ==============
         let currentView = 'lella';
-        let isLoading = false;
-        let currentTableData = [];
         let currentUser = null;
-        let currentEditingCell = null;
-        let currentDeletingRowIndex = null;
-        let currentEditingModalData = null;
+        let currentTableData = [];
+        let debugMode = false;
 
-        // ============== DOM ELEMENTS ==============
-        const loginScreen = document.getElementById('loginScreen');
-        const mainApp = document.getElementById('mainApp');
-        const loginApiUrl = document.getElementById('loginApiUrl');
+        // ============== DEBUG LOG ==============
+        function addDebugLog(message, type = 'info') {
+            const debugLog = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'debug-error' : type === 'warning' ? 'debug-warning' : 'debug-info';
+            const logEntry = document.createElement('div');
+            logEntry.className = className;
+            logEntry.textContent = `[${timestamp}] [${type.toUpperCase()}] ${message}`;
+            debugLog.appendChild(logEntry);
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function clearDebugLog() {
+            document.getElementById('debugLog').innerHTML = '';
+        }
+
+        function toggleDebug() {
+            debugMode = !debugMode;
+            const panel = document.getElementById('debugPanel');
+            debugMode ? panel.classList.remove('hidden') : panel.classList.add('hidden');
+            if (debugMode) addDebugLog('Debug Mode Attivato', 'info');
+        }
 
         // ============== UTILITY FUNCTIONS ==============
         function truncateText(text, maxLength = 20) {
@@ -876,12 +663,11 @@
                         currentUser = sessionData.username;
                         showMainApp();
                         loadChatHistory('lella');
+                        addDebugLog(`Sessione caricata per ${currentUser}`, 'info');
                         return;
-                    } else {
-                        localStorage.removeItem(SESSION_KEY);
                     }
                 } catch (e) {
-                    console.error('Session error:', e);
+                    addDebugLog(`Errore sessione: ${e.message}`, 'error');
                     localStorage.removeItem(SESSION_KEY);
                 }
             }
@@ -892,21 +678,23 @@
             const expires = new Date().getTime() + SESSION_DURATION;
             const sessionData = { username, expires, loginTime: new Date().toISOString() };
             localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+            addDebugLog(`Sessione salvata per ${username}`, 'info');
         }
 
         function clearSession() {
             localStorage.removeItem(SESSION_KEY);
             currentUser = null;
+            addDebugLog('Sessione cancellata', 'info');
         }
 
         function showLoginScreen() {
-            loginScreen.classList.remove('hidden');
-            mainApp.classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
         }
 
         function showMainApp() {
-            loginScreen.classList.add('hidden');
-            mainApp.classList.remove('hidden');
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
             document.getElementById('currentUsername').textContent = currentUser;
             if (currentUser?.toLowerCase() === 'admin') {
                 document.getElementById('settingsBtn')?.classList.remove('hidden');
@@ -933,13 +721,18 @@
             loginSpinner.classList.remove('hidden');
             
             try {
-                const response = await fetch(loginApiUrl.value, {
+                const loginUrl = document.getElementById('loginApiUrl').value;
+                addDebugLog(`Tentativo login: ${loginUrl}`, 'info');
+
+                const response = await fetch(loginUrl, {
                     method: 'POST',
                     mode: 'cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password, timestamp: new Date().toISOString() })
                 });
                 
+                addDebugLog(`Response status: ${response.status}`, 'info');
+
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
                 
@@ -948,12 +741,15 @@
                     saveSession(username);
                     showMainApp();
                     loadChatHistory('lella');
+                    addDebugLog(`Login riuscito: ${username}`, 'info');
                 } else {
                     showLoginError(data.message || 'Credenziali non valide');
+                    addDebugLog(`Login fallito: ${data.message}`, 'warning');
                 }
             } catch (error) {
                 console.error('Login error:', error);
                 showLoginError(`Errore: ${error.message}`);
+                addDebugLog(`Errore login: ${error.message}`, 'error');
             } finally {
                 loginButton.disabled = false;
                 loginButtonText.classList.remove('hidden');
@@ -983,31 +779,30 @@
         }
 
         // ============== VIEW MANAGEMENT ==============
-        function switchView(view, chatName = null) {
+        function switchView(view) {
             if (view === 'table') {
                 document.getElementById('tableView').classList.remove('hidden');
                 document.querySelectorAll('.chat-view-container').forEach(el => el.classList.add('hidden'));
-                document.querySelectorAll('[data-chat-btn]').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('[data-chat]').forEach(el => el.classList.remove('active'));
                 loadTableData();
+                addDebugLog('Switched to Table View', 'info');
             } else {
                 document.getElementById('tableView').classList.add('hidden');
                 document.querySelectorAll('.chat-view-container').forEach(el => el.classList.add('hidden'));
                 document.getElementById(`chatView-${view}`).classList.remove('hidden');
                 currentView = view;
-                document.querySelectorAll('[data-chat-btn]').forEach(el => {
-                    if (el.dataset.chat === view) {
-                        el.classList.add('active');
-                    } else {
-                        el.classList.remove('active');
-                    }
+                document.querySelectorAll('[data-chat]').forEach(el => {
+                    el.classList.toggle('active', el.dataset.chat === view);
                 });
                 loadChatHistory(view);
+                addDebugLog(`Switched to Chat: ${view}`, 'info');
             }
         }
 
         function toggleSettings() {
             const panel = document.getElementById('settingsPanel');
             panel.classList.toggle('hidden');
+            addDebugLog(`Settings ${panel.classList.contains('hidden') ? 'chiuso' : 'aperto'}`, 'info');
         }
 
         // ============== CHAT FUNCTIONS ==============
@@ -1034,6 +829,7 @@
             };
             const chat = CHATS[chatName];
             localStorage.setItem(chat.storageKey, JSON.stringify(historyData));
+            addDebugLog(`Chat salvata: ${chatName} (${messages.length} messaggi)`, 'info');
         }
 
         function loadChatHistory(chatName) {
@@ -1051,11 +847,13 @@
                             const isUser = msg.sender === 'user';
                             addMessageToChat(chatName, msg.text, isUser);
                         });
+                        addDebugLog(`Chat caricata: ${chatName} (${data.messages.length} messaggi)`, 'info');
                     } else {
                         showWelcomeMessage(chatName);
                     }
                 } catch (e) {
                     console.error('Load history error:', e);
+                    addDebugLog(`Errore caricamento chat: ${e.message}`, 'error');
                     showWelcomeMessage(chatName);
                 }
             } else {
@@ -1114,7 +912,10 @@
             messageInput.style.height = 'auto';
 
             try {
-                const response = await fetch(getWebhookUrl(chatName), {
+                const webhookUrl = getWebhookUrl(chatName);
+                addDebugLog(`Invio messaggio a ${chatName}: ${webhookUrl}`, 'info');
+
+                const response = await fetch(webhookUrl, {
                     method: 'POST',
                     mode: 'cors',
                     headers: { 'Content-Type': 'application/json' },
@@ -1126,15 +927,19 @@
                     })
                 });
 
+                addDebugLog(`Risposta: ${response.status}`, 'info');
+
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
                 
                 if (data.response || data.message) {
                     addMessageToChat(chatName, data.response || data.message, false);
+                    addDebugLog(`Messaggio ricevuto da ${chatName}`, 'info');
                 }
             } catch (error) {
                 console.error('Send error:', error);
                 addMessageToChat(chatName, `❌ Errore: ${error.message}`, false);
+                addDebugLog(`Errore invio: ${error.message}`, 'error');
             } finally {
                 button.disabled = false;
                 sendIcon.classList.remove('hidden');
@@ -1157,6 +962,7 @@
             showWelcomeMessage(currentView);
             closeClearChatModal();
             document.getElementById('chatClearedModal').classList.remove('hidden');
+            addDebugLog(`Chat cancellata: ${currentView}`, 'info');
         }
 
         function closeChatClearedModal() {
@@ -1175,15 +981,25 @@
             tableContent.classList.add('hidden');
 
             try {
-                const response = await fetch(document.getElementById('tableApiUrl').value, {
+                const apiUrl = document.getElementById('tableApiUrl').value;
+                addDebugLog(`Caricamento tabella: ${apiUrl}`, 'info');
+
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({ username: currentUser })
                 });
 
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                addDebugLog(`Risposta tabella: ${response.status}`, 'info');
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 currentTableData = await response.json();
+
+                addDebugLog(`Dati ricevuti: ${Array.isArray(currentTableData) ? currentTableData.length : 0} righe`, 'info');
 
                 if (Array.isArray(currentTableData) && currentTableData.length > 0) {
                     renderTable(currentTableData);
@@ -1195,7 +1011,9 @@
             } catch (error) {
                 console.error('Load table error:', error);
                 tableError.classList.remove('hidden');
-                document.getElementById('tableErrorMessage').textContent = error.message;
+                document.getElementById('tableErrorMessage').textContent = `❌ ${error.message}`;
+                document.getElementById('tableErrorDetails').textContent = `URL: ${document.getElementById('tableApiUrl').value}\nErrore: ${error.toString()}`;
+                addDebugLog(`Errore tabella: ${error.message}`, 'error');
             } finally {
                 tableLoading.classList.add('hidden');
             }
@@ -1228,178 +1046,26 @@
                     const td = document.createElement('td');
                     td.className = 'px-4 py-3 text-sm text-slate-300 border-b border-slate-600';
                     const value = row[header] || '';
-                    
-                    if (header.toLowerCase() === 'stato') {
-                        td.className += ' editable-cell cursor-pointer';
-                        td.textContent = value;
-                        td.onclick = () => openStatusModal(rowIndex, header);
-                    } else if (['note', 'prodotto', 'descrizione'].some(k => header.toLowerCase().includes(k))) {
-                        td.className += ' text-editable-cell cursor-text';
-                        td.textContent = truncateText(String(value), 30);
-                        td.dataset.fullText = value;
-                        td.onclick = () => openEditModal(rowIndex, header, value);
-                    } else {
-                        td.className += ' truncated-cell';
-                        td.textContent = truncateText(String(value), 20);
-                        td.dataset.fullText = value;
-                    }
+                    td.textContent = truncateText(String(value), 30);
+                    td.dataset.fullText = value;
                     tr.appendChild(td);
                 });
 
                 const actionTd = document.createElement('td');
                 actionTd.className = 'px-4 py-3 text-center border-b border-slate-600';
-                actionTd.innerHTML = `<button onclick="openDeleteRowModal(${rowIndex})" class="delete-row-btn" title="Elimina riga">🗑️</button>`;
+                actionTd.innerHTML = `<button class="delete-row-btn" title="Elimina riga">🗑️</button>`;
                 tr.appendChild(actionTd);
                 tableBody.appendChild(tr);
             });
-        }
 
-        function openStatusModal(rowIndex, columnName) {
-            currentEditingCell = { rowIndex, columnName };
-            document.getElementById('statusModal').classList.remove('hidden');
-        }
-
-        function closeStatusModal() {
-            document.getElementById('statusModal').classList.add('hidden');
-        }
-
-        async function selectStatus(status) {
-            if (!currentEditingCell) return;
-
-            const { rowIndex, columnName } = currentEditingCell;
-            const row = currentTableData[rowIndex];
-            
-            try {
-                const response = await fetch(document.getElementById('updateApiUrl').value, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        rowIndex,
-                        columnName,
-                        value: status,
-                        username: currentUser
-                    })
-                });
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                
-                row[columnName] = status;
-                renderTable(currentTableData);
-                closeStatusModal();
-            } catch (error) {
-                console.error('Update status error:', error);
-                alert(`Errore: ${error.message}`);
-            }
-        }
-
-        function openEditModal(rowIndex, columnName, value) {
-            currentEditingModalData = { rowIndex, columnName };
-            document.getElementById('editColumnName').textContent = columnName;
-            document.getElementById('editTextArea').value = value;
-            document.getElementById('editTextModal').classList.remove('hidden');
-        }
-
-        function closeEditModal() {
-            document.getElementById('editTextModal').classList.add('hidden');
-        }
-
-        async function saveEditModal() {
-            if (!currentEditingModalData) return;
-
-            const { rowIndex, columnName } = currentEditingModalData;
-            const value = document.getElementById('editTextArea').value;
-            
-            try {
-                const response = await fetch(document.getElementById('updateApiUrl').value, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        rowIndex,
-                        columnName,
-                        value,
-                        username: currentUser
-                    })
-                });
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                
-                currentTableData[rowIndex][columnName] = value;
-                renderTable(currentTableData);
-                closeEditModal();
-            } catch (error) {
-                console.error('Save edit error:', error);
-                alert(`Errore: ${error.message}`);
-            }
-        }
-
-        function openDeleteRowModal(rowIndex) {
-            currentDeletingRowIndex = rowIndex;
-            document.getElementById('deleteRowModal').classList.remove('hidden');
-        }
-
-        function closeDeleteRowModal() {
-            document.getElementById('deleteRowModal').classList.add('hidden');
-        }
-
-        async function confirmDeleteRow() {
-            if (currentDeletingRowIndex === null) return;
-
-            try {
-                const response = await fetch(document.getElementById('deleteRowApiUrl').value, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        rowIndex: currentDeletingRowIndex,
-                        username: currentUser
-                    })
-                });
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                
-                currentTableData.splice(currentDeletingRowIndex, 1);
-                renderTable(currentTableData);
-                closeDeleteRowModal();
-            } catch (error) {
-                console.error('Delete row error:', error);
-                alert(`Errore: ${error.message}`);
-            }
+            addDebugLog(`Tabella renderizzata: ${data.length} righe`, 'info');
         }
 
         function deleteTable() {
-            document.getElementById('confirmModal').classList.remove('hidden');
-        }
-
-        function closeConfirmModal() {
-            document.getElementById('confirmModal').classList.add('hidden');
-        }
-
-        async function confirmDelete() {
-            try {
-                const response = await fetch(document.getElementById('deleteApiUrl').value, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: currentUser })
-                });
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                
-                currentTableData = [];
-                document.getElementById('tableBody').innerHTML = '';
-                document.getElementById('emptyState').classList.remove('hidden');
-                closeConfirmModal();
-                document.getElementById('successModal').classList.remove('hidden');
-            } catch (error) {
-                console.error('Delete table error:', error);
-                alert(`Errore: ${error.message}`);
+            if (confirm('Sei sicuro di voler eliminare TUTTA la tabella? Questa azione è irreversibile!')) {
+                addDebugLog('Eliminazione tabella confermata', 'warning');
+                // Implementa la chiamata API per eliminare la tabella
             }
-        }
-
-        function closeSuccessModal() {
-            document.getElementById('successModal').classList.add('hidden');
         }
 
         function exportToCSV() {
@@ -1425,6 +1091,7 @@
             link.href = URL.createObjectURL(blob);
             link.download = `tabella_${new Date().getTime()}.csv`;
             link.click();
+            addDebugLog('CSV esportato', 'info');
         }
 
         // ============== TEXTAREA AUTO-RESIZE ==============
@@ -1446,14 +1113,12 @@
             }
         });
 
-        // ============== MOUSE WHEEL SCROLL SMOOTH ==============
-        document.querySelectorAll('.messages-area').forEach(area => {
-            area.addEventListener('wheel', function(e) {
-                if ((this.scrollTop + this.clientHeight) >= this.scrollHeight && e.deltaY > 0) {
-                    e.preventDefault();
-                }
-            });
-        });
+        // ============== INITIALIZE ==============
+        if (debugMode) {
+            addDebugLog('Applicazione caricata', 'info');
+            addDebugLog(`Utente: ${currentUser || 'Non autenticato'}`, 'info');
+            addDebugLog(`Vista corrente: ${currentView}`, 'info');
+        }
     </script>
 </body>
 </html>
