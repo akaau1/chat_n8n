@@ -3,31 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Casahoro Viewer</title>
+    <title>Casahoro Viewer - Modern</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Stili Base */
         body {
             margin: 0;
             padding: 0;
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             overflow: hidden;
         }
+        /* Animazioni e Transizioni */
         .message-enter {
             animation: slideIn 0.3s ease-out;
         }
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .spinner {
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #3b82f6;
+            border: 2px solid #06b6d4; /* sky-500 */
+            border-top: 2px solid #1e293b; /* slate-800 */
             border-radius: 50%;
             width: 16px;
             height: 16px;
@@ -37,344 +33,257 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .nav-item {
+            transition: all 0.2s ease-in-out;
+            border-radius: 0.75rem; /* Arrotondamento maggiore */
+            transform: scale(1);
+        }
+        .nav-item:hover {
+            background-color: rgba(6, 182, 212, 0.1); /* sky-500 con opacità */
+            transform: scale(1.01);
+        }
+        .nav-item.active {
+            background-color: rgba(6, 182, 212, 0.2);
+            border-left: 3px solid #06b6d4; /* sky-500 */
+        }
+        .nav-item.active:hover {
+            background-color: rgba(6, 182, 212, 0.25);
+            transform: scale(1.01);
+        }
+        /* Stili Chat */
         #messageInput {
             min-height: 48px;
             max-height: 150px;
-        }
-        .nav-item {
             transition: all 0.2s;
         }
-        .nav-item:hover {
-            background-color: rgba(59, 130, 246, 0.1);
+        .chat-bubble-user {
+            background-color: #06b6d4; /* sky-500 */
+            color: white;
+            border-radius: 1rem 1rem 0.25rem 1rem;
+            transition: transform 0.1s ease-out;
         }
-        .nav-item.active {
-            background-color: rgba(59, 130, 246, 0.2);
-            border-left: 3px solid #3b82f6;
+        .chat-bubble-user:hover {
+            transform: scale(1.01);
         }
-        #chatView {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
+        .chat-bubble-bot {
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+            border-radius: 1rem 1rem 1rem 0.25rem;
+            transition: transform 0.1s ease-out;
         }
-        #messagesArea {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
+        .chat-bubble-bot:hover {
+            transform: scale(1.01);
         }
+        .chat-bubble-error {
+            background-color: #ef4444; /* red-500 */
+            color: white;
+        }
+        /* Stili Tabella */
         .editable-cell {
-            cursor: pointer;
-            position: relative;
             transition: background-color 0.2s;
         }
         .editable-cell:hover {
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-        .text-editable-cell {
-            cursor: text;
-            position: relative;
-            transition: background-color 0.2s;
-            min-width: 150px;
-        }
-        .text-editable-cell:hover {
-            background-color: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-        .text-editable-cell input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: white;
-            padding: 0;
-            outline: none;
+            background-color: rgba(6, 182, 212, 0.1);
         }
         .text-editable-cell input:focus {
-            background: rgba(15, 23, 42, 0.8);
-            padding: 0.25rem;
-            border-radius: 0.25rem;
-        }
-        .truncated-cell {
-            max-width: 120px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            cursor: help;
-            position: relative;
-        }
-        .truncated-cell:hover::after {
-            content: attr(data-full-text);
-            position: absolute;
-            left: 0;
-            top: 100%;
             background: #1e293b;
-            border: 1px solid #475569;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            z-index: 1000;
-            white-space: normal;
-            max-width: 300px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            margin-top: 0.25rem;
+            border-color: #06b6d4;
         }
         .saving-indicator {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 8px;
-            height: 8px;
-            background: #f59e0b;
-            border-radius: 50%;
-            animation: pulse 1s infinite;
+            background: #f59e0b; /* amber-500 */
         }
         .saved-indicator {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
+            background: #10b981; /* emerald-500 */
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            animation: fadeIn 0.2s ease-out;
-        }
-        .modal-content {
-            background: #1e293b;
-            border: 1px solid #475569;
-            border-radius: 1rem;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: slideUp 0.3s ease-out;
-        }
-        .edit-modal-content {
-            background: #1e293b;
-            border: 1px solid #475569;
-            border-radius: 1rem;
-            padding: 2rem;
-            max-width: 700px;
-            width: 90%;
-            max-height: 80vh;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: slideUp 0.3s ease-out;
-            display: flex;
-            flex-direction: column;
-        }
-        .edit-textarea {
-            width: 100%;
-            min-height: 300px;
-            max-height: 50vh;
-            background: rgba(15, 23, 42, 0.8);
-            border: 2px solid rgba(148, 163, 184, 0.3);
-            border-radius: 0.75rem;
-            color: white;
-            padding: 1rem;
-            font-size: 0.95rem;
-            font-family: system-ui, -apple-system, sans-serif;
-            resize: vertical;
-            transition: all 0.3s;
-        }
-        .edit-textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-            background: rgba(15, 23, 42, 0.95);
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        /* Stili Login */
         .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .login-container::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: float 20s linear infinite;
-        }
-        @keyframes float {
-            from { transform: translate(-50px, -50px); }
-            to { transform: translate(0, 0); }
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
         .login-box {
-            background: rgba(30, 41, 59, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
-            padding: 3rem;
+            padding: 40px;
+            border-radius: 16px;
             width: 100%;
-            max-width: 420px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: slideUp 0.5s ease-out;
-            position: relative;
-            z-index: 1;
+            max-width: 400px;
         }
         .input-group {
-            position: relative;
-            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 0 15px;
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            transition: border-color 0.2s;
         }
-        .input-group input {
-            width: 100%;
-            padding: 0.875rem 1rem 0.875rem 3rem;
-            background: rgba(15, 23, 42, 0.6);
-            border: 2px solid rgba(148, 163, 184, 0.2);
-            border-radius: 0.75rem;
-            color: white;
-            font-size: 0.95rem;
-            transition: all 0.3s;
-        }
-        .input-group input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            background: rgba(15, 23, 42, 0.8);
+        .input-group:focus-within {
+            border-color: #06b6d4;
         }
         .input-group svg {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            pointer-events: none;
+            margin-right: 10px;
+            color: #94a3b8; /* slate-400 */
+        }
+        .input-group input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 0;
+            color: white;
+            outline: none;
+        }
+        .error-message {
+            background-color: #450a0a; /* red-900 */
+            color: #fca5a5; /* red-300 */
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #b91c1c; /* red-700 */
         }
         .login-button {
             width: 100%;
-            padding: 0.875rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 0.75rem;
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-        .login-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-        .login-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            animation: shake 0.5s;
-        }
-        .btn-custom-blue {
-            background-color: rgb(72, 89, 169);
-        }
-        .btn-custom-blue:hover {
-            background-color: rgb(62, 79, 159);
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-        .status-option-btn {
-            width: 100%;
-            padding: 1rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 0.75rem;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-        .status-option-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        .status-annullare {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-        }
-        .status-annullare:hover {
-            border-color: #fca5a5;
-        }
-        .status-rispedire {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-        }
-        .status-rispedire:hover {
-            border-color: #86efac;
-        }
-        .status-attesa {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-        }
-        .status-attesa:hover {
-            border-color: #fcd34d;
-        }
-        .delete-row-btn {
-            padding: 0.5rem;
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 0.5rem;
-            color: #ef4444;
-            cursor: pointer;
-            transition: all 0.2s;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-width: 450px;
+            width: 90%;
+            border: 1px solid #334155;
+        }
+        .edit-modal-content {
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            width: 90%;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #334155;
+        }
+        .edit-textarea {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 8px;
+            resize: none;
+            font-family: monospace;
+            font-size: 14px;
+            color: white;
+            transition: border-color 0.2s;
+        }
+        .status-option-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            margin-bottom: 8px;
+        }
+        .status-annullare {
+            background-color: #ef4444; /* red-500 */
+        }
+        .status-annullare:hover {
+            background-color: #dc2626; /* red-600 */
+        }
+        .status-rispedire {
+            background-color: #f97316; /* orange-500 */
+        }
+        .status-rispedire:hover {
+            background-color: #ea580c; /* orange-600 */
+        }
+        .status-attesa {
+            background-color: #eab308; /* yellow-500 */
+        }
+        .status-attesa:hover {
+            background-color: #d97706; /* yellow-600 */
+        }
+        .delete-row-btn {
+            color: #f87171; /* red-400 */
+            transition: color 0.2s;
         }
         .delete-row-btn:hover {
-            background: rgba(239, 68, 68, 0.3);
-            border-color: rgba(239, 68, 68, 0.5);
-            transform: scale(1.1);
+            color: #ef4444; /* red-500 */
+        }
+        .saving-indicator, .saved-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 5px;
+            animation: pulse 1s infinite;
+        }
+        .saved-indicator {
+            animation: none;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.7; }
+        }
+        .login-box {
+            background: rgba(30, 41, 59, 0.9); /* slate-800 */
+            border: 1px solid rgba(71, 85, 105, 0.5); /* slate-600 */
+        }
+        .input-group input {
+            background: #0f172a; /* slate-900 */
+            border: 2px solid rgba(71, 85, 105, 0.3);
+        }
+        .input-group input:focus {
+            border-color: #06b6d4; /* sky-500 */
+            background: #0f172a;
+        }
+        .login-button {
+            background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%); /* sky-500 to sky-600 */
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+        }
+        .login-button:hover {
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.6);
+            transform: translateY(-2px);
+        }
+        .btn-custom-blue {
+            background-color: #475569; /* slate-600 */
+        }
+        .btn-custom-blue:hover {
+            background-color: #334155; /* slate-700 */
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+<body class="bg-slate-900 text-slate-200">
     <!-- Login Screen -->
-    <div id="loginScreen" class="login-container">
+    <div id="loginScreen" class="fixed inset-0 flex items-center justify-center login-container">
         <div class="login-box">
             <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+                <div class="w-20 h-20 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                     </svg>
                 </div>
-                <h1 class="text-3xl font-bold text-white mb-2">Benvenuto</h1>
-                <p class="text-slate-400">Accedi per continuare</p>
+                <h1 class="text-3xl font-bold text-white mb-2">Accesso Piattaforma</h1>
+                <p class="text-slate-400">Inserisci le tue credenziali</p>
             </div>
 
             <div id="loginError" class="error-message hidden">
@@ -422,21 +331,24 @@
     <div id="mainApp" class="hidden">
         <div class="flex h-screen">
             <!-- Sidebar Navigation -->
-            <div class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
-                <div class="p-4 border-b border-slate-700">
-                    <h1 class="text-xl font-bold text-white">🔗 Casahoro viewer</h1>
-                    <p class="text-xs text-slate-400 mt-1">Utente: <span id="currentUsername" class="text-blue-400"></span></p>
+            <div class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col p-3">
+                <div class="p-3 border-b border-slate-700 mb-3">
+                    <h1 class="text-xl font-extrabold text-white flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                        Casahoro
+                    </h1>
+                    <p class="text-xs text-slate-400 mt-1">Utente: <span id="currentUsername" class="text-sky-400 font-medium"></span></p>
                 </div>
-                <nav class="flex-1 p-2">
+                <nav class="flex-1 space-y-1">
                     <!-- Chat Lella (Visibilità condizionata) -->
-                    <button onclick="switchView('chat-lella')" id="navChatLella" class="nav-item w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3 mb-2 hidden">
+                    <button onclick="switchView('chat-lella')" id="navChatLella" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3 hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                         </svg>
                         <span class="font-medium">Chat - Lella</span>
                     </button>
                     <!-- Chat Evasore -->
-                    <button onclick="switchView('chat-evasore')" id="navChatEvasore" class="nav-item w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3 mb-2">
+                    <button onclick="switchView('chat-evasore')" id="navChatEvasore" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 2a10 10 0 0 0-9 5.5 10 10 0 0 0 18 0A10 10 0 0 0 12 2z"></path>
                             <path d="M12 16v-4"></path>
@@ -445,7 +357,7 @@
                         <span class="font-medium">Evasore</span>
                     </button>
                     <!-- Chat God of Returns -->
-                    <button onclick="switchView('chat-godofreturns')" id="navChatGodOfReturns" class="nav-item w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3 mb-2">
+                    <button onclick="switchView('chat-godofreturns')" id="navChatGodOfReturns" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path>
                         </svg>
@@ -456,7 +368,7 @@
                     <div class="my-4 border-t border-slate-700 mx-4"></div>
 
                     <!-- Table Lella (Visibilità condizionata) -->
-                    <button onclick="switchView('table-lella')" id="navTableLella" class="nav-item w-full text-left px-4 py-3 rounded-lg text-white flex items-center gap-3 hidden">
+                    <button onclick="switchView('table-lella')" id="navTableLella" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3 hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                             <line x1="3" y1="9" x2="21" y2="9"></line>
@@ -465,65 +377,65 @@
                         <span class="font-medium">Tabella - Lella</span>
                     </button>
                 </nav>
-                <div class="p-4 border-t border-slate-700 space-y-2">
+                <div class="p-3 border-t border-slate-700 space-y-2">
                     <button id="settingsBtn" onclick="toggleSettings()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors hidden">
                         ⚙️ Impostazioni
                     </button>
                     <button id="clearChatBtn" onclick="showClearChatModal()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors">
                         🗑️ Cancella Chat
                     </button>
-                    <button onclick="showLogoutModal()" class="w-full px-4 py-2 btn-custom-blue text-white rounded-lg text-sm transition-colors">
+                    <button onclick="showLogoutModal()" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors">
                         🚪 Logout
                     </button>
                 </div>
             </div>
 
             <!-- Main Content -->
-            <div class="flex-1 flex flex-col relative">
+            <div class="flex-1 flex flex-col relative bg-slate-900">
                 <!-- Settings Panel -->
-                <div id="settingsPanel" class="hidden bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 absolute top-0 left-0 right-0 z-10">
-                    <h2 class="text-white font-bold mb-3">Configurazione API</h2>
+                <div id="settingsPanel" class="hidden bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 p-4 absolute top-0 left-0 right-0 z-10 shadow-xl">
+                    <h2 class="text-white font-bold mb-3 text-lg">Configurazione API</h2>
                     <div class="space-y-3">
                         <div>
-                            <label class="text-sm text-slate-300 block mb-1">API Login:</label>
-                            <input type="text" id="loginApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/sing-up" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
+                            <label class="text-xs text-slate-400 block mb-1">API Login:</label>
+                            <input type="text" id="loginApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/sing-up" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <div>
-                            <label class="text-sm text-slate-300 block mb-1">Webhook Chat Lella:</label>
-                            <input type="text" id="webhookUrlLella" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/chat" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
+                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat Lella:</label>
+                            <input type="text" id="webhookUrlLella" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/chat" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <!-- NUOVO: Webhook Chat Evasore -->
                         <div>
-                            <label class="text-sm text-slate-300 block mb-1">Webhook Chat Evasore:</label>
-                            <input type="text" id="webhookUrlEvasore" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/evasore-ordini" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
+                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat Evasore:</label>
+                            <input type="text" id="webhookUrlEvasore" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/evasore-ordini" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <!-- NUOVO: Webhook Chat God of Returns -->
                         <div>
-                            <label class="text-sm text-slate-300 block mb-1">Webhook Chat God of Returns:</label>
-                            <input type="text" id="webhookUrlGodOfReturns" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/god-of-returns" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
+                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat God of Returns:</label>
+                            <input type="text" id="webhookUrlGodOfReturns" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/god-of-returns" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <div>
-                            <label class="text-sm text-slate-300 block mb-1">API Tabella:</label>
-                            <input type="text" id="tableApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/data" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
+                            <label class="text-xs text-slate-400 block mb-1">API Tabella:</label>
+                            <input type="text" id="tableApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/data" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <div>
-                            <label class="text-sm text-slate-300 block mb-1">API Elimina Tabella:</label>
-                            <input type="text" id="deleteApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/deletetab" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
+                            <label class="text-xs text-slate-400 block mb-1">API Elimina Tabella:</label>
+                            <input type="text" id="deleteApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/deletetab" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <div>
-                            <label class="text-sm text-slate-300 block mb-1">API Modifica Cella:</label>
-                            <input type="text" id="updateApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/edit-tab" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
+                            <label class="text-xs text-slate-400 block mb-1">API Modifica Cella:</label>
+                            <input type="text" id="updateApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/edit-tab" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <div>
-                            <label class="text-sm text-slate-300 block mb-1">API Elimina Riga:</label>
-                            <input type="text" id="deleteRowApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/delete-one-row" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"/>
+                            <label class="text-xs text-slate-400 block mb-1">API Elimina Riga:</label>
+                            <input type="text" id="deleteRowApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/delete-one-row" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                     </div>
                 </div>
 
                 <!-- Chat View -->
-                <div id="chatView" class="absolute inset-0 flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-                    <div class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 flex-shrink-0">
+                <div id="chatView" class="absolute inset-0 flex flex-col">
+                    <div class="bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 p-4 flex-shrink-0 shadow-lg">
                         <h2 class="text-xl font-bold text-white">💬 <span id="currentChatTitle">Chat - Lella</span></h2>
                     </div>
                     <div id="messagesArea" class="flex-1 overflow-y-auto p-4 space-y-4">
@@ -533,10 +445,10 @@
                         </div>
                     </div>
 
-                    <div class="bg-slate-800/50 backdrop-blur-sm border-t border-slate-700 p-4 flex-shrink-0">
-                        <div class="flex gap-2 max-w-4xl mx-auto">
-                            <textarea id="messageInput" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500 focus:outline-none resize-none" rows="1"></textarea>
-                            <button id="sendButton" class="w-12 h-12 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <div class="bg-slate-800/95 backdrop-blur-sm border-t border-slate-700 p-4 flex-shrink-0 shadow-2xl">
+                        <div class="flex gap-3 max-w-4xl mx-auto">
+                            <textarea id="messageInput" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-sky-500 focus:outline-none resize-none transition-colors" rows="1"></textarea>
+                            <button id="sendButton" class="w-12 h-12 flex items-center justify-center bg-sky-500 hover:bg-sky-600 text-white rounded-xl transition-all flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-sky-500/50">
                                 <svg id="sendIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="22" y1="2" x2="11" y2="13"></line>
                                     <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -548,19 +460,19 @@
                 </div>
 
                 <!-- Table View -->
-                <div id="tableView" class="hidden absolute inset-0 flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-                    <div class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4 flex-shrink-0 flex justify-between items-center">
+                <div id="tableView" class="hidden absolute inset-0 flex flex-col">
+                    <div class="bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 p-4 flex-shrink-0 flex justify-between items-center shadow-lg">
                         <h2 class="text-xl font-bold text-white">📊 Tabella - Lella</h2>
                         <div class="flex space-x-3">
-                            <button onclick="loadTableData()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2">
+                            <button onclick="loadTableData()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2 shadow-md">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M21.5 14a10 10 0 0 1-18 0M2.5 10a10 10 0 0 1 18 0"/></svg>
                                 Aggiorna
                             </button>
-                            <button onclick="exportToCSV()" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2">
+                            <button onclick="exportToCSV()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2 shadow-md">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15h6"/></svg>
                                 Esporta CSV
                             </button>
-                            <button onclick="deleteTable()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2">
+                            <button onclick="deleteTable()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2 shadow-md">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                                 Svuota Tabella
                             </button>
@@ -569,7 +481,7 @@
                     <div class="flex-1 overflow-y-auto p-4 relative">
                         <div id="tableLoading" class="absolute inset-0 bg-slate-900/70 flex items-center justify-center hidden">
                             <div class="flex flex-col items-center">
-                                <div class="spinner w-8 h-8 border-4 border-t-4 border-blue-500 mb-3"></div>
+                                <div class="spinner w-8 h-8 border-4 border-t-4 border-sky-500 mb-3"></div>
                                 <p class="text-white text-lg">Caricamento dati...</p>
                             </div>
                         </div>
@@ -581,7 +493,7 @@
                             <p class="text-2xl mb-2">📭 Nessun dato trovato</p>
                             <p class="text-md">La tabella è vuota. Invia un messaggio alla chat per popolarla.</p>
                         </div>
-                        <div class="shadow overflow-hidden border border-slate-700 sm:rounded-lg">
+                        <div class="shadow-xl overflow-hidden border border-slate-700 rounded-xl">
                             <table class="min-w-full divide-y divide-slate-700">
                                 <thead class="bg-slate-800" id="tableHead">
                                     <!-- Table headers will be injected here -->
@@ -597,10 +509,10 @@
         </div>
     </div>
 
-    <!-- Modals (omitted for brevity, they are unchanged) -->
+    <!-- Modals -->
     <!-- Logout Modal -->
     <div id="logoutModal" class="modal-overlay hidden">
-        <div class="modal-content">
+        <div class="modal-content bg-slate-800 border-slate-700">
             <h3 class="text-xl font-bold text-white mb-4">Conferma Logout</h3>
             <p class="text-slate-300 mb-6">Sei sicuro di voler effettuare il logout?</p>
             <div class="flex justify-end space-x-3">
@@ -612,7 +524,7 @@
 
     <!-- Confirm Delete Table Modal -->
     <div id="confirmModal" class="modal-overlay hidden">
-        <div class="modal-content">
+        <div class="modal-content bg-slate-800 border-slate-700">
             <h3 class="text-xl font-bold text-white mb-4">Conferma Svuota Tabella</h3>
             <p class="text-slate-300 mb-6">Sei sicuro di voler eliminare TUTTI i dati dalla tabella? Questa azione è irreversibile.</p>
             <div class="flex justify-end space-x-3">
@@ -624,17 +536,17 @@
 
     <!-- Success Modal -->
     <div id="successModal" class="modal-overlay hidden">
-        <div class="modal-content text-center">
-            <div class="text-green-500 text-5xl mb-4">✅</div>
+        <div class="modal-content text-center bg-slate-800 border-slate-700">
+            <div class="text-emerald-500 text-5xl mb-4">✅</div>
             <h3 class="text-xl font-bold text-white mb-2">Successo!</h3>
             <p class="text-slate-300">La tabella è stata svuotata con successo.</p>
-            <button onclick="closeSuccessModal()" class="mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">Chiudi</button>
+            <button onclick="closeSuccessModal()" class="mt-6 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors">Chiudi</button>
         </div>
     </div>
 
     <!-- Clear Chat Modal -->
     <div id="clearChatModal" class="modal-overlay hidden">
-        <div class="modal-content">
+        <div class="modal-content bg-slate-800 border-slate-700">
             <h3 class="text-xl font-bold text-white mb-4">Conferma Cancellazione Chat</h3>
             <p class="text-slate-300 mb-6">Sei sicuro di voler cancellare la cronologia della chat corrente? Questa azione è irreversibile.</p>
             <div class="flex justify-end space-x-3">
@@ -646,17 +558,17 @@
 
     <!-- Chat Cleared Modal -->
     <div id="chatClearedModal" class="modal-overlay hidden">
-        <div class="modal-content text-center">
-            <div class="text-green-500 text-5xl mb-4">🗑️</div>
+        <div class="modal-content text-center bg-slate-800 border-slate-700">
+            <div class="text-emerald-500 text-5xl mb-4">🗑️</div>
             <h3 class="text-xl font-bold text-white mb-2">Chat Cancellata!</h3>
             <p class="text-slate-300">La cronologia della chat è stata cancellata con successo.</p>
-            <button onclick="closeChatClearedModal()" class="mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">Chiudi</button>
+            <button onclick="closeChatClearedModal()" class="mt-6 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors">Chiudi</button>
         </div>
     </div>
 
     <!-- Status Edit Modal -->
     <div id="statusModal" class="modal-overlay hidden">
-        <div class="modal-content">
+        <div class="modal-content bg-slate-800 border-slate-700">
             <h3 class="text-xl font-bold text-white mb-4">Modifica Stato</h3>
             <p class="text-slate-300 mb-6">Seleziona il nuovo stato per l'ordine:</p>
             <div class="space-y-3">
@@ -672,19 +584,19 @@
 
     <!-- Text Edit Modal -->
     <div id="editTextModal" class="modal-overlay hidden">
-        <div class="edit-modal-content">
+        <div class="edit-modal-content bg-slate-800 border-slate-700">
             <h3 class="text-xl font-bold text-white mb-4">Modifica Cella</h3>
-            <textarea id="editTextarea" class="edit-textarea flex-1 mb-4"></textarea>
+            <textarea id="editTextarea" class="edit-textarea flex-1 mb-4 bg-slate-900 border-slate-600 focus:border-sky-500"></textarea>
             <div class="flex justify-end space-x-3 flex-shrink-0">
                 <button onclick="closeEditModal()" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">Annulla</button>
-                <button onclick="saveEditModal()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">Salva</button>
+                <button onclick="saveEditModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">Salva</button>
             </div>
         </div>
     </div>
 
     <!-- Delete Row Modal -->
     <div id="deleteRowModal" class="modal-overlay hidden">
-        <div class="modal-content">
+        <div class="modal-content bg-slate-800 border-slate-700">
             <h3 class="text-xl font-bold text-white mb-4">Conferma Eliminazione Riga</h3>
             <p class="text-slate-300 mb-6">Sei sicuro di voler eliminare questa riga dalla tabella? Questa azione è irreversibile.</p>
             <div class="flex justify-end space-x-3">
@@ -853,12 +765,20 @@
                     throw new Error('Credenziali non valide o utente non trovato nella risposta.');
                 }
 
-                // Estrazione del ruolo e gestione di 'Null' o mancante
+                // Estrazione del ruolo e gestione di 'Null' o mancante (Logica V7/V8)
+                // 1. Tenta di estrarre il ruolo dal campo 'role' (se presente e non nullo)
                 if (loggedInUser.role && loggedInUser.role.toLowerCase() !== 'null') {
                     userRole = loggedInUser.role.toLowerCase();
                 } else {
-                    // Se il ruolo è mancante o 'Null', usa il ruolo di default 'user'
-                    userRole = 'user';
+                    // 2. FALLBACK: Se il ruolo è mancante o 'Null', deducilo dal nome utente (più robusto per il tuo webhook)
+                    const receivedUsername = (loggedInUser.username || loggedInUser.utente || usernameInput).toLowerCase();
+                    if (receivedUsername === 'admin') {
+                        userRole = 'admin';
+                    } else if (receivedUsername === 'caller') {
+                        userRole = 'caller';
+                    } else {
+                        userRole = 'user';
+                    }
                 }
 
                 // Se il nome utente è stato ricevuto con una chiave diversa da 'username', usiamo quella
@@ -933,7 +853,7 @@
             messagesArea.querySelectorAll('.message-enter').forEach(msgDiv => {
                 const text = msgDiv.querySelector('p:first-child').textContent;
                 const sender = msgDiv.classList.contains('justify-end') ? 'user' : 'bot';
-                const isError = msgDiv.querySelector('.bg-red-600\\/20') !== null;
+                const isError = msgDiv.querySelector('.chat-bubble-error') !== null;
                 messages.push({ text, sender, isError });
             });
             localStorage.setItem(getChatHistoryKey(), JSON.stringify(messages));
@@ -1044,14 +964,14 @@
 
             const messageDiv = document.createElement('div');
             messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} message-enter`;
-            const bubbleClass = sender === 'user' ? 'bg-blue-600 text-white' :
-                isError ? 'bg-red-600/20 text-red-200 border border-red-500/30' :
-                'bg-slate-700 text-white';
-            const timeClass = sender === 'user' ? 'text-blue-200' : 'text-slate-400';
+            const bubbleClass = sender === 'user' ? 'chat-bubble-user' :
+                isError ? 'chat-bubble-error' :
+                'chat-bubble-bot';
+            const timeClass = sender === 'user' ? 'text-sky-100' : 'text-slate-400';
             messageDiv.innerHTML = `
-                <div class="max-w-[70%] rounded-2xl px-4 py-3 shadow-lg ${bubbleClass}">
+                <div class="max-w-[70%] px-4 py-3 shadow-lg ${bubbleClass}">
                     <p class="whitespace-pre-wrap break-words">${escapeHtml(text)}</p>
-                    <p class="text-xs mt-1 ${timeClass}">${timestamp}</p>
+                    <p class="text-xs mt-1 ${timeClass} text-right">${timestamp}</p>
                 </div>
             `;
             messagesArea.appendChild(messageDiv);
@@ -1070,7 +990,7 @@
             loadingDiv.id = 'loadingMessage';
             loadingDiv.className = 'flex justify-start message-enter';
             loadingDiv.innerHTML = `
-                <div class="bg-slate-700 text-white rounded-2xl px-4 py-3 shadow-lg flex items-center gap-2">
+                <div class="chat-bubble-bot text-white px-4 py-3 shadow-lg flex items-center gap-2">
                     <div class="spinner"></div>
                     <span>Elaborazione...</span>
                 </div>
