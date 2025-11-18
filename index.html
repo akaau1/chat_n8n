@@ -1178,9 +1178,9 @@
             if (data.length === 0) return;
             
             const columns = Object.keys(data[0]);
-            const textEditableColumns = ['indirizzo', 'cap', 'provincia', 'città', 'citta','prodotto','note'];
+            const textEditableColumns = ['indirizzo', 'cap', 'provincia', 'città', 'citta','note'];
             const nonEditableColumns = ['nome', 'cognome', 'telefono'];
-            const truncatedColumns = ['prodotto', 'indirizzo'];
+            const truncatedColumns = ['prodotto', 'indirizzo','note'];
             
             tableHead.innerHTML = `<tr>${columns.map(col => `<th class="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">${escapeHtml(col)}</th>`).join('')}<th class="px-6 py-3 text-center text-xs font-medium text-slate-300 uppercase tracking-wider">Azioni</th></tr>`;
             tableBody.innerHTML = data.map((row, rowIndex) => `
@@ -1662,6 +1662,7 @@
     </script>
 </body>
 </html>
+
 
 
 
