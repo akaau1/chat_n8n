@@ -384,7 +384,7 @@
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="input-group">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 4 0 0 0-4-4H8a4 4 4 0 0 0-4 4v2"></path>
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
                     <input
@@ -836,24 +836,37 @@
                 let userRole = 'user'; // Ruolo di default
                 let loggedInUser = null;
 
+                // Gestione di array (vecchia logica)
                 if (Array.isArray(data) && data.length > 0) {
-                    // Cerca l'utente con il nome utente fornito (il tuo campo è 'utente', non 'username')
                     loggedInUser = data.find(u => u.utente === usernameInput) || data[0];
-                } else if (data.role) {
-                    // Fallback per un oggetto singolo che contiene il ruolo
-                    loggedInUser = data;
+                }
+                // Gestione di oggetto singolo (logica attuale)
+                else if (typeof data === 'object' && data !== null) {
+                    // Cerca il nome utente in 'username' o 'utente'
+                    const receivedUsername = data.username || data.utente;
+                    if (receivedUsername && receivedUsername.toLowerCase() === usernameInput.toLowerCase()) {
+                        loggedInUser = data;
+                    }
                 }
 
-                if (!loggedInUser || !loggedInUser.role) {
-                    // Se non trova l'utente o il ruolo, lancia l'errore
-                    throw new Error('Credenziali non valide o ruolo utente non trovato.');
+                if (!loggedInUser) {
+                    throw new Error('Credenziali non valide o utente non trovato nella risposta.');
                 }
 
-                userRole = loggedInUser.role.toLowerCase();
+                // Estrazione del ruolo e gestione di 'Null' o mancante
+                if (loggedInUser.role && loggedInUser.role.toLowerCase() !== 'null') {
+                    userRole = loggedInUser.role.toLowerCase();
+                } else {
+                    // Se il ruolo è mancante o 'Null', usa il ruolo di default 'user'
+                    userRole = 'user';
+                }
 
-                localStorage.setItem('currentUser', usernameInput);
+                // Se il nome utente è stato ricevuto con una chiave diversa da 'username', usiamo quella
+                const finalUsername = loggedInUser.username || loggedInUser.utente || usernameInput;
+
+                localStorage.setItem('currentUser', finalUsername);
                 localStorage.setItem('currentUserRole', userRole);
-                showMainApp(usernameInput, userRole);
+                showMainApp(finalUsername, userRole);
 
                 // Dopo il login, reindirizza alla vista corretta
                 if (['admin', 'caller'].includes(userRole)) {
