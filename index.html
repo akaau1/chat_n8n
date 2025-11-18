@@ -1178,7 +1178,7 @@
             if (data.length === 0) return;
             
             const columns = Object.keys(data[0]);
-            const textEditableColumns = ['indirizzo', 'cap', 'provincia', 'città', 'citta','prodotto'];
+            const textEditableColumns = ['indirizzo', 'cap', 'provincia', 'città', 'citta','prodotto','note'];
             const nonEditableColumns = ['nome', 'cognome', 'telefono'];
             const truncatedColumns = ['prodotto', 'indirizzo'];
             
@@ -1662,6 +1662,7 @@
     </script>
 </body>
 </html>
+
 
 
 
