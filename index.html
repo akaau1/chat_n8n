@@ -282,7 +282,7 @@
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                     </svg>
                 </div>
-                <h1 class="text-3xl font-bold text-white mb-2">Accesso</h1>
+                <h1 class="text-3xl font-bold text-white mb-2">Accesso Piattaforma</h1>
                 <p class="text-slate-400">Inserisci le tue credenziali</p>
             </div>
 
@@ -406,13 +406,8 @@
                         </div>
                         <!-- NUOVO: Webhook Chat Evasore -->
                         <div>
-                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat Evasore (Testo):</label>
+                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat Evasore:</label>
                             <input type="text" id="webhookUrlEvasore" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/evasore-ordini" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
-                        </div>
-                        <!-- NUOVO: Webhook Chat Evasore (Documenti) -->
-                        <div>
-                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat Evasore (Documenti):</label>
-                            <input type="text" id="webhookUrlEvasoreDocument" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/evasore-ordini-document" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <!-- NUOVO: Webhook Chat God of Returns -->
                         <div>
@@ -619,7 +614,6 @@
         let currentUserRole = localStorage.getItem('currentUserRole');
         let currentView = 'chat-lella';
         let currentChat = 'lella';
-        let selectedFile = null;
         let isLoading = false;
         let currentTableData = [];
         let currentEditingCell = null;
@@ -814,25 +808,6 @@
 
         function showLogoutModal() {
             document.getElementById('logoutModal').classList.remove('hidden');
-        }
-
-        function clearFile() {
-            selectedFile = null;
-            document.getElementById('fileInput').value = '';
-            document.getElementById('filePreview').classList.add('hidden');
-            document.getElementById('messageInput').placeholder = 'Scrivi un messaggio...';
-        }
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                selectedFile = file;
-                document.getElementById('fileName').textContent = file.name;
-                document.getElementById('filePreview').classList.remove('hidden');
-                document.getElementById('messageInput').placeholder = 'Aggiungi un messaggio al file... (Opzionale)';
-            } else {
-                clearFile();
-            }
         }
 
         function closeLogoutModal() {
@@ -1031,33 +1006,16 @@
 
         async function sendMessage() {
             const text = messageInput.value.trim();
-            const isFileSelected = selectedFile !== null;
-
-            if ((!text && !isFileSelected) || isLoading) return;
+            if (!text || isLoading) return;
 
             const chatConfig = CHAT_MAP[currentChat];
-
             // Doppio controllo permessi prima di inviare
             if (currentUserRole && !chatConfig.requiresRole.includes(currentUserRole)) {
                 alert(`Accesso negato. Non puoi inviare messaggi a ${chatConfig.title}.`);
                 return;
             }
 
-            // Solo la chat Evasore supporta l'upload di file
-            if (isFileSelected && currentChat !== 'evasore') {
-                alert('L\'upload di file è supportato solo nella chat Evasore.');
-                clearFile();
-                return;
-            }
-
-            // Aggiungi il messaggio utente (testo o file)
-            if (text) {
-                addMessage(text, 'user');
-            }
-            if (isFileSelected) {
-                addMessage(`📎 File allegato: ${selectedFile.name}`, 'user');
-            }
-
+            addMessage(text, 'user');
             messageInput.value = '';
             messageInput.style.height = 'auto';
             isLoading = true;
@@ -1066,60 +1024,29 @@
             loadingIcon.classList.remove('hidden');
             addLoadingMessage();
 
-            const webhookUrlText = document.getElementById(chatConfig.webhookId).value;
-            const webhookUrlDocument = document.getElementById('webhookUrlEvasoreDocument') ? document.getElementById('webhookUrlEvasoreDocument').value : webhookUrlText;
-            const webhookUrl = isFileSelected ? webhookUrlDocument : webhookUrlText;
+            const webhookUrl = document.getElementById(chatConfig.webhookId).value;
 
             try {
-                let response;
-                let data;
-
-                if (isFileSelected) {
-                    // Invio del file (multipart/form-data)
-                    const formData = new FormData();
-                    formData.append('file', selectedFile);
-                    formData.append('message', text);
-                    formData.append('username', currentUser);
-                    formData.append('timestamp', new Date().toISOString());
-                    formData.append('action', 'file_upload'); // Aggiungi un'azione per il webhook
-
-                    response = await fetch(webhookUrl, {
-                        method: 'POST',
-                        mode: 'cors',
-                        body: formData // Non impostare Content-Type, il browser lo fa automaticamente con boundary
-                    });
-                } else {
-                    // Invio del solo testo (application/json)
-                    response = await fetch(webhookUrl, {
-                        method: 'POST',
-                        mode: 'cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            message: text,
-                            username: currentUser,
-                            timestamp: new Date().toISOString()
-                        })
-                    });
-                }
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: text,
+                        username: currentUser,
+                        timestamp: new Date().toISOString()
+                    })
+                });
 
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-                // Tenta di leggere la risposta come JSON, altrimenti come testo
-                try {
-                    data = await response.json();
-                } catch (e) {
-                    data = { response: await response.text() };
-                }
-
+                const data = await response.json();
                 removeLoadingMessage();
                 const responseText = data.response || data.message || JSON.stringify(data);
                 addMessage(responseText, 'bot');
-
             } catch (error) {
                 removeLoadingMessage();
-                addMessage(`❌ Errore di connessione/upload: ${error.message}\n\nVerifica che il webhook sia in esecuzione su:\n${webhookUrl}`, 'bot', true);
+                addMessage(`❌ Errore di connessione: ${error.message}\n\nVerifica che il webhook sia in esecuzione su:\n${webhookUrl}`, 'bot', true);
             } finally {
-                clearFile(); // Pulisci il file dopo l'invio
                 isLoading = false;
                 sendButton.disabled = false;
                 sendIcon.classList.remove('hidden');
@@ -1682,4 +1609,3 @@
     </script>
 </body>
 </html>
-
