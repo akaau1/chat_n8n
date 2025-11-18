@@ -749,7 +749,7 @@
         const currentChatTitle = document.getElementById('currentChatTitle');
         const navChatLella = document.getElementById('navChatLella');
         const navTableLella = document.getElementById('navTableLella');
-        const settingsBtn = document.getElementById('settingsBtn'); // NUOVO: Elemento Impostazioni
+        const settingsBtn = document.getElementById('settingsBtn');
 
         // =================================================================
         // FUNZIONI DI INIZIALIZZAZIONE E LOGIN
@@ -832,24 +832,24 @@
 
                 const data = await response.json();
 
-                // CORREZIONE: Estrazione del ruolo dal payload che è un array
+                // CORREZIONE V4: Estrazione del ruolo dal payload che è un array
                 let userRole = 'user'; // Ruolo di default
                 let loggedInUser = null;
 
                 if (Array.isArray(data) && data.length > 0) {
-                    // Assumiamo che il primo elemento sia l'utente loggato
-                    loggedInUser = data[0];
-                    if (loggedInUser.role) {
-                        userRole = loggedInUser.role.toLowerCase();
-                    }
+                    // Cerca l'utente con il nome utente fornito (anche se il tuo webhook sembra restituire solo l'utente loggato)
+                    loggedInUser = data.find(u => u.utente === usernameInput) || data[0];
                 } else if (data.role) {
-                    // Fallback per un oggetto singolo
-                    userRole = data.role.toLowerCase();
+                    // Fallback per un oggetto singolo che contiene il ruolo
+                    loggedInUser = data;
                 }
 
-                if (!loggedInUser && !data.role) {
+                if (!loggedInUser || !loggedInUser.role) {
+                    // Se non trova l'utente o il ruolo, lancia l'errore
                     throw new Error('Credenziali non valide o ruolo utente non trovato.');
                 }
+
+                userRole = loggedInUser.role.toLowerCase();
 
                 localStorage.setItem('currentUser', usernameInput);
                 localStorage.setItem('currentUserRole', userRole);
@@ -1519,7 +1519,7 @@
 
             input.addEventListener('blur', saveValue);
             input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     input.blur();
                 } else if (e.key === 'Escape') {
