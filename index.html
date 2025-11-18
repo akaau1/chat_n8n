@@ -159,6 +159,38 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             animation: slideUp 0.3s ease-out;
         }
+        .edit-modal-content {
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+        .edit-textarea {
+            width: 100%;
+            min-height: 300px;
+            max-height: 50vh;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(148, 163, 184, 0.3);
+            border-radius: 0.75rem;
+            color: white;
+            padding: 1rem;
+            font-size: 0.95rem;
+            font-family: system-ui, -apple-system, sans-serif;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+        .edit-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(15, 23, 42, 0.95);
+        }
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -575,6 +607,35 @@
         </div>
     </div>
 
+    <!-- Modal Modifica Testo (Note e Prodotto) -->
+    <div id="editTextModal" class="modal-overlay hidden">
+        <div class="edit-modal-content">
+            <div class="mb-4">
+                <h3 class="text-2xl font-bold text-white mb-2">📝 Modifica <span id="editColumnName"></span></h3>
+                <p class="text-slate-400 text-sm">Modifica il contenuto e clicca "Salva" per confermare</p>
+            </div>
+            
+            <div class="flex-1 mb-4">
+                <textarea id="editTextArea" class="edit-textarea" placeholder="Inserisci il testo..."></textarea>
+            </div>
+            
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeEditModal()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium">
+                    Annulla
+                </button>
+                <button onclick="saveEditModal()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    <span id="editSaveText">Salva</span>
+                    <div id="editSaveSpinner" class="spinner hidden"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Eliminazione Tabella -->
     <div id="confirmModal" class="modal-overlay hidden">
         <div class="modal-content">
@@ -755,6 +816,7 @@
         let currentUser = null;
         let currentEditingCell = null;
         let currentDeletingRowIndex = null;
+        let currentEditingModalData = null;
 
         const loginScreen = document.getElementById('loginScreen');
         const mainApp = document.getElementById('mainApp');
@@ -768,7 +830,6 @@
         const loadingIcon = document.getElementById('loadingIcon');
         const welcomeMessage = document.getElementById('welcomeMessage');
 
-        // Funzione per troncare il testo
         function truncateText(text, maxLength = 20) {
             if (!text) return '';
             const str = String(text);
@@ -1178,9 +1239,10 @@
             if (data.length === 0) return;
             
             const columns = Object.keys(data[0]);
-            const textEditableColumns = ['indirizzo', 'cap', 'provincia', 'città', 'citta','note'];
+            const textEditableColumns = ['indirizzo', 'cap', 'provincia', 'città', 'citta'];
+            const modalEditableColumns = ['note', 'prodotto', 'prodotti'];
             const nonEditableColumns = ['nome', 'cognome', 'telefono'];
-            const truncatedColumns = ['prodotto', 'indirizzo','note'];
+            const truncatedColumns = ['prodotto', 'prodotti', 'indirizzo', 'note'];
             
             tableHead.innerHTML = `<tr>${columns.map(col => `<th class="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">${escapeHtml(col)}</th>`).join('')}<th class="px-6 py-3 text-center text-xs font-medium text-slate-300 uppercase tracking-wider">Azioni</th></tr>`;
             tableBody.innerHTML = data.map((row, rowIndex) => `
@@ -1188,6 +1250,7 @@
                     ${columns.map(col => {
                         const colLower = col.toLowerCase();
                         const isStatoColumn = colLower === 'stato';
+                        const isModalEditable = modalEditableColumns.includes(colLower);
                         const isTextEditable = textEditableColumns.includes(colLower);
                         const isNonEditable = nonEditableColumns.includes(colLower);
                         const shouldTruncate = truncatedColumns.includes(colLower);
@@ -1201,6 +1264,17 @@
                                     data-column="${escapeHtml(col)}" 
                                     data-original-value="${escapeHtml(fullValue)}" 
                                     onclick="editStatusCell(this)">
+                                    ${escapeHtml(displayValue)}
+                                </td>
+                            `;
+                        } else if (isModalEditable) {
+                            return `
+                                <td class="px-6 py-4 text-sm text-white text-editable-cell ${shouldTruncate ? 'truncated-cell' : ''}" 
+                                    data-row="${rowIndex}" 
+                                    data-column="${escapeHtml(col)}" 
+                                    data-original-value="${escapeHtml(fullValue)}"
+                                    ${shouldTruncate ? `data-full-text="${escapeHtml(fullValue)}"` : ''}
+                                    onclick="openEditModal(this)">
                                     ${escapeHtml(displayValue)}
                                 </td>
                             `;
@@ -1343,6 +1417,102 @@
         function editStatusCell(cell) {
             currentEditingCell = cell;
             document.getElementById('statusModal').classList.remove('hidden');
+        }
+
+        function openEditModal(cell) {
+            const currentValue = cell.getAttribute('data-original-value') || '';
+            const columnName = cell.getAttribute('data-column');
+            const rowIndex = parseInt(cell.getAttribute('data-row'));
+            
+            currentEditingModalData = {
+                cell: cell,
+                rowIndex: rowIndex,
+                columnName: columnName,
+                originalValue: currentValue
+            };
+            
+            document.getElementById('editColumnName').textContent = columnName;
+            document.getElementById('editTextArea').value = currentValue;
+            document.getElementById('editTextModal').classList.remove('hidden');
+            
+            setTimeout(() => {
+                document.getElementById('editTextArea').focus();
+            }, 100);
+        }
+
+        function closeEditModal() {
+            document.getElementById('editTextModal').classList.add('hidden');
+            currentEditingModalData = null;
+        }
+
+        async function saveEditModal() {
+            if (!currentEditingModalData) return;
+            
+            const newValue = document.getElementById('editTextArea').value.trim();
+            const { cell, rowIndex, columnName, originalValue } = currentEditingModalData;
+            
+            if (newValue === originalValue) {
+                closeEditModal();
+                return;
+            }
+            
+            const editSaveText = document.getElementById('editSaveText');
+            const editSaveSpinner = document.getElementById('editSaveSpinner');
+            const saveButton = editSaveText.parentElement;
+            
+            saveButton.disabled = true;
+            editSaveText.classList.add('hidden');
+            editSaveSpinner.classList.remove('hidden');
+            
+            const updateApiUrl = document.getElementById('updateApiUrl');
+            const rowData = {...currentTableData[rowIndex]};
+            rowData[columnName] = newValue;
+            
+            try {
+                const response = await fetch(updateApiUrl.value, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        action: 'update',
+                        rowIndex: rowIndex,
+                        columnName: columnName,
+                        newValue: newValue,
+                        rowData: rowData,
+                        username: currentUser,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const responseData = await response.json();
+                console.log('Update successful:', responseData);
+                
+                currentTableData[rowIndex][columnName] = newValue;
+                
+                const colLower = columnName.toLowerCase();
+                const shouldTruncate = ['prodotto', 'prodotti', 'indirizzo', 'note'].includes(colLower);
+                const displayValue = shouldTruncate ? truncateText(newValue, 25) : newValue;
+                
+                cell.textContent = displayValue;
+                cell.setAttribute('data-original-value', newValue);
+                if (shouldTruncate) {
+                    cell.setAttribute('data-full-text', newValue);
+                }
+                
+                closeEditModal();
+                
+            } catch (error) {
+                console.error('Update error:', error);
+                alert(`❌ Errore durante l'aggiornamento:\n${error.message}`);
+            } finally {
+                saveButton.disabled = false;
+                editSaveText.classList.remove('hidden');
+                editSaveSpinner.classList.add('hidden');
+            }
         }
 
         function editTextCell(cell) {
@@ -1647,6 +1817,9 @@
         document.getElementById('statusModal').addEventListener('click', function(e) {
             if (e.target === this) closeStatusModal();
         });
+        document.getElementById('editTextModal').addEventListener('click', function(e) {
+            if (e.target === this) closeEditModal();
+        });
         
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
@@ -1657,14 +1830,9 @@
                 if (!document.getElementById('clearChatModal').classList.contains('hidden')) closeClearChatModal();
                 if (!document.getElementById('chatClearedModal').classList.contains('hidden')) closeChatClearedModal();
                 if (!document.getElementById('statusModal').classList.contains('hidden')) closeStatusModal();
+                if (!document.getElementById('editTextModal').classList.contains('hidden')) closeEditModal();
             }
         });
     </script>
 </body>
 </html>
-
-
-
-
-
-
