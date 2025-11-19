@@ -270,35 +270,11 @@
         .btn-custom-blue:hover {
             background-color: #334155; /* slate-700 */
         }
-        /* Stili Drag & Drop per Evasore */
-        .drag-drop-area {
-            border: 2px dashed #475569;
+        /* Stili File Upload per Evasore */
+        .chat-drag-over {
+            background-color: rgba(6, 182, 212, 0.05);
+            border: 2px dashed #06b6d4;
             border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.3s ease;
-            background-color: rgba(30, 41, 59, 0.3);
-        }
-        .drag-drop-area.drag-over {
-            border-color: #06b6d4;
-            background-color: rgba(6, 182, 212, 0.1);
-            transform: scale(1.02);
-        }
-        .file-upload-btn {
-            background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
-        }
-        .file-upload-btn:hover {
-            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
-            transform: translateY(-2px);
         }
         .uploaded-file-item {
             background-color: #1e293b;
@@ -512,29 +488,18 @@
                     </div>
 
                     <div class="bg-slate-800/95 backdrop-blur-sm border-t border-slate-700 p-4 flex-shrink-0 shadow-2xl">
-                        <!-- Area Drag & Drop per Evasore -->
-                        <div id="evasoreDragDropArea" class="hidden max-w-4xl mx-auto mb-4">
-                            <div class="drag-drop-area" id="dragDropZone">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 text-slate-400">
+                        <!-- Lista file caricati per Evasore -->
+                        <div id="uploadedFilesList" class="hidden max-w-4xl mx-auto mb-3"></div>
+                        <div class="flex gap-3 max-w-4xl mx-auto">
+                            <!-- Bottone per caricare file (solo per Evasore) -->
+                            <button id="fileUploadButton" class="hidden w-12 h-12 flex items-center justify-center bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-all flex-shrink-0 shadow-lg" title="Carica file">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                     <polyline points="17 8 12 3 7 8"></polyline>
                                     <line x1="12" y1="3" x2="12" y2="15"></line>
                                 </svg>
-                                <p class="text-slate-300 mb-2 font-medium">Trascina qui i tuoi file</p>
-                                <p class="text-slate-500 text-sm mb-4">oppure</p>
-                                <label for="fileInput" class="file-upload-btn">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="17 8 12 3 7 8"></polyline>
-                                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                                    </svg>
-                                    Seleziona File
-                                </label>
-                                <input type="file" id="fileInput" class="hidden" multiple />
-                            </div>
-                            <div id="uploadedFilesList" class="mt-3"></div>
-                        </div>
-                        <div class="flex gap-3 max-w-4xl mx-auto">
+                            </button>
+                            <input type="file" id="fileInput" class="hidden" multiple />
                             <textarea id="messageInput" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-sky-500 focus:outline-none resize-none transition-colors" rows="1"></textarea>
                             <button id="sendButton" class="w-12 h-12 flex items-center justify-center bg-sky-500 hover:bg-sky-600 text-white rounded-xl transition-all flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-sky-500/50">
                                 <svg id="sendIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1042,12 +1007,17 @@
                 clearChatBtn.classList.add('hidden');
             }
 
-            // Mostra/nascondi area drag & drop solo per evasore
-            const evasoreDragDropArea = document.getElementById('evasoreDragDropArea');
+            // Mostra/nascondi bottone file e lista solo per evasore
+            const fileUploadButton = document.getElementById('fileUploadButton');
+            const uploadedFilesList = document.getElementById('uploadedFilesList');
             if (currentChat === 'evasore' && isChatView) {
-                evasoreDragDropArea.classList.remove('hidden');
+                fileUploadButton.classList.remove('hidden');
+                if (uploadedFiles.length > 0) {
+                    uploadedFilesList.classList.remove('hidden');
+                }
             } else {
-                evasoreDragDropArea.classList.add('hidden');
+                fileUploadButton.classList.add('hidden');
+                uploadedFilesList.classList.add('hidden');
             }
 
             // Carica i dati della tabella se si passa alla vista tabella
@@ -1116,7 +1086,10 @@
 
         async function sendMessage() {
             const text = messageInput.value.trim();
-            if (!text || isLoading) return;
+            const hasFiles = uploadedFiles.length > 0;
+            
+            // Permetti invio solo se c'è testo o file
+            if ((!text && !hasFiles) || isLoading) return;
 
             const chatConfig = CHAT_MAP[currentChat];
             // Doppio controllo permessi prima di inviare
@@ -1125,7 +1098,25 @@
                 return;
             }
 
-            addMessage(text, 'user');
+            // Se ci sono file e siamo in evasore, usa webhook diverso
+            const isEvasoreWithFiles = currentChat === 'evasore' && hasFiles;
+            let webhookUrl;
+            
+            if (isEvasoreWithFiles) {
+                // Usa webhook per file
+                webhookUrl = document.getElementById(chatConfig.webhookId).value.replace('/evasore-ordini', '/evasore-ordini-file');
+            } else {
+                webhookUrl = document.getElementById(chatConfig.webhookId).value;
+            }
+
+            if (text) {
+                addMessage(text, 'user');
+            }
+            if (hasFiles) {
+                const fileNames = uploadedFiles.map(f => f.name).join(', ');
+                addMessage(`📎 File allegati: ${fileNames}`, 'user');
+            }
+            
             messageInput.value = '';
             messageInput.style.height = 'auto';
             isLoading = true;
@@ -1134,25 +1125,49 @@
             loadingIcon.classList.remove('hidden');
             addLoadingMessage();
 
-            const webhookUrl = document.getElementById(chatConfig.webhookId).value;
-
             try {
-                const response = await fetch(webhookUrl, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: text,
-                        username: currentUser,
-                        timestamp: new Date().toISOString()
-                    })
-                });
+                let response;
+                
+                if (isEvasoreWithFiles) {
+                    // Invia con FormData per i file
+                    const formData = new FormData();
+                    formData.append('message', text || '');
+                    formData.append('username', currentUser);
+                    formData.append('timestamp', new Date().toISOString());
+                    
+                    uploadedFiles.forEach((file, index) => {
+                        formData.append('files', file);
+                    });
+                    
+                    response = await fetch(webhookUrl, {
+                        method: 'POST',
+                        mode: 'cors',
+                        body: formData
+                    });
+                } else {
+                    // Invio normale JSON
+                    response = await fetch(webhookUrl, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: text,
+                            username: currentUser,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                }
 
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 removeLoadingMessage();
                 const responseText = data.response || data.message || JSON.stringify(data);
                 addMessage(responseText, 'bot');
+                
+                // Pulisci i file dopo l'invio riuscito
+                if (isEvasoreWithFiles) {
+                    clearUploadedFiles();
+                }
             } catch (error) {
                 removeLoadingMessage();
                 addMessage(`❌ Errore di connessione: ${error.message}\n\nVerifica che il webhook sia in esecuzione su:\n${webhookUrl}`, 'bot', true);
@@ -1668,33 +1683,44 @@
         let uploadedFiles = [];
 
         function initDragDropHandlers() {
-            const dragDropZone = document.getElementById('dragDropZone');
+            const messagesArea = document.getElementById('messagesArea');
             const fileInput = document.getElementById('fileInput');
-            const uploadedFilesList = document.getElementById('uploadedFilesList');
+            const fileUploadButton = document.getElementById('fileUploadButton');
 
-            // Gestione drag & drop
-            dragDropZone.addEventListener('dragover', (e) => {
+            // Gestione drag & drop su tutta la chat (solo per evasore)
+            messagesArea.addEventListener('dragover', (e) => {
+                if (currentChat !== 'evasore') return;
                 e.preventDefault();
                 e.stopPropagation();
-                dragDropZone.classList.add('drag-over');
+                messagesArea.classList.add('chat-drag-over');
             });
 
-            dragDropZone.addEventListener('dragleave', (e) => {
+            messagesArea.addEventListener('dragleave', (e) => {
+                if (currentChat !== 'evasore') return;
                 e.preventDefault();
                 e.stopPropagation();
-                dragDropZone.classList.remove('drag-over');
+                // Verifica se stiamo uscendo dall'area messagesArea
+                if (e.target === messagesArea) {
+                    messagesArea.classList.remove('chat-drag-over');
+                }
             });
 
-            dragDropZone.addEventListener('drop', (e) => {
+            messagesArea.addEventListener('drop', (e) => {
+                if (currentChat !== 'evasore') return;
                 e.preventDefault();
                 e.stopPropagation();
-                dragDropZone.classList.remove('drag-over');
+                messagesArea.classList.remove('chat-drag-over');
                 
                 const files = Array.from(e.dataTransfer.files);
                 handleFiles(files);
             });
 
-            // Gestione selezione file tramite bottone
+            // Gestione click sul bottone file
+            fileUploadButton.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Gestione selezione file tramite input
             fileInput.addEventListener('change', (e) => {
                 const files = Array.from(e.target.files);
                 handleFiles(files);
@@ -1705,8 +1731,13 @@
         function handleFiles(files) {
             files.forEach(file => {
                 uploadedFiles.push(file);
-                addFileToList(file);
             });
+            updateFilesList();
+            // Mostra la lista se ci sono file
+            const uploadedFilesList = document.getElementById('uploadedFilesList');
+            if (uploadedFiles.length > 0) {
+                uploadedFilesList.classList.remove('hidden');
+            }
         }
 
         function addFileToList(file) {
