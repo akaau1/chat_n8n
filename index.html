@@ -1811,6 +1811,24 @@
         // EVENT LISTENERS
         // =================================================================
 
+        // Chiusura pannello impostazioni al click esterno
+        document.addEventListener('click', function(e) {
+            const settingsPanel = document.getElementById('settingsPanel');
+            const settingsBtn = document.getElementById('settingsBtn');
+            
+            // Se il pannello è visibile e il click non è sul pannello e non è sul pulsante
+            if (!settingsPanel.classList.contains('hidden') && 
+                !settingsPanel.contains(e.target) && 
+                !settingsBtn.contains(e.target)) {
+                
+                // Controllo aggiuntivo per evitare chiusure accidentali
+                // se il click è su un elemento che non è un input o un link
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'A') {
+                    settingsPanel.classList.add('hidden');
+                }
+            }
+        });
+
         sendButton.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
