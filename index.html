@@ -435,38 +435,53 @@
             <!-- Main Content -->
             <div class="flex-1 flex flex-col relative bg-slate-900">
                 <!-- Settings Panel -->
-                <div id="settingsPanel" class="hidden bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 p-4 absolute top-0 left-0 right-0 z-10 shadow-xl">
-                    <h2 class="text-white font-bold mb-3 text-lg">Configurazione API</h2>
-                    <div class="space-y-3">
-                        <div>
+                <div id="settingsPanel" class="hidden bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 p-6 absolute top-0 left-0 right-0 z-10 shadow-2xl">
+                    <h2 class="text-white font-extrabold mb-5 text-2xl border-b border-slate-700 pb-3 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky-500"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.73l-.15.1a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1 0-2.73l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                        Configurazione API
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="col-span-full">
+                            <h3 class="text-lg font-semibold text-sky-400 mb-3">Autenticazione</h3>
                             <label class="text-xs text-slate-400 block mb-1">API Login:</label>
                             <input type="text" id="loginApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/sing-up" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
+
+                        <div class="col-span-full">
+                            <h3 class="text-lg font-semibold text-sky-400 mb-3">Webhooks Chat</h3>
                         </div>
                         <div>
                             <label class="text-xs text-slate-400 block mb-1">Webhook Chat Lella:</label>
                             <input type="text" id="webhookUrlLella" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/chat" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
-                        <!-- NUOVO: Webhook Chat Evasore -->
                         <div>
-                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat Evasore:</label>
+                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat Evasore (Testo):</label>
                             <input type="text" id="webhookUrlEvasore" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/evasore-ordini" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
-                        <!-- NUOVO: Webhook Chat God of Returns -->
+                        <!-- NUOVO: Webhook Chat Evasore (File) -->
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat Evasore (File):</label>
+                            <input type="text" id="webhookUrlEvasoreFile" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/evasore-ordini-file" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
                         <div>
                             <label class="text-xs text-slate-400 block mb-1">Webhook Chat God of Returns:</label>
                             <input type="text" id="webhookUrlGodOfReturns" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/god-of-returns" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
-                        <div>
-                            <label class="text-xs text-slate-400 block mb-1">API Tabella:</label>
-                            <input type="text" id="tableApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/data" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
+
+                        <div class="col-span-full">
+                            <h3 class="text-lg font-semibold text-sky-400 mb-3 mt-3">API Tabella</h3>
                         </div>
                         <div>
-                            <label class="text-xs text-slate-400 block mb-1">API Elimina Tabella:</label>
-                            <input type="text" id="deleteApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/deletetab" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
+                            <label class="text-xs text-slate-400 block mb-1">API Tabella (Caricamento Dati):</label>
+                            <input type="text" id="tableApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/data" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <div>
                             <label class="text-xs text-slate-400 block mb-1">API Modifica Cella:</label>
                             <input type="text" id="updateApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/edit-tab" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1">API Elimina Tabella:</label>
+                            <input type="text" id="deleteApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/deletetab" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <div>
                             <label class="text-xs text-slate-400 block mb-1">API Elimina Riga:</label>
@@ -1103,8 +1118,8 @@
             let webhookUrl;
             
             if (isEvasoreWithFiles) {
-                // Usa webhook per file
-                webhookUrl = document.getElementById(chatConfig.webhookId).value.replace('/evasore-ordini', '/evasore-ordini-file');
+                // Usa webhook per file dal nuovo campo di configurazione
+                webhookUrl = document.getElementById('webhookUrlEvasoreFile').value;
             } else {
                 webhookUrl = document.getElementById(chatConfig.webhookId).value;
             }
