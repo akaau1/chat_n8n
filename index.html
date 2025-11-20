@@ -937,17 +937,71 @@
                     body: JSON.stringify({ username, password }),
                 });
 
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    let errorData;
+                    try {
+                        errorData = JSON.parse(errorText);
+                    } catch (e) {
+                        throw new Error(`Errore HTTP! Stato: ${response.status}. Risposta: ${errorText}`);
+                    }
+                    throw new Error(errorData.message || `Errore HTTP! Stato: ${response.status}`);
+                }
+
                 const data = await response.json();
 
-                if (data.status === 'success') {
-                    currentUser = { username: data.username, role: data.role };
-                    document.getElementById('userInfo').textContent = `${currentUser.username} (${currentUser.role})`;
-                    document.getElementById('loginScreen').classList.add('hidden');
-                    document.getElementById('mainApp').classList.remove('hidden');
-                    switchView('chatLella'); // Mostra la vista di default
+                let userRole = 'user'; // Ruolo di default
+                let loggedInUser = null;
+
+                // Gestione di array (vecchia logica)
+                if (Array.isArray(data) && data.length > 0) {
+                    loggedInUser = data.find(u => u.utente === username) || data[0];
+                }
+                // Gestione di oggetto singolo (logica attuale)
+                else if (typeof data === 'object' && data !== null) {
+                    // Cerca il nome utente in 'username' o 'utente'
+                    const receivedUsername = data.username || data.utente;
+                    if (receivedUsername && receivedUsername.toLowerCase() === username.toLowerCase()) {
+                        loggedInUser = data;
+                    }
+                }
+
+                if (!loggedInUser) {
+                    throw new Error('Credenziali non valide o utente non trovato nella risposta.');
+                }
+
+                // Estrazione del ruolo e gestione di 'Null' o mancante (Logica V7/V8)
+                if (loggedInUser.role && loggedInUser.role.toLowerCase() !== 'null') {
+                    userRole = loggedInUser.role.toLowerCase();
                 } else {
-                    loginErrorText.textContent = data.message || 'Credenziali non valide.';
-                    loginError.classList.remove('hidden');
+                    // FALLBACK: Se il ruolo è mancante o 'Null', deducilo dal nome utente
+                    const receivedUsername = (loggedInUser.username || loggedInUser.utente || username).toLowerCase();
+                    if (receivedUsername === 'admin') {
+                        userRole = 'admin';
+                    } else if (receivedUsername === 'caller') {
+                        userRole = 'caller';
+                    } else {
+                        userRole = 'user';
+                    }
+                }
+
+                // Se il nome utente è stato ricevuto con una chiave diversa da 'username', usiamo quella
+                const finalUsername = loggedInUser.username || loggedInUser.utente || username;
+
+                localStorage.setItem('currentUser', finalUsername);
+                localStorage.setItem('currentUserRole', userRole);
+                
+                // Aggiorna le variabili globali
+                currentUser = finalUsername;
+                currentUserRole = userRole;
+
+                showMainApp(finalUsername, userRole);
+
+                // Dopo il login, reindirizza alla vista corretta
+                if (['admin', 'caller'].includes(userRole)) {
+                    switchView('chatLella');
+                } else {
+                    switchView('chatEvasore');
                 }
             } catch (error) {
                 console.error('Errore di login:', error);
