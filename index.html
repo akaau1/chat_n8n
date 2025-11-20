@@ -9,24 +9,40 @@
 <link rel="manifest" href="/site.webmanifest">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* NUOVI COLORI E VARIABILI */
+        :root {
+            --color-bg-primary: #0A0A0A; /* Quasi nero */
+            --color-bg-secondary: #1C1C1C; /* Sfondo elementi */
+            --color-bg-tertiary: #2C2C2C; /* Sfondo hover/attivo */
+            --color-text-primary: #E0E0E0; /* Testo chiaro */
+            --color-text-secondary: #A0A0A0; /* Testo secondario */
+            --color-accent: #00E676; /* Verde Neon (Lime-A700) */
+            --color-accent-dark: #00C853;
+            --color-shadow: rgba(0, 230, 118, 0.4); /* Ombra neon */
+            --color-error: #FF5252;
+        }
+
         /* Stili Base */
         body {
             margin: 0;
             padding: 0;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             overflow: hidden;
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
         }
+
         /* Animazioni e Transizioni */
         .message-enter {
-            animation: slideIn 0.3s ease-out;
+            animation: slideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Easing più fluido */
         }
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(15px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         .spinner {
-            border: 2px solid #06b6d4; /* sky-500 */
-            border-top: 2px solid #1e293b; /* slate-800 */
+            border: 2px solid var(--color-accent);
+            border-top: 2px solid var(--color-bg-secondary);
             border-radius: 50%;
             width: 16px;
             height: 16px;
@@ -37,121 +53,175 @@
             100% { transform: rotate(360deg); }
         }
         .nav-item {
-            transition: all 0.2s ease-in-out;
-            border-radius: 0.75rem; /* Arrotondamento maggiore */
+            transition: all 0.3s ease-in-out;
+            border-radius: 0.75rem;
             transform: scale(1);
+            position: relative;
+            overflow: hidden;
+        }
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+            transition: all 0.5s ease;
+            opacity: 0.1;
         }
         .nav-item:hover {
-            background-color: rgba(6, 182, 212, 0.1); /* sky-500 con opacità */
-            transform: scale(1.01);
+            background-color: var(--color-bg-tertiary);
+            transform: scale(1.02);
+            box-shadow: 0 0 5px rgba(0, 230, 118, 0.2);
+        }
+        .nav-item:hover::before {
+            left: 100%;
         }
         .nav-item.active {
-            background-color: rgba(6, 182, 212, 0.2);
-            border-left: 3px solid #06b6d4; /* sky-500 */
+            background-color: var(--color-bg-tertiary);
+            border-left: 4px solid var(--color-accent);
+            box-shadow: 0 0 10px var(--color-shadow);
         }
         .nav-item.active:hover {
-            background-color: rgba(6, 182, 212, 0.25);
-            transform: scale(1.01);
+            background-color: var(--color-bg-tertiary);
+            transform: scale(1.02);
         }
         /* Stili Chat */
         #messageInput {
             min-height: 48px;
             max-height: 150px;
             transition: all 0.2s;
+            border: 1px solid var(--color-bg-secondary);
+            background-color: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        #messageInput:focus {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 8px var(--color-shadow);
         }
         .chat-bubble-user {
-            background-color: #06b6d4; /* sky-500 */
-            color: white;
-            border-radius: 1rem 1rem 0.25rem 1rem;
-            transition: transform 0.1s ease-out;
+            background-color: var(--color-accent);
+            color: var(--color-bg-primary);
+            border-radius: 1.2rem 1.2rem 0.4rem 1.2rem;
+            transition: transform 0.2s ease-out, box-shadow 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .chat-bubble-user:hover {
-            transform: scale(1.01);
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 4px 10px rgba(0, 230, 118, 0.3);
         }
         .chat-bubble-bot {
-            background-color: #1e293b; /* slate-800 */
-            color: #e2e8f0; /* slate-200 */
-            border-radius: 1rem 1rem 1rem 0.25rem;
-            transition: transform 0.1s ease-out;
+            background-color: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            border-radius: 1.2rem 1.2rem 1.2rem 0.4rem;
+            transition: transform 0.2s ease-out, box-shadow 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .chat-bubble-bot:hover {
-            transform: scale(1.01);
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         }
         .chat-bubble-error {
-            background-color: #ef4444; /* red-500 */
+            background-color: var(--color-error);
             color: white;
         }
         /* Stili Tabella */
         .editable-cell {
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, box-shadow 0.2s;
         }
         .editable-cell:hover {
-            background-color: rgba(6, 182, 212, 0.1);
+            background-color: var(--color-bg-tertiary);
+            box-shadow: inset 0 0 5px rgba(0, 230, 118, 0.1);
         }
         .text-editable-cell input:focus {
-            background: #1e293b;
-            border-color: #06b6d4;
+            background: var(--color-bg-secondary);
+            border-color: var(--color-accent);
+            box-shadow: 0 0 5px var(--color-shadow);
         }
         .saving-indicator {
-            background: #f59e0b; /* amber-500 */
+            background: #F59E0B; /* amber-500 */
         }
         .saved-indicator {
-            background: #10b981; /* emerald-500 */
+            background: #10B981; /* emerald-500 */
         }
         /* Stili Login */
         .login-container {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: radial-gradient(circle at center, #1C1C1C 0%, #0A0A0A 100%);
         }
         .login-box {
             padding: 40px;
-            border-radius: 16px;
+            border-radius: 20px;
             width: 100%;
             max-width: 400px;
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-bg-tertiary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s ease;
+        }
+        .login-box:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 20px var(--color-shadow);
         }
         .input-group {
             display: flex;
             align-items: center;
             margin-bottom: 20px;
-            background: #0f172a;
-            border-radius: 8px;
+            background: var(--color-bg-primary);
+            border-radius: 10px;
             padding: 0 15px;
-            border: 1px solid rgba(71, 85, 105, 0.3);
-            transition: border-color 0.2s;
+            border: 1px solid var(--color-bg-tertiary);
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
         .input-group:focus-within {
-            border-color: #06b6d4;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 8px var(--color-shadow);
         }
         .input-group svg {
             margin-right: 10px;
-            color: #94a3b8; /* slate-400 */
+            color: var(--color-text-secondary);
+            transition: color 0.3s;
+        }
+        .input-group:focus-within svg {
+            color: var(--color-accent);
         }
         .input-group input {
             flex-grow: 1;
             background: transparent;
             border: none;
             padding: 12px 0;
-            color: white;
+            color: var(--color-text-primary);
             outline: none;
         }
         .error-message {
-            background-color: #450a0a; /* red-900 */
-            color: #fca5a5; /* red-300 */
+            background-color: rgba(255, 82, 82, 0.1);
+            color: var(--color-error);
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
-            border: 1px solid #b91c1c; /* red-700 */
+            border: 1px solid var(--color-error);
         }
         .login-button {
             width: 100%;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 10px;
             font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease-in-out;
+            background: var(--color-accent);
+            color: var(--color-bg-primary);
+            box-shadow: 0 4px 15px var(--color-shadow);
+            border: none;
+        }
+        .login-button:hover {
+            background: var(--color-accent-dark);
+            box-shadow: 0 6px 20px var(--color-shadow);
+            transform: translateY(-3px);
         }
         .modal-overlay {
             position: fixed;
@@ -159,33 +229,39 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 50;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(8px); /* Blur aumentato */
         }
         .modal-content {
-            background-color: #1e293b;
+            background-color: var(--color-bg-secondary);
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
             max-width: 450px;
             width: 90%;
-            border: 1px solid #334155;
+            border: 1px solid var(--color-bg-tertiary);
+            animation: modalFadeIn 0.3s ease-out;
         }
         .edit-modal-content {
-            background-color: #1e293b;
+            background-color: var(--color-bg-secondary);
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
             max-width: 600px;
             width: 90%;
             height: 400px;
             display: flex;
             flex-direction: column;
-            border: 1px solid #334155;
+            border: 1px solid var(--color-bg-tertiary);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
         .edit-textarea {
             flex-grow: 1;
@@ -194,42 +270,54 @@
             resize: none;
             font-family: monospace;
             font-size: 14px;
-            color: white;
+            color: var(--color-text-primary);
+            background-color: var(--color-bg-primary);
+            border: 1px solid var(--color-bg-tertiary);
             transition: border-color 0.2s;
+        }
+        .edit-textarea:focus {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 5px var(--color-shadow);
         }
         .status-option-btn {
             width: 100%;
             padding: 10px;
-            border-radius: 6px;
-            color: white;
+            border-radius: 8px;
+            color: var(--color-bg-primary);
             font-weight: 600;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
             margin-bottom: 8px;
+            border: none;
         }
         .status-annullare {
-            background-color: #ef4444; /* red-500 */
+            background-color: #FF5252; /* Red A200 */
         }
         .status-annullare:hover {
-            background-color: #dc2626; /* red-600 */
+            background-color: #FF1744; /* Red A400 */
+            transform: translateY(-1px);
         }
         .status-rispedire {
-            background-color: #77dd77; /* verde-500 */
+            background-color: #00E676; /* Green A700 */
         }
         .status-rispedire:hover {
-            background-color: #03c03c; /* verde-600 */
+            background-color: #00C853; /* Green A800 */
+            transform: translateY(-1px);
         }
         .status-attesa {
-            background-color: #eab308; /* yellow-500 */
+            background-color: #FFC400; /* Amber A400 */
+            color: var(--color-bg-primary);
         }
         .status-attesa:hover {
-            background-color: #d97706; /* yellow-600 */
+            background-color: #FFAB00; /* Amber A700 */
+            transform: translateY(-1px);
         }
         .delete-row-btn {
-            color: #f87171; /* red-400 */
-            transition: color 0.2s;
+            color: var(--color-error);
+            transition: color 0.2s, transform 0.2s;
         }
         .delete-row-btn:hover {
-            color: #ef4444; /* red-500 */
+            color: #FF1744;
+            transform: scale(1.1);
         }
         .saving-indicator, .saved-indicator {
             display: inline-block;
@@ -247,42 +335,42 @@
             50% { transform: scale(1.2); opacity: 1; }
             100% { transform: scale(0.8); opacity: 0.7; }
         }
-        .login-box {
-            background: rgba(30, 41, 59, 0.9); /* slate-800 */
-            border: 1px solid rgba(71, 85, 105, 0.5); /* slate-600 */
+        /* Aggiornamento stili per la sidebar e il main content */
+        .sidebar {
+            background-color: var(--color-bg-secondary);
+            border-right: 1px solid var(--color-bg-tertiary);
         }
-        .input-group input {
-            background: #0f172a; /* slate-900 */
-            border: 2px solid rgba(71, 85, 105, 0.3);
+        .main-content {
+            background-color: var(--color-bg-primary);
         }
-        .input-group input:focus {
-            border-color: #06b6d4; /* sky-500 */
-            background: #0f172a;
+        .header-bar {
+            background-color: var(--color-bg-secondary);
+            border-bottom: 1px solid var(--color-bg-tertiary);
         }
-        .login-button {
-            background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%); /* sky-500 to sky-600 */
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+        .chat-area {
+            background-color: var(--color-bg-primary);
         }
-        .login-button:hover {
-            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.6);
-            transform: translateY(-2px);
+        .input-area {
+            background-color: var(--color-bg-secondary);
+            border-top: 1px solid var(--color-bg-tertiary);
         }
         .btn-custom-blue {
-            background-color: #475569; /* slate-600 */
+            background-color: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
         }
         .btn-custom-blue:hover {
-            background-color: #334155; /* slate-700 */
+            background-color: #404040;
         }
         /* Stili File Upload per Evasore */
         .chat-drag-over {
-            background-color: rgba(6, 182, 212, 0.05);
-            border: 2px dashed #06b6d4;
+            background-color: rgba(0, 230, 118, 0.05);
+            border: 2px dashed var(--color-accent);
             border-radius: 12px;
         }
         .uploaded-file-item {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 8px;
+            background-color: var(--color-bg-tertiary);
+            border: 1px solid #404040;
+            border-radius: 10px;
             padding: 12px;
             margin-top: 10px;
             display: flex;
@@ -291,15 +379,15 @@
             transition: all 0.2s;
         }
         .uploaded-file-item:hover {
-            background-color: #334155;
+            background-color: #404040;
         }
         .remove-file-btn {
-            color: #ef4444;
+            color: var(--color-error);
             cursor: pointer;
             transition: color 0.2s;
         }
         .remove-file-btn:hover {
-            color: #dc2626;
+            color: #FF1744;
         }
         /* Animazione cambio vista */
         .view-transition {
@@ -315,6 +403,75 @@
                 transform: translateY(0) scale(1);
             }
         }
+        /* Stile per il pulsante di invio */
+        #sendButton {
+            background-color: var(--color-accent);
+            color: var(--color-bg-primary);
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 2px 10px var(--color-shadow);
+        }
+        #sendButton:hover {
+            background-color: var(--color-accent-dark);
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px var(--color-shadow);
+        }
+        /* Stile per l'icona del logo */
+        .logo-icon {
+            background: linear-gradient(135deg, var(--color-accent) 0%, #00BFA5 100%);
+            box-shadow: 0 0 15px var(--color-shadow);
+        }
+        /* Stile per le icone della sidebar */
+        .nav-icon {
+            color: var(--color-text-secondary);
+            transition: color 0.3s;
+        }
+        .nav-item:hover .nav-icon {
+            color: var(--color-accent);
+        }
+        .nav-item.active .nav-icon {
+            color: var(--color-accent);
+        }
+        /* Stile per i titoli */
+        .text-accent {
+            color: var(--color-accent);
+        }
+        /* Stile per le intestazioni della tabella */
+        .table-header {
+            background-color: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+        }
+        /* Stile per le righe della tabella */
+        .table-row {
+            border-bottom: 1px solid var(--color-bg-tertiary);
+        }
+        .table-row:nth-child(even) {
+            background-color: var(--color-bg-secondary);
+        }
+        .table-row:nth-child(odd) {
+            background-color: var(--color-bg-primary);
+        }
+        .table-row:hover {
+            background-color: var(--color-bg-tertiary);
+        }
+        /* Stile per i pulsanti generici */
+        .btn-primary {
+            background-color: var(--color-accent);
+            color: var(--color-bg-primary);
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: var(--color-accent-dark);
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background-color: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #404040;
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-200">
@@ -322,7 +479,7 @@
     <div id="loginScreen" class="fixed inset-0 flex items-center justify-center login-container">
         <div class="login-box">
             <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+                <div class="w-20 h-20 logo-icon rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                     </svg>
@@ -376,203 +533,299 @@
     <div id="mainApp" class="hidden">
         <div class="flex h-screen">
             <!-- Sidebar Navigation -->
-            <div class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col p-3">
+            <div class="w-64 sidebar flex flex-col p-3">
                 <div class="p-3 border-b border-slate-700 mb-3">
                     <h1 class="text-xl font-extrabold text-white flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                        <div class="w-8 h-8 logo-icon rounded-lg flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
                         FenixHome
                     </h1>
-                    <p class="text-xs text-slate-400 mt-1">Utente: <span id="currentUsername" class="text-sky-400 font-medium"></span></p>
+                    <p class="text-xs text-slate-400 mt-1">Utente: <span id="userInfo"></span></p>
                 </div>
-                <nav class="flex-1 space-y-1">
-                    <!-- Chat Lella (Visibilità condizionata) -->
-                    <button onclick="switchView('chat-lella')" id="navChatLella" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3 hidden">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        <span class="font-medium">Chat - Lella</span>
-                    </button>
-                    <!-- Chat Evasore -->
-                    <button onclick="switchView('chat-evasore')" id="navChatEvasore" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2a10 10 0 0 0-9 5.5 10 10 0 0 0 18 0A10 10 0 0 0 12 2z"></path>
-                            <path d="M12 16v-4"></path>
-                            <path d="M12 8h.01"></path>
-                        </svg>
-                        <span class="font-medium">Evasore</span>
-                    </button>
-                    <!-- Chat God of Returns -->
-                    <button onclick="switchView('chat-godofreturns')" id="navChatGodOfReturns" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path>
-                        </svg>
-                        <span class="font-medium">God of Returns</span>
-                    </button>
 
-                    <!-- Separatore Visivo -->
-                    <div class="my-4 border-t border-slate-700 mx-4"></div>
-
-                    <!-- Table Lella (Visibilità condizionata) -->
-                    <button onclick="switchView('table-lella')" id="navTableLella" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3 hidden">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="3" y1="9" x2="21" y2="9"></line>
-                            <line x1="9" y1="21" x2="9" y2="9"></line>
-                        </svg>
-                        <span class="font-medium">Tabella - Lella</span>
+                <nav class="flex-grow space-y-1">
+                    <button id="navChatLella" class="nav-item w-full flex items-center p-3 text-sm font-medium text-left active">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 nav-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        Chat - Lella
+                    </button>
+                    <button id="navChatEvasore" class="nav-item w-full flex items-center p-3 text-sm font-medium text-left">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 nav-icon"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                        Evasore
+                    </button>
+                    <button id="navChatGodOfReturns" class="nav-item w-full flex items-center p-3 text-sm font-medium text-left">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 nav-icon"><path d="M12 17.75l-6.172 3.245 1.179-6.873-5-4.867 6.908-1.004 3.085-6.257 3.085 6.257 6.908 1.004-5 4.867 1.179 6.873z"></path></svg>
+                        God of Returns
+                    </button>
+                    <button id="navTableLella" class="nav-item w-full flex items-center p-3 text-sm font-medium text-left">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 nav-icon"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="10" x2="21" y2="10"></line><line x1="3" y1="14" x2="21" y2="14"></line><line x1="10" y1="3" x2="10" y2="21"></line><line x1="14" y1="3" x2="14" y2="21"></line></svg>
+                        Tabella - Lella
                     </button>
                 </nav>
-                <div class="p-3 border-t border-slate-700 space-y-2">
-                    <button id="settingsBtn" onclick="toggleSettings()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors hidden">
+
+                <div class="mt-auto space-y-2">
+                    <button id="settingsBtn" class="nav-item w-full flex items-center p-3 text-sm font-medium text-left">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 nav-icon"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 .51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                         ⚙️ Impostazioni
                     </button>
-                    <button id="clearChatBtn" onclick="showClearChatModal()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors">
+                    <button id="clearChatBtn" class="nav-item w-full flex items-center p-3 text-sm font-medium text-left">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 nav-icon"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                         🗑️ Cancella Chat
                     </button>
-                    <button onclick="showLogoutModal()" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors">
+                    <button id="logoutBtn" class="nav-item w-full flex items-center p-3 text-sm font-medium text-left text-red-400 hover:text-red-300 hover:bg-red-900/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                         🚪 Logout
                     </button>
                 </div>
             </div>
 
-            <!-- Main Content -->
-            <div class="flex-1 flex flex-col relative bg-slate-900">
-                <!-- Settings Panel -->
-                <div id="settingsPanel" class="hidden bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 p-6 absolute top-0 left-0 right-0 z-10 shadow-2xl">
-                    <h2 class="text-white font-extrabold mb-5 text-2xl border-b border-slate-700 pb-3 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky-500"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.73l-.15.1a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1 0-2.73l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-                        Configurazione API
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="col-span-full">
-                            <h3 class="text-lg font-semibold text-sky-400 mb-3">Autenticazione</h3>
-                            <label class="text-xs text-slate-400 block mb-1">API Login:</label>
-                            <input type="text" id="loginApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/sing-up" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
-                        </div>
-
-                        <div class="col-span-full">
-                            <h3 class="text-lg font-semibold text-sky-400 mb-3">Webhooks Chat</h3>
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat Lella:</label>
-                            <input type="text" id="webhookUrlLella" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/chat" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat Evasore (Testo):</label>
-                            <input type="text" id="webhookUrlEvasore" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/evasore-ordini" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
-                        </div>
-                        <!-- NUOVO: Webhook Chat Evasore (File) -->
-                        <div>
-                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat Evasore (File):</label>
-                            <input type="text" id="webhookUrlEvasoreFile" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/evasore-ordini-file" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate-400 block mb-1">Webhook Chat God of Returns:</label>
-                            <input type="text" id="webhookUrlGodOfReturns" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/god-of-returns" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
-                        </div>
-
-                        <div class="col-span-full">
-                            <h3 class="text-lg font-semibold text-sky-400 mb-3 mt-3">API Tabella</h3>
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate-400 block mb-1">API Tabella (Caricamento Dati):</label>
-                            <input type="text" id="tableApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/data" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate-400 block mb-1">API Modifica Cella:</label>
-                            <input type="text" id="updateApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/edit-tab" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate-400 block mb-1">API Elimina Tabella:</label>
-                            <input type="text" id="deleteApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/deletetab" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate-400 block mb-1">API Elimina Riga:</label>
-                            <input type="text" id="deleteRowApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/delete-one-row" class="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-sky-500 focus:outline-none text-sm transition-colors"/>
-                        </div>
+            <!-- Main Content Area -->
+            <div class="flex-grow flex flex-col main-content">
+                <!-- Header Bar -->
+                <div class="p-4 header-bar flex items-center justify-between">
+                    <h2 id="currentViewTitle" class="text-xl font-semibold text-white">Chat - Lella</h2>
+                    <div id="headerActions" class="flex items-center space-x-3">
+                        <!-- Actions will be injected here -->
                     </div>
                 </div>
 
-                <!-- Chat View -->
-                <div id="chatView" class="absolute inset-0 flex flex-col">
-                    <div class="bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 p-4 flex-shrink-0 shadow-lg">
-                        <h2 class="text-xl font-bold text-white">💬 <span id="currentChatTitle">Chat - Lella</span></h2>
-                    </div>
-                    <div id="messagesArea" class="flex-1 overflow-y-auto p-4 space-y-4">
-                        <div id="welcomeMessage" class="text-center text-slate-400 mt-20">
-                            <p class="text-lg mb-2">👋 Benvenuto!</p>
-                            <p class="text-sm">Invia un messaggio per iniziare a comunicare</p>
+                <!-- View Containers -->
+                <div class="flex-grow overflow-hidden p-4">
+                    <!-- Chat View -->
+                    <div id="chatView" class="h-full flex flex-col view-transition">
+                        <div id="chatMessages" class="flex-grow overflow-y-auto p-4 space-y-4 chat-area">
+                            <!-- Messaggi di benvenuto -->
+                            <div class="flex justify-center">
+                                <div class="p-3 rounded-lg text-center text-slate-400 bg-slate-800/50">
+                                    <span class="text-2xl">👋</span> Benvenuto!
+                                    <p class="text-sm mt-1">Invia un messaggio per iniziare a comunicare</p>
+                                </div>
+                            </div>
+                            <!-- I messaggi della chat verranno iniettati qui -->
                         </div>
-                    </div>
 
-                    <div class="bg-slate-800/95 backdrop-blur-sm border-t border-slate-700 p-4 flex-shrink-0 shadow-2xl">
-                        <!-- Lista file caricati per Evasore -->
-                        <div id="uploadedFilesList" class="hidden max-w-4xl mx-auto mb-3"></div>
-                        <div class="flex gap-3 max-w-4xl mx-auto">
-                            <!-- Bottone per caricare file (solo per Evasore) -->
-                            <button id="fileUploadButton" class="hidden w-12 h-12 flex items-center justify-center bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-all flex-shrink-0 shadow-lg" title="Carica file">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="17 8 12 3 7 8"></polyline>
-                                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                                </svg>
-                            </button>
-                            <input type="file" id="fileInput" class="hidden" multiple />
-                            <textarea id="messageInput" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-sky-500 focus:outline-none resize-none transition-colors" rows="1"></textarea>
-                            <button id="sendButton" class="w-12 h-12 flex items-center justify-center bg-sky-500 hover:bg-sky-600 text-white rounded-xl transition-all flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-sky-500/50">
-                                <svg id="sendIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                                </svg>
-                                <div id="loadingIcon" class="spinner hidden"></div>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Table View -->
-                <div id="tableView" class="hidden absolute inset-0 flex flex-col">
-                    <div class="bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 p-4 flex-shrink-0 flex justify-between items-center shadow-lg">
-                        <h2 class="text-xl font-bold text-white">📊 Tabella - Lella</h2>
-                        <div class="flex space-x-3">
-                            <button onclick="loadTableData()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2 shadow-md">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M21.5 14a10 10 0 0 1-18 0M2.5 10a10 10 0 0 1 18 0"/></svg>
-                                Aggiorna
-                            </button>
-                            <button onclick="exportToCSV()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2 shadow-md">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15h6"/></svg>
-                                Esporta CSV
-                            </button>
-                            <button onclick="deleteTable()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2 shadow-md">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                                Svuota Tabella
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex-1 overflow-y-auto p-4 relative">
-                        <div id="tableLoading" class="absolute inset-0 bg-slate-900/70 flex items-center justify-center hidden">
-                            <div class="flex flex-col items-center">
-                                <div class="spinner w-8 h-8 border-4 border-t-4 border-sky-500 mb-3"></div>
-                                <p class="text-white text-lg">Caricamento dati...</p>
+                        <!-- Input Area -->
+                        <div class="p-4 input-area">
+                            <div class="flex items-end space-x-3">
+                                <textarea
+                                    id="messageInput"
+                                    class="flex-grow p-3 text-sm resize-none focus:ring-0"
+                                    placeholder="Scrivi un messaggio..."
+                                    rows="1"
+                                    oninput="autoResizeTextarea(this)"
+                                    onkeydown="handleKeyDown(event)"
+                                ></textarea>
+                                <button id="sendButton" class="w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center text-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                </button>
                             </div>
                         </div>
-                        <div id="tableError" class="bg-red-900/50 border border-red-700 text-red-300 p-4 rounded-lg mb-4 hidden">
-                            <p class="font-bold mb-2">Errore nel caricamento della tabella:</p>
-                            <pre id="tableErrorMessage" class="whitespace-pre-wrap text-sm"></pre>
+                    </div>
+
+                    <!-- Evasore View -->
+                    <div id="evasoreView" class="hidden h-full flex flex-col view-transition">
+                        <div id="evasoreChatMessages" class="flex-grow overflow-y-auto p-4 space-y-4 chat-area">
+                            <!-- Messaggi di benvenuto Evasore -->
+                            <div class="flex justify-center">
+                                <div class="p-3 rounded-lg text-center text-slate-400 bg-slate-800/50">
+                                    <span class="text-2xl">🕵️</span> Modalità Evasore
+                                    <p class="text-sm mt-1">Invia un messaggio o trascina un file per iniziare l'analisi.</p>
+                                </div>
+                            </div>
+                            <!-- I messaggi della chat verranno iniettati qui -->
                         </div>
-                        <div id="emptyState" class="text-center text-slate-400 mt-20 hidden">
-                            <p class="text-2xl mb-2">📭 Nessun dato trovato</p>
-                            <p class="text-md">La tabella è vuota. Invia un messaggio alla chat per popolarla.</p>
+
+                        <!-- Input Area Evasore -->
+                        <div class="p-4 input-area">
+                            <div id="fileDropArea" class="border-2 border-dashed border-slate-600 rounded-lg p-4 text-center text-slate-400 transition duration-300 hover:border-sky-500 hover:text-sky-400">
+                                Trascina qui i file o <label for="fileInputEvasore" class="text-accent cursor-pointer font-medium">clicca per selezionare</label>
+                                <input type="file" id="fileInputEvasore" multiple class="hidden" onchange="handleFileSelect(event)">
+                            </div>
+                            <div id="uploadedFilesContainer" class="mt-2 space-y-2">
+                                <!-- File caricati verranno iniettati qui -->
+                            </div>
+                            <div class="flex items-end space-x-3 mt-4">
+                                <textarea
+                                    id="messageInputEvasore"
+                                    class="flex-grow p-3 text-sm resize-none focus:ring-0"
+                                    placeholder="Scrivi un messaggio..."
+                                    rows="1"
+                                    oninput="autoResizeTextarea(this)"
+                                    onkeydown="handleKeyDownEvasore(event)"
+                                ></textarea>
+                                <button id="sendButtonEvasore" class="w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center text-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                </button>
+                            </div>
                         </div>
-                        <div class="shadow-xl overflow-x-auto border border-slate-700 rounded-xl">
-                            <table class="min-w-full divide-y divide-slate-700">
-                                <thead class="bg-slate-800" id="tableHead">
-                                    <!-- Table headers will be injected here -->
-                                </thead>
-                                <tbody class="bg-slate-900 divide-y divide-slate-700" id="tableBody">
-                                    <!-- Table rows will be injected here -->
-                                </tbody>
-                            </table>
+                    </div>
+
+                    <!-- God of Returns View -->
+                    <div id="godOfReturnsView" class="hidden h-full flex flex-col view-transition">
+                        <div id="godOfReturnsChatMessages" class="flex-grow overflow-y-auto p-4 space-y-4 chat-area">
+                            <!-- Messaggi di benvenuto God of Returns -->
+                            <div class="flex justify-center">
+                                <div class="p-3 rounded-lg text-center text-slate-400 bg-slate-800/50">
+                                    <span class="text-2xl">🌟</span> God of Returns
+                                    <p class="text-sm mt-1">Invia un messaggio per analizzare i dati e ottenere previsioni.</p>
+                                </div>
+                            </div>
+                            <!-- I messaggi della chat verranno iniettati qui -->
+                        </div>
+
+                        <!-- Input Area God of Returns -->
+                        <div class="p-4 input-area">
+                            <div class="flex items-end space-x-3">
+                                <textarea
+                                    id="messageInputGodOfReturns"
+                                    class="flex-grow p-3 text-sm resize-none focus:ring-0"
+                                    placeholder="Scrivi un messaggio..."
+                                    rows="1"
+                                    oninput="autoResizeTextarea(this)"
+                                    onkeydown="handleKeyDownGodOfReturns(event)"
+                                ></textarea>
+                                <button id="sendButtonGodOfReturns" class="w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center text-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table View -->
+                    <div id="tableView" class="hidden h-full flex flex-col view-transition">
+                        <div class="p-4 flex-grow overflow-y-auto">
+                            <div id="tableContainer" class="bg-slate-800 rounded-lg shadow-xl overflow-hidden">
+                                <table class="min-w-full divide-y divide-slate-700">
+                                    <thead class="table-header sticky top-0">
+                                        <tr>
+                                            <!-- Intestazioni tabella verranno iniettate qui -->
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody" class="divide-y divide-slate-700">
+                                        <!-- Righe tabella verranno iniettate qui -->
+                                    </tbody>
+                                </table>
+                                <div id="tableLoading" class="p-4 text-center text-slate-400 hidden">
+                                    <div class="spinner mx-auto mb-2"></div>
+                                    Caricamento dati...
+                                </div>
+                                <div id="tableError" class="p-4 text-center text-red-400 hidden">
+                                    Errore nel caricamento della tabella: <span id="tableErrorText"></span>
+                                </div>
+                                <div id="tableEmpty" class="p-4 text-center text-slate-400 hidden">
+                                    <span class="text-2xl">📭</span> Nessun dato trovato
+                                    <p class="text-sm mt-1">La tabella è vuota. Invia un messaggio alla chat per popolarla.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Modal -->
+                    <div id="settingsModal" class="modal-overlay hidden">
+                        <div class="modal-content">
+                            <h3 class="text-xl font-bold mb-4 text-white">⚙️ Impostazioni API</h3>
+                            <div class="space-y-4">
+                                <!-- Sezione Autenticazione -->
+                                <div class="border-b border-slate-700 pb-3">
+                                    <h4 class="font-semibold text-accent mb-2">Autenticazione</h4>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-medium text-slate-400">API Login:</label>
+                                        <input type="text" id="apiLoginInput" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 focus:border-accent focus:ring-accent text-white transition" placeholder="URL API Login">
+                                    </div>
+                                </div>
+
+                                <!-- Sezione Webhooks Chat -->
+                                <div class="border-b border-slate-700 pb-3">
+                                    <h4 class="font-semibold text-accent mb-2">Webhooks Chat</h4>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-medium text-slate-400">Webhook Chat Lella:</label>
+                                        <input type="text" id="webhookLellaInput" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 focus:border-accent focus:ring-accent text-white transition" placeholder="URL Webhook Lella">
+
+                                        <label class="block text-sm font-medium text-slate-400">Webhook Chat Evasore (Testo):</label>
+                                        <input type="text" id="webhookEvasoreTextInput" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 focus:border-accent focus:ring-accent text-white transition" placeholder="URL Webhook Evasore (Testo)">
+
+                                        <label class="block text-sm font-medium text-slate-400">Webhook Chat Evasore (File):</label>
+                                        <input type="text" id="webhookEvasoreFileInput" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 focus:border-accent focus:ring-accent text-white transition" placeholder="URL Webhook Evasore (File)">
+
+                                        <label class="block text-sm font-medium text-slate-400">Webhook Chat God of Returns:</label>
+                                        <input type="text" id="webhookGodOfReturnsInput" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 focus:border-accent focus:ring-accent text-white transition" placeholder="URL Webhook God of Returns">
+                                    </div>
+                                </div>
+
+                                <!-- Sezione API Tabella -->
+                                <div>
+                                    <h4 class="font-semibold text-accent mb-2">API Tabella</h4>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-medium text-slate-400">API Tabella (Caricamento Dati):</label>
+                                        <input type="text" id="apiTableLoadInput" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 focus:border-accent focus:ring-accent text-white transition" placeholder="URL API Caricamento Dati">
+
+                                        <label class="block text-sm font-medium text-slate-400">API Modifica Cella:</label>
+                                        <input type="text" id="apiTableCellEditInput" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 focus:border-accent focus:ring-accent text-white transition" placeholder="URL API Modifica Cella">
+
+                                        <label class="block text-sm font-medium text-slate-400">API Elimina Tabella:</label>
+                                        <input type="text" id="apiTableDeleteInput" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 focus:border-accent focus:ring-accent text-white transition" placeholder="URL API Elimina Tabella">
+
+                                        <label class="block text-sm font-medium text-slate-400">API Elimina Riga:</label>
+                                        <input type="text" id="apiTableRowDeleteInput" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 focus:border-accent focus:ring-accent text-white transition" placeholder="URL API Elimina Riga">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex justify-end space-x-3">
+                                <button id="closeSettingsModalBtn" class="px-4 py-2 rounded-lg btn-secondary">Annulla</button>
+                                <button id="saveSettingsBtn" class="px-4 py-2 rounded-lg btn-primary">Salva Impostazioni</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit Cell Modal -->
+                    <div id="editCellModal" class="modal-overlay hidden">
+                        <div class="edit-modal-content">
+                            <h3 class="text-xl font-bold mb-4 text-white">Modifica Cella</h3>
+                            <textarea id="editCellTextarea" class="edit-textarea mb-4"></textarea>
+                            <div class="flex justify-end space-x-3 mt-auto">
+                                <button id="closeEditCellModalBtn" class="px-4 py-2 rounded-lg btn-secondary">Annulla</button>
+                                <button id="saveEditCellBtn" class="px-4 py-2 rounded-lg btn-primary">Salva</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Modal -->
+                    <div id="statusModal" class="modal-overlay hidden">
+                        <div class="modal-content">
+                            <h3 class="text-xl font-bold mb-4 text-white">Aggiorna Stato</h3>
+                            <div id="statusOptions" class="space-y-2">
+                                <!-- Opzioni stato verranno iniettate qui -->
+                            </div>
+                            <div class="mt-6 flex justify-end">
+                                <button id="closeStatusModalBtn" class="px-4 py-2 rounded-lg btn-secondary">Chiudi</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delete Row Modal -->
+                    <div id="deleteRowModal" class="modal-overlay hidden">
+                        <div class="modal-content">
+                            <h3 class="text-xl font-bold mb-4 text-white">Conferma Eliminazione</h3>
+                            <p class="text-slate-300 mb-6">Sei sicuro di voler eliminare la riga selezionata? Questa azione è irreversibile.</p>
+                            <div class="flex justify-end space-x-3">
+                                <button id="cancelDeleteRowBtn" class="px-4 py-2 rounded-lg btn-secondary">Annulla</button>
+                                <button id="confirmDeleteRowBtn" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition">Elimina</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delete Table Modal -->
+                    <div id="deleteTableModal" class="modal-overlay hidden">
+                        <div class="modal-content">
+                            <h3 class="text-xl font-bold mb-4 text-white">Conferma Eliminazione Tabella</h3>
+                            <p class="text-slate-300 mb-6">Sei sicuro di voler eliminare TUTTI i dati della tabella? Questa azione è irreversibile.</p>
+                            <div class="flex justify-end space-x-3">
+                                <button id="cancelDeleteTableBtn" class="px-4 py-2 rounded-lg btn-secondary">Annulla</button>
+                                <button id="confirmDeleteTableBtn" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition">Elimina Tutto</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -580,1313 +833,802 @@
         </div>
     </div>
 
-    <!-- Modals -->
-    <!-- Logout Modal -->
-    <div id="logoutModal" class="modal-overlay hidden">
-        <div class="modal-content bg-slate-800 border-slate-700">
-            <h3 class="text-xl font-bold text-white mb-4">Conferma Logout</h3>
-            <p class="text-slate-300 mb-6">Sei sicuro di voler effettuare il logout?</p>
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeLogoutModal()" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">Annulla</button>
-                <button onclick="handleLogout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Logout</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Confirm Delete Table Modal -->
-    <div id="confirmModal" class="modal-overlay hidden">
-        <div class="modal-content bg-slate-800 border-slate-700">
-            <h3 class="text-xl font-bold text-white mb-4">Conferma Svuota Tabella</h3>
-            <p class="text-slate-300 mb-6">Sei sicuro di voler eliminare TUTTI i dati dalla tabella? Questa azione è irreversibile.</p>
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeConfirmModal()" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">Annulla</button>
-                <button onclick="confirmDelete()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Svuota</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div id="successModal" class="modal-overlay hidden">
-        <div class="modal-content text-center bg-slate-800 border-slate-700">
-            <div class="text-emerald-500 text-5xl mb-4">✅</div>
-            <h3 class="text-xl font-bold text-white mb-2">Successo!</h3>
-            <p class="text-slate-300">La tabella è stata svuotata con successo.</p>
-            <button onclick="closeSuccessModal()" class="mt-6 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors">Chiudi</button>
-        </div>
-    </div>
-
-    <!-- Clear Chat Modal -->
-    <div id="clearChatModal" class="modal-overlay hidden">
-        <div class="modal-content bg-slate-800 border-slate-700">
-            <h3 class="text-xl font-bold text-white mb-4">Conferma Cancellazione Chat</h3>
-            <p class="text-slate-300 mb-6">Sei sicuro di voler cancellare la cronologia della chat corrente? Questa azione è irreversibile.</p>
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeClearChatModal()" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">Annulla</button>
-                <button onclick="confirmClearChat()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Cancella</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Chat Cleared Modal -->
-    <div id="chatClearedModal" class="modal-overlay hidden">
-        <div class="modal-content text-center bg-slate-800 border-slate-700">
-            <div class="text-emerald-500 text-5xl mb-4">🗑️</div>
-            <h3 class="text-xl font-bold text-white mb-2">Chat Cancellata!</h3>
-            <p class="text-slate-300">La cronologia della chat è stata cancellata con successo.</p>
-            <button onclick="closeChatClearedModal()" class="mt-6 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors">Chiudi</button>
-        </div>
-    </div>
-
-    <!-- Status Edit Modal -->
-    <div id="statusModal" class="modal-overlay hidden">
-        <div class="modal-content bg-slate-800 border-slate-700">
-            <h3 class="text-xl font-bold text-white mb-4">Modifica Stato</h3>
-            <p class="text-slate-300 mb-6">Seleziona il nuovo stato per l'ordine:</p>
-            <div class="space-y-3">
-                <button onclick="selectStatus('Annullare')" class="status-option-btn status-annullare">Annullare</button>
-                <button onclick="selectStatus('Rispedire')" class="status-option-btn status-rispedire">Rispedire</button>
-                <button onclick="selectStatus('Attesa')" class="status-option-btn status-attesa">Attesa</button>
-            </div>
-            <div class="flex justify-end mt-6">
-                <button onclick="closeStatusModal()" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">Chiudi</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Text Edit Modal -->
-    <div id="editTextModal" class="modal-overlay hidden">
-        <div class="edit-modal-content bg-slate-800 border-slate-700">
-            <h3 class="text-xl font-bold text-white mb-4">Modifica Cella</h3>
-            <textarea id="editTextarea" class="edit-textarea flex-1 mb-4 bg-slate-900 border-slate-600 focus:border-sky-500"></textarea>
-            <div class="flex justify-end space-x-3 flex-shrink-0">
-                <button onclick="closeEditModal()" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">Annulla</button>
-                <button onclick="saveEditModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">Salva</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Row Modal -->
-    <div id="deleteRowModal" class="modal-overlay hidden">
-        <div class="modal-content bg-slate-800 border-slate-700">
-            <h3 class="text-xl font-bold text-white mb-4">Conferma Eliminazione Riga</h3>
-            <p class="text-slate-300 mb-6">Sei sicuro di voler eliminare questa riga dalla tabella? Questa azione è irreversibile.</p>
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeDeleteRowModal()" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">Annulla</button>
-                <button onclick="confirmDeleteRow()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Elimina</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Script -->
     <script>
-        // =================================================================
-        // VARIABILI GLOBALI
-        // =================================================================
-        let currentUser = localStorage.getItem('currentUser');
-        let currentUserRole = localStorage.getItem('currentUserRole');
-        let currentView = 'chat-lella';
-        let currentChat = 'lella';
-        let isLoading = false;
+        // Variabili globali
+        let currentView = 'chatLella';
+        let currentUser = null;
         let currentTableData = [];
-        let currentEditingCell = null;
-        let currentEditingRowIndex = null;
-        let currentEditingColumnName = null;
+        let editingCell = { rowId: null, colKey: null, originalValue: null };
+        let statusOptions = [
+            { key: 'annullare', label: 'Annullare', class: 'status-annullare' },
+            { key: 'rispedire', label: 'Rispedire', class: 'status-rispedire' },
+            { key: 'attesa', label: 'In Attesa', class: 'status-attesa' }
+        ];
 
-        // =================================================================
-        // MAPPATURA CHAT
-        // =================================================================
-        const CHAT_MAP = {
-            'lella': {
-                title: 'Chat - Lella',
-                webhookId: 'webhookUrlLella',
-                navId: 'navChatLella',
-                historyKey: 'chatHistory_lella',
-                requiresRole: ['admin', 'caller']
-            },
-            'evasore': {
-                title: 'Evasore',
-                webhookId: 'webhookUrlEvasore',
-                navId: 'navChatEvasore',
-                historyKey: 'chatHistory_evasore',
-                requiresRole: ['admin', 'caller', 'user']
-            },
-            'godofreturns': {
-                title: 'God of Returns',
-                webhookId: 'webhookUrlGodOfReturns',
-                navId: 'navChatGodOfReturns',
-                historyKey: 'chatHistory_godofreturns',
-                requiresRole: ['admin', 'caller', 'user']
-            }
+        // API Endpoints (caricati da localStorage o valori di default)
+        let apiEndpoints = {
+            login: localStorage.getItem('apiLogin') || 'https://hook.eu1.make.com/xxxxxxxxxxxxxxxxxxxx',
+            webhookLella: localStorage.getItem('webhookLella') || 'https://hook.eu1.make.com/xxxxxxxxxxxxxxxxxxxx',
+            webhookEvasoreText: localStorage.getItem('webhookEvasoreText') || 'https://hook.eu1.make.com/xxxxxxxxxxxxxxxxxxxx',
+            webhookEvasoreFile: localStorage.getItem('webhookEvasoreFile') || 'https://hook.eu1.make.com/xxxxxxxxxxxxxxxxxxxx',
+            webhookGodOfReturns: localStorage.getItem('webhookGodOfReturns') || 'https://hook.eu1.make.com/xxxxxxxxxxxxxxxxxxxx',
+            tableLoad: localStorage.getItem('apiTableLoad') || 'https://hook.eu1.make.com/xxxxxxxxxxxxxxxxxxxx',
+            tableCellEdit: localStorage.getItem('apiTableCellEdit') || 'https://hook.eu1.make.com/xxxxxxxxxxxxxxxxxxxx',
+            tableDelete: localStorage.getItem('apiTableDelete') || 'https://hook.eu1.make.com/xxxxxxxxxxxxxxxxxxxx',
+            tableRowDelete: localStorage.getItem('apiTableRowDelete') || 'https://hook.eu1.make.com/xxxxxxxxxxxxxxxxxxxx',
         };
 
-        // =================================================================
-        // ELEMENTI DOM
-        // =================================================================
-        const mainApp = document.getElementById('mainApp');
-        const loginScreen = document.getElementById('loginScreen');
-        const currentUsernameSpan = document.getElementById('currentUsername');
-        const messagesArea = document.getElementById('messagesArea');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-        const sendIcon = document.getElementById('sendIcon');
-        const loadingIcon = document.getElementById('loadingIcon');
-        const currentChatTitle = document.getElementById('currentChatTitle');
-        const navChatLella = document.getElementById('navChatLella');
-        const navTableLella = document.getElementById('navTableLella');
-        const settingsBtn = document.getElementById('settingsBtn');
-
-        // =================================================================
-        // FUNZIONI DI INIZIALIZZAZIONE E LOGIN
-        // =================================================================
-
-        document.addEventListener('DOMContentLoaded', () => {
-            if (currentUser) {
-                showMainApp(currentUser, currentUserRole);
-                // Se l'utente non ha i diritti per 'lella', reindirizza alla prima chat disponibile
-                if (currentUserRole && !['admin', 'caller'].includes(currentUserRole) && currentView === 'chat-lella') {
-                    currentView = 'chat-evasore';
-                    currentChat = 'evasore';
-                }
-                switchView(currentView);
-            } else {
-                showLoginScreen();
-            }
-        });
-
-        function showLoginScreen() {
-            loginScreen.classList.remove('hidden');
-            mainApp.classList.add('hidden');
+        // Funzione per salvare gli endpoint nel localStorage
+        function saveApiEndpoints() {
+            localStorage.setItem('apiLogin', apiEndpoints.login);
+            localStorage.setItem('webhookLella', apiEndpoints.webhookLella);
+            localStorage.setItem('webhookEvasoreText', apiEndpoints.webhookEvasoreText);
+            localStorage.setItem('webhookEvasoreFile', apiEndpoints.webhookEvasoreFile);
+            localStorage.setItem('webhookGodOfReturns', apiEndpoints.webhookGodOfReturns);
+            localStorage.setItem('apiTableLoad', apiEndpoints.tableLoad);
+            localStorage.setItem('apiTableCellEdit', apiEndpoints.tableCellEdit);
+            localStorage.setItem('apiTableDelete', apiEndpoints.tableDelete);
+            localStorage.setItem('apiTableRowDelete', apiEndpoints.tableRowDelete);
         }
 
-        function showMainApp(username, role) {
-            currentUser = username;
-            currentUserRole = role;
-            currentUsernameSpan.textContent = `${username} (${role || 'Nessun Ruolo'})`;
-            loginScreen.classList.add('hidden');
-            mainApp.classList.remove('hidden');
-            updateNavigationVisibility(role);
+        // Funzione per caricare gli endpoint nel modal
+        function loadSettingsModal() {
+            document.getElementById('apiLoginInput').value = apiEndpoints.login;
+            document.getElementById('webhookLellaInput').value = apiEndpoints.webhookLella;
+            document.getElementById('webhookEvasoreTextInput').value = apiEndpoints.webhookEvasoreText;
+            document.getElementById('webhookEvasoreFileInput').value = apiEndpoints.webhookEvasoreFile;
+            document.getElementById('webhookGodOfReturnsInput').value = apiEndpoints.webhookGodOfReturns;
+            document.getElementById('apiTableLoadInput').value = apiEndpoints.tableLoad;
+            document.getElementById('apiTableCellEditInput').value = apiEndpoints.tableCellEdit;
+            document.getElementById('apiTableDeleteInput').value = apiEndpoints.tableDelete;
+            document.getElementById('apiTableRowDeleteInput').value = apiEndpoints.tableRowDelete;
         }
 
-        function updateNavigationVisibility(role) {
-            const isLellaVisible = ['admin', 'caller'].includes(role);
-            const isSettingsVisible = role === 'admin';
-
-            // Visibilità Chat Lella e Tabella Lella
-            navChatLella.classList.toggle('hidden', !isLellaVisible);
-            navTableLella.classList.toggle('hidden', !isLellaVisible);
-
-            // Visibilità Impostazioni
-            settingsBtn.classList.toggle('hidden', !isSettingsVisible);
+        // Funzione per salvare gli endpoint dal modal
+        function saveSettingsFromModal() {
+            apiEndpoints.login = document.getElementById('apiLoginInput').value;
+            apiEndpoints.webhookLella = document.getElementById('webhookLellaInput').value;
+            apiEndpoints.webhookEvasoreText = document.getElementById('webhookEvasoreTextInput').value;
+            apiEndpoints.webhookEvasoreFile = document.getElementById('webhookEvasoreFileInput').value;
+            apiEndpoints.webhookGodOfReturns = document.getElementById('webhookGodOfReturnsInput').value;
+            apiEndpoints.tableLoad = document.getElementById('apiTableLoadInput').value;
+            apiEndpoints.tableCellEdit = document.getElementById('apiTableCellEditInput').value;
+            apiEndpoints.tableDelete = document.getElementById('apiTableDeleteInput').value;
+            apiEndpoints.tableRowDelete = document.getElementById('apiTableRowDeleteInput').value;
+            saveApiEndpoints();
+            alert('Impostazioni salvate con successo!');
+            document.getElementById('settingsModal').classList.add('hidden');
         }
 
+        // Funzione per l'autenticazione
         async function handleLogin(event) {
             event.preventDefault();
-            const usernameInput = document.getElementById('username').value;
-            const passwordInput = document.getElementById('password').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
             const loginButton = document.getElementById('loginButton');
             const loginButtonText = document.getElementById('loginButtonText');
             const loginSpinner = document.getElementById('loginSpinner');
             const loginError = document.getElementById('loginError');
             const loginErrorText = document.getElementById('loginErrorText');
-            const loginApiUrl = document.getElementById('loginApiUrl').value;
 
-            loginButton.disabled = true;
-            loginButtonText.classList.add('hidden');
+            loginButtonText.textContent = 'Accesso in corso...';
             loginSpinner.classList.remove('hidden');
+            loginButton.disabled = true;
             loginError.classList.add('hidden');
 
             try {
-                const response = await fetch(loginApiUrl, {
+                const response = await fetch(apiEndpoints.login, {
                     method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: usernameInput, password: passwordInput })
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
                 });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    let errorData;
-                    try {
-                        errorData = JSON.parse(errorText);
-                    } catch (e) {
-                        throw new Error(`Errore HTTP! Stato: ${response.status}. Risposta: ${errorText}`);
-                    }
-                    throw new Error(errorData.message || `Errore HTTP! Stato: ${response.status}`);
-                }
-
                 const data = await response.json();
-                console.log('RISPOSTA WEBHOOK RICEVUTA:', data); // LOG DI DEBUG
 
-                let userRole = 'user'; // Ruolo di default
-                let loggedInUser = null;
-
-                // Gestione di array (vecchia logica)
-                if (Array.isArray(data) && data.length > 0) {
-                    loggedInUser = data.find(u => u.utente === usernameInput) || data[0];
-                }
-                // Gestione di oggetto singolo (logica attuale)
-                else if (typeof data === 'object' && data !== null) {
-                    // Cerca il nome utente in 'username' o 'utente'
-                    const receivedUsername = data.username || data.utente;
-                    if (receivedUsername && receivedUsername.toLowerCase() === usernameInput.toLowerCase()) {
-                        loggedInUser = data;
-                    }
-                }
-
-                if (!loggedInUser) {
-                    throw new Error('Credenziali non valide o utente non trovato nella risposta.');
-                }
-
-                // Estrazione del ruolo e gestione di 'Null' o mancante (Logica V7/V8)
-                // 1. Tenta di estrarre il ruolo dal campo 'role' (se presente e non nullo)
-                if (loggedInUser.role && loggedInUser.role.toLowerCase() !== 'null') {
-                    userRole = loggedInUser.role.toLowerCase();
+                if (data.status === 'success') {
+                    currentUser = { username: data.username, role: data.role };
+                    document.getElementById('userInfo').textContent = `${currentUser.username} (${currentUser.role})`;
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('mainApp').classList.remove('hidden');
+                    switchView('chatLella'); // Mostra la vista di default
                 } else {
-                    // 2. FALLBACK: Se il ruolo è mancante o 'Null', deducilo dal nome utente (più robusto per il tuo webhook)
-                    const receivedUsername = (loggedInUser.username || loggedInUser.utente || usernameInput).toLowerCase();
-                    if (receivedUsername === 'admin') {
-                        userRole = 'admin';
-                    } else if (receivedUsername === 'caller') {
-                        userRole = 'caller';
-                    } else {
-                        userRole = 'user';
-                    }
+                    loginErrorText.textContent = data.message || 'Credenziali non valide.';
+                    loginError.classList.remove('hidden');
                 }
-
-                // Se il nome utente è stato ricevuto con una chiave diversa da 'username', usiamo quella
-                const finalUsername = loggedInUser.username || loggedInUser.utente || usernameInput;
-
-                localStorage.setItem('currentUser', finalUsername);
-                localStorage.setItem('currentUserRole', userRole);
-                showMainApp(finalUsername, userRole);
-
-                // Dopo il login, reindirizza alla vista corretta
-                if (['admin', 'caller'].includes(userRole)) {
-                    switchView('chat-lella');
-                } else {
-                    switchView('chat-evasore');
-                }
-
             } catch (error) {
                 console.error('Errore di login:', error);
-                loginErrorText.textContent = error.message;
+                loginErrorText.textContent = 'Errore di connessione al server.';
                 loginError.classList.remove('hidden');
             } finally {
-                loginButton.disabled = false;
-                loginButtonText.classList.remove('hidden');
+                loginButtonText.textContent = 'Accedi';
                 loginSpinner.classList.add('hidden');
+                loginButton.disabled = false;
             }
         }
 
-        function showLogoutModal() {
-            document.getElementById('logoutModal').classList.remove('hidden');
-        }
-
-        function closeLogoutModal() {
-            document.getElementById('logoutModal').classList.add('hidden');
-        }
-
+        // Funzione per il logout
         function handleLogout() {
-            closeLogoutModal();
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('currentUserRole');
             currentUser = null;
-            currentUserRole = null;
-            showLoginScreen();
-            window.location.reload();
-        }
-
-        // =================================================================
-        // FUNZIONI DI GESTIONE CHAT
-        // =================================================================
-
-        function getChatHistoryKey() {
-            return CHAT_MAP[currentChat].historyKey;
-        }
-
-        function loadChatHistory() {
-            const history = localStorage.getItem(getChatHistoryKey());
-            messagesArea.innerHTML = '';
-            if (history) {
-                const messages = JSON.parse(history);
-                messages.forEach(msg => addMessage(msg.text, msg.sender, msg.isError, false));
-            } else {
-                messagesArea.innerHTML = `
-                    <div id="welcomeMessage" class="text-center text-slate-400 mt-20">
-                        <p class="text-lg mb-2">👋 Benvenuto!</p>
-                        <p class="text-sm">Invia un messaggio per iniziare a comunicare</p>
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('loginError').classList.add('hidden');
+            // Pulisci le chat e la tabella
+            document.getElementById('chatMessages').innerHTML = `
+                <div class="flex justify-center">
+                    <div class="p-3 rounded-lg text-center text-slate-400 bg-slate-800/50">
+                        <span class="text-2xl">👋</span> Benvenuto!
+                        <p class="text-sm mt-1">Invia un messaggio per iniziare a comunicare</p>
                     </div>
-                `;
-            }
-        }
-
-        function saveChatHistory() {
-            const messages = [];
-            messagesArea.querySelectorAll('.message-enter').forEach(msgDiv => {
-                const text = msgDiv.querySelector('p:first-child').textContent;
-                const sender = msgDiv.classList.contains('justify-end') ? 'user' : 'bot';
-                const isError = msgDiv.querySelector('.chat-bubble-error') !== null;
-                messages.push({ text, sender, isError });
-            });
-            localStorage.setItem(getChatHistoryKey(), JSON.stringify(messages));
-        }
-
-        function showClearChatModal() {
-            document.getElementById('clearChatModal').classList.remove('hidden');
-        }
-
-        function closeClearChatModal() {
-            document.getElementById('clearChatModal').classList.add('hidden');
-        }
-
-        function confirmClearChat() {
-            closeClearChatModal();
-            localStorage.removeItem(getChatHistoryKey());
-            messagesArea.innerHTML = `
-                <div id="welcomeMessage" class="text-center text-slate-400 mt-20">
-                    <p class="text-lg mb-2">👋 Benvenuto!</p>
-                    <p class="text-sm">Invia un messaggio per iniziare a comunicare</p>
                 </div>
             `;
-            showChatClearedModal();
-        }
-
-        function showChatClearedModal() {
-            document.getElementById('chatClearedModal').classList.remove('hidden');
-        }
-
-        function closeChatClearedModal() {
-            document.getElementById('chatClearedModal').classList.add('hidden');
-        }
-
-        function switchView(view) {
-            currentView = view;
-            const isChatView = view.startsWith('chat-');
-            const isTableView = view.startsWith('table-');
-
-            // Aggiorna lo stato attivo della navigazione
-            Object.values(CHAT_MAP).forEach(chat => {
-                const navElement = document.getElementById(chat.navId);
-                if (navElement) navElement.classList.remove('active');
-            });
-            const navTableElement = document.getElementById('navTableLella');
-            if (navTableElement) navTableElement.classList.remove('active');
-
-            if (isChatView) {
-                currentChat = view.split('-')[1];
-                const chatConfig = CHAT_MAP[currentChat];
-
-                // Controllo dei permessi
-                if (currentUserRole && !chatConfig.requiresRole.includes(currentUserRole)) {
-                    alert(`Accesso negato. Solo gli utenti con ruolo ${chatConfig.requiresRole.join(' o ')} possono accedere a ${chatConfig.title}.`);
-                    // Reindirizza alla prima chat disponibile per l'utente (Evasore)
-                    switchView('chat-evasore');
-                    return;
-                }
-
-                document.getElementById(chatConfig.navId).classList.add('active');
-                currentChatTitle.textContent = chatConfig.title;
-                loadChatHistory();
-            } else if (isTableView) {
-                // Per ora, solo la tabella Lella è supportata
-                currentChat = 'lella';
-                // Controllo dei permessi per la tabella Lella
-                if (currentUserRole && !['admin', 'caller'].includes(currentUserRole)) {
-                    alert(`Accesso negato. Solo gli utenti con ruolo admin o caller possono accedere alla Tabella - Lella.`);
-                    // Reindirizza alla prima chat disponibile per l'utente (Evasore)
-                    switchView('chat-evasore');
-                    return;
-                }
-                document.getElementById('navTableLella').classList.add('active');
-            }
-
-            // Mostra/nascondi le aree principali con animazione
-            const chatView = document.getElementById('chatView');
-            const tableView = document.getElementById('tableView');
-            
-            chatView.classList.toggle('hidden', !isChatView);
-            tableView.classList.toggle('hidden', !isTableView);
-            
-            // Aggiungi animazione alla vista attiva
-            if (isChatView) {
-                chatView.classList.remove('view-transition');
-                void chatView.offsetWidth; // Trigger reflow
-                chatView.classList.add('view-transition');
-            } else if (isTableView) {
-                tableView.classList.remove('view-transition');
-                void tableView.offsetWidth; // Trigger reflow
-                tableView.classList.add('view-transition');
-            }
-
-            // Mostra/nascondi il pulsante "Cancella Chat"
-            const clearChatBtn = document.getElementById('clearChatBtn');
-            if (isChatView) {
-                clearChatBtn.classList.remove('hidden');
-            } else {
-                clearChatBtn.classList.add('hidden');
-            }
-
-            // Mostra/nascondi bottone file e lista solo per evasore
-            const fileUploadButton = document.getElementById('fileUploadButton');
-            const uploadedFilesList = document.getElementById('uploadedFilesList');
-            if (currentChat === 'evasore' && isChatView) {
-                fileUploadButton.classList.remove('hidden');
-                if (uploadedFiles.length > 0) {
-                    uploadedFilesList.classList.remove('hidden');
-                }
-            } else {
-                fileUploadButton.classList.add('hidden');
-                uploadedFilesList.classList.add('hidden');
-            }
-
-            // Carica i dati della tabella se si passa alla vista tabella
-            if (isTableView) loadTableData();
-        }
-
-        function toggleSettings() {
-            // Controllo dei permessi per le Impostazioni
-            if (currentUserRole !== 'admin') {
-                alert('Accesso negato. Solo gli amministratori possono accedere alle impostazioni.');
-                return;
-            }
-            document.getElementById('settingsPanel').classList.toggle('hidden');
-        }
-
-        function scrollToBottom() {
-            messagesArea.scrollTop = messagesArea.scrollHeight;
-        }
-
-        function addMessage(text, sender, isError = false, saveHistory = true) {
-            const timestamp = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-            const welcomeMsg = document.getElementById('welcomeMessage');
-            if (welcomeMsg && welcomeMsg.parentNode) welcomeMsg.remove();
-
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} message-enter`;
-            const bubbleClass = sender === 'user' ? 'chat-bubble-user' :
-                isError ? 'chat-bubble-error' :
-                'chat-bubble-bot';
-            const timeClass = sender === 'user' ? 'text-sky-100' : 'text-slate-400';
-            messageDiv.innerHTML = `
-                <div class="max-w-[70%] px-4 py-3 shadow-lg ${bubbleClass}">
-                    <p class="whitespace-pre-wrap break-words">${escapeHtml(text)}</p>
-                    <p class="text-xs mt-1 ${timeClass} text-right">${timestamp}</p>
+            document.getElementById('evasoreChatMessages').innerHTML = `
+                <div class="flex justify-center">
+                    <div class="p-3 rounded-lg text-center text-slate-400 bg-slate-800/50">
+                        <span class="text-2xl">🕵️</span> Modalità Evasore
+                        <p class="text-sm mt-1">Invia un messaggio o trascina un file per iniziare l'analisi.</p>
+                    </div>
                 </div>
             `;
-            messagesArea.appendChild(messageDiv);
-            scrollToBottom();
-            if (saveHistory) saveChatHistory();
+            document.getElementById('godOfReturnsChatMessages').innerHTML = `
+                <div class="flex justify-center">
+                    <div class="p-3 rounded-lg text-center text-slate-400 bg-slate-800/50">
+                        <span class="text-2xl">🌟</span> God of Returns
+                        <p class="text-sm mt-1">Invia un messaggio per analizzare i dati e ottenere previsioni.</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('tableBody').innerHTML = '';
+            document.getElementById('tableEmpty').classList.remove('hidden');
+            document.getElementById('tableLoading').classList.add('hidden');
+            document.getElementById('tableError').classList.add('hidden');
         }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        // Funzione per il ridimensionamento automatico della textarea
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
         }
 
-        function addLoadingMessage() {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = 'loadingMessage';
-            loadingDiv.className = 'flex justify-start message-enter';
-            loadingDiv.innerHTML = `
-                <div class="chat-bubble-bot text-white px-4 py-3 shadow-lg flex items-center gap-2">
+        // Funzione per creare un bubble di messaggio
+        function createMessageBubble(message, isUser, containerId) {
+            const container = document.getElementById(containerId);
+            const bubble = document.createElement('div');
+            bubble.className = `flex ${isUser ? 'justify-end' : 'justify-start'} message-enter`;
+
+            const content = document.createElement('div');
+            content.className = `max-w-xs md:max-w-md lg:max-w-lg p-3 text-sm shadow-md ${isUser ? 'chat-bubble-user' : 'chat-bubble-bot'}`;
+            content.innerHTML = message;
+
+            bubble.appendChild(content);
+            container.appendChild(bubble);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Funzione per creare un bubble di errore
+        function createErrorBubble(message, containerId) {
+            const container = document.getElementById(containerId);
+            const bubble = document.createElement('div');
+            bubble.className = `flex justify-center message-enter`;
+
+            const content = document.createElement('div');
+            content.className = `max-w-xs md:max-w-md lg:max-w-lg p-3 text-sm shadow-md chat-bubble-error`;
+            content.textContent = `Errore: ${message}`;
+
+            bubble.appendChild(content);
+            container.appendChild(bubble);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Funzione per inviare un messaggio
+        async function sendMessage(message, webhookUrl, containerId, inputId, isFile = false, files = []) {
+            if (!message.trim() && !isFile) return;
+
+            const input = document.getElementById(inputId);
+            const container = document.getElementById(containerId);
+            const sendButton = document.getElementById(inputId.replace('messageInput', 'sendButton'));
+
+            // Aggiungi il messaggio dell'utente
+            if (message.trim()) {
+                createMessageBubble(message, true, containerId);
+            }
+
+            // Aggiungi il bubble di caricamento del bot
+            const loadingBubble = document.createElement('div');
+            loadingBubble.className = 'flex justify-start message-enter';
+            loadingBubble.innerHTML = `
+                <div class="max-w-xs md:max-w-md lg:max-w-lg p-3 text-sm shadow-md chat-bubble-bot flex items-center space-x-2">
                     <div class="spinner"></div>
-                    <span>Elaborazione...</span>
+                    <span>Il bot sta scrivendo...</span>
                 </div>
             `;
-            messagesArea.appendChild(loadingDiv);
-            scrollToBottom();
-        }
+            container.appendChild(loadingBubble);
+            container.scrollTop = container.scrollHeight;
 
-        function removeLoadingMessage() {
-            const loading = document.getElementById('loadingMessage');
-            if (loading) loading.remove();
-        }
-
-        async function sendMessage() {
-            const text = messageInput.value.trim();
-            const hasFiles = uploadedFiles.length > 0;
-            
-            // Permetti invio solo se c'è testo o file
-            if ((!text && !hasFiles) || isLoading) return;
-
-            const chatConfig = CHAT_MAP[currentChat];
-            // Doppio controllo permessi prima di inviare
-            if (currentUserRole && !chatConfig.requiresRole.includes(currentUserRole)) {
-                alert(`Accesso negato. Non puoi inviare messaggi a ${chatConfig.title}.`);
-                return;
-            }
-
-            // Se ci sono file e siamo in evasore, usa webhook diverso
-            const isEvasoreWithFiles = currentChat === 'evasore' && hasFiles;
-            let webhookUrl;
-            
-            if (isEvasoreWithFiles) {
-                // Usa webhook per file dal nuovo campo di configurazione
-                webhookUrl = document.getElementById('webhookUrlEvasoreFile').value;
-            } else {
-                webhookUrl = document.getElementById(chatConfig.webhookId).value;
-            }
-
-            if (text) {
-                addMessage(text, 'user');
-            }
-            if (hasFiles) {
-                const fileNames = uploadedFiles.map(f => f.name).join(', ');
-                addMessage(`📎 File allegati: ${fileNames}`, 'user');
-            }
-            
-            messageInput.value = '';
-            messageInput.style.height = 'auto';
-            isLoading = true;
+            // Disabilita l'input e il pulsante
+            input.disabled = true;
             sendButton.disabled = true;
-            sendIcon.classList.add('hidden');
-            loadingIcon.classList.remove('hidden');
-            addLoadingMessage();
 
             try {
-                let response;
-                
-                if (isEvasoreWithFiles) {
-                    // Invia con FormData per i file
+                let body;
+                let contentType;
+
+                if (isFile) {
                     const formData = new FormData();
-                    formData.append('message', text || '');
-                    formData.append('username', currentUser);
-                    formData.append('timestamp', new Date().toISOString());
-                    
-                    uploadedFiles.forEach((file, index) => {
-                        formData.append('files', file);
+                    formData.append('user', currentUser.username);
+                    formData.append('message', message);
+                    files.forEach(file => {
+                        formData.append('file', file);
                     });
-                    
-                    response = await fetch(webhookUrl, {
-                        method: 'POST',
-                        mode: 'cors',
-                        body: formData
-                    });
+                    body = formData;
+                    contentType = null; // FormData imposta automaticamente il Content-Type
                 } else {
-                    // Invio normale JSON
-                    response = await fetch(webhookUrl, {
-                        method: 'POST',
-                        mode: 'cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            message: text,
-                            username: currentUser,
-                            timestamp: new Date().toISOString()
-                        })
-                    });
+                    body = JSON.stringify({ user: currentUser.username, message: message });
+                    contentType = 'application/json';
                 }
 
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: contentType ? { 'Content-Type': contentType } : {},
+                    body: body,
+                });
+
                 const data = await response.json();
-                removeLoadingMessage();
-                const responseText = data.response || data.message || JSON.stringify(data);
-                addMessage(responseText, 'bot');
-                
-                // Pulisci i file dopo l'invio riuscito
-                if (isEvasoreWithFiles) {
-                    clearUploadedFiles();
+
+                // Rimuovi il bubble di caricamento
+                container.removeChild(loadingBubble);
+
+                if (data.status === 'success') {
+                    createMessageBubble(data.response, false, containerId);
+                } else {
+                    createErrorBubble(data.message || 'Risposta non valida dal bot.', containerId);
                 }
             } catch (error) {
-                removeLoadingMessage();
-                addMessage(`❌ Errore di connessione: ${error.message}\n\nVerifica che il webhook sia in esecuzione su:\n${webhookUrl}`, 'bot', true);
+                console.error('Errore di invio messaggio:', error);
+                // Rimuovi il bubble di caricamento
+                if (container.contains(loadingBubble)) {
+                    container.removeChild(loadingBubble);
+                }
+                createErrorBubble('Errore di connessione o del server.', containerId);
             } finally {
-                isLoading = false;
+                // Riabilita l'input e il pulsante
+                input.disabled = false;
                 sendButton.disabled = false;
-                sendIcon.classList.remove('hidden');
-                loadingIcon.classList.add('hidden');
+                input.value = '';
+                autoResizeTextarea(input);
+                // Pulisci i file caricati se in modalità Evasore
+                if (isFile) {
+                    uploadedFiles = [];
+                    renderUploadedFiles();
+                }
             }
         }
 
-        // =================================================================
-        // FUNZIONI DI GESTIONE TABELLA (NON MODIFICATE)
-        // =================================================================
+        // Funzioni specifiche per i messaggi
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                const message = document.getElementById('messageInput').value;
+                sendMessage(message, apiEndpoints.webhookLella, 'chatMessages', 'messageInput');
+            }
+        }
 
-        async function loadTableData() {
-            // Controllo permessi per la tabella
-            if (currentUserRole && !['admin', 'caller'].includes(currentUserRole)) {
-                console.error("Tentativo di caricare la tabella senza i permessi necessari.");
-                return;
+        // Variabili e funzioni per Evasore
+        let uploadedFiles = [];
+
+        function renderUploadedFiles() {
+            const container = document.getElementById('uploadedFilesContainer');
+            container.innerHTML = '';
+            uploadedFiles.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'uploaded-file-item';
+                item.innerHTML = `
+                    <span class="text-sm text-slate-300">${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                    <button class="remove-file-btn" onclick="removeFile(${index})">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            renderUploadedFiles();
+        }
+
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            uploadedFiles = [...uploadedFiles, ...files];
+            renderUploadedFiles();
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            document.getElementById('fileDropArea').classList.remove('chat-drag-over');
+            const files = Array.from(event.dataTransfer.files);
+            uploadedFiles = [...uploadedFiles, ...files];
+            renderUploadedFiles();
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            document.getElementById('fileDropArea').classList.add('chat-drag-over');
+        }
+
+        function handleDragLeave(event) {
+            event.preventDefault();
+            document.getElementById('fileDropArea').classList.remove('chat-drag-over');
+        }
+
+        function handleKeyDownEvasore(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                const message = document.getElementById('messageInputEvasore').value;
+                if (uploadedFiles.length > 0) {
+                    sendMessage(message, apiEndpoints.webhookEvasoreFile, 'evasoreChatMessages', 'messageInputEvasore', true, uploadedFiles);
+                } else {
+                    sendMessage(message, apiEndpoints.webhookEvasoreText, 'evasoreChatMessages', 'messageInputEvasore');
+                }
+            }
+        }
+
+        document.getElementById('fileDropArea').addEventListener('drop', handleDrop);
+        document.getElementById('fileDropArea').addEventListener('dragover', handleDragOver);
+        document.getElementById('fileDropArea').addEventListener('dragleave', handleDragLeave);
+        document.getElementById('sendButtonEvasore').addEventListener('click', () => {
+            const message = document.getElementById('messageInputEvasore').value;
+            if (uploadedFiles.length > 0) {
+                sendMessage(message, apiEndpoints.webhookEvasoreFile, 'evasoreChatMessages', 'messageInputEvasore', true, uploadedFiles);
+            } else {
+                sendMessage(message, apiEndpoints.webhookEvasoreText, 'evasoreChatMessages', 'messageInputEvasore');
+            }
+        });
+
+        // Funzioni per God of Returns
+        function handleKeyDownGodOfReturns(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                const message = document.getElementById('messageInputGodOfReturns').value;
+                sendMessage(message, apiEndpoints.webhookGodOfReturns, 'godOfReturnsChatMessages', 'messageInputGodOfReturns');
+            }
+        }
+        document.getElementById('sendButtonGodOfReturns').addEventListener('click', () => {
+            const message = document.getElementById('messageInputGodOfReturns').value;
+            sendMessage(message, apiEndpoints.webhookGodOfReturns, 'godOfReturnsChatMessages', 'messageInputGodOfReturns');
+        });
+
+        // Funzione per cambiare vista
+        function switchView(newView) {
+            // Nascondi tutte le viste
+            document.getElementById('chatView').classList.add('hidden');
+            document.getElementById('evasoreView').classList.add('hidden');
+            document.getElementById('godOfReturnsView').classList.add('hidden');
+            document.getElementById('tableView').classList.add('hidden');
+
+            // Rimuovi la classe 'active' da tutti i pulsanti di navigazione
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
+            // Mostra la vista selezionata
+            const viewElement = document.getElementById(newView + 'View');
+            if (viewElement) {
+                viewElement.classList.remove('hidden');
+                currentView = newView;
+                document.getElementById('currentViewTitle').textContent = document.getElementById('nav' + newView.charAt(0).toUpperCase() + newView.slice(1)).textContent.trim();
+                document.getElementById('nav' + newView.charAt(0).toUpperCase() + newView.slice(1)).classList.add('active');
             }
 
+            // Aggiorna le azioni nell'header
+            updateHeaderActions(newView);
+
+            // Carica la tabella se la vista è 'tableLella'
+            if (newView === 'tableLella') {
+                loadTableData();
+            }
+        }
+
+        // Funzione per aggiornare le azioni nell'header
+        function updateHeaderActions(view) {
+            const headerActions = document.getElementById('headerActions');
+            headerActions.innerHTML = '';
+
+            if (view === 'tableLella') {
+                const deleteTableBtn = document.createElement('button');
+                deleteTableBtn.id = 'deleteTableBtn';
+                deleteTableBtn.className = 'px-3 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition';
+                deleteTableBtn.textContent = '🗑️ Elimina Tabella';
+                deleteTableBtn.onclick = () => document.getElementById('deleteTableModal').classList.remove('hidden');
+                headerActions.appendChild(deleteTableBtn);
+            }
+        }
+
+        // Funzione per caricare i dati della tabella
+        async function loadTableData() {
+            const tableBody = document.getElementById('tableBody');
             const tableLoading = document.getElementById('tableLoading');
             const tableError = document.getElementById('tableError');
-            const tableContent = document.getElementById('tableView').querySelector('.flex-1');
-            const emptyState = document.getElementById('emptyState');
-            const tableApiUrl = document.getElementById('tableApiUrl');
+            const tableEmpty = document.getElementById('tableEmpty');
+            const tableContainer = document.getElementById('tableContainer');
 
+            tableBody.innerHTML = '';
             tableLoading.classList.remove('hidden');
             tableError.classList.add('hidden');
-            tableContent.style.opacity = '0.5';
+            tableEmpty.classList.add('hidden');
 
             try {
-                const response = await fetch(tableApiUrl.value, {
-                    method: 'GET',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' }
+                const response = await fetch(apiEndpoints.tableLoad, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user: currentUser.username }),
                 });
 
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = JSON.parse(await response.text());
-                let rows;
-                if (Array.isArray(data)) {
-                    rows = data.length > 0 && data[0].json ? data.map(item => item.json) : data;
-                } else if (data.data && Array.isArray(data.data)) {
-                    rows = data.data;
-                } else if (data.rows && Array.isArray(data.rows)) {
-                    rows = data.rows;
-                } else if (data.json) {
-                    rows = [data.json];
-                } else if (typeof data === 'object' && data !== null) {
-                    rows = [data];
-                } else {
-                    rows = [];
-                }
-                rows = rows.map(row => {
-                    const cleanRow = {};
-                    Object.entries(row).forEach(([key, value]) => {
-                        const cleanKey = key.trim();
-                        if (cleanKey) cleanRow[cleanKey] = value;
-                    });
-                    return cleanRow;
-                });
-                currentTableData = rows;
-                if (rows.length === 0) {
-                    emptyState.classList.remove('hidden');
-                    document.getElementById('tableHead').innerHTML = '';
-                    document.getElementById('tableBody').innerHTML = '';
-                } else {
-                    emptyState.classList.add('hidden');
-                    renderTable(rows);
-                }
-            } catch (error) {
-                console.error('Table loading error:', error);
-                tableError.classList.remove('hidden');
-                document.getElementById('tableErrorMessage').textContent = `Impossibile caricare i dati: ${error.message}\n\nURL: ${tableApiUrl.value}`;
-            } finally {
+                const data = await response.json();
+
                 tableLoading.classList.add('hidden');
-                tableContent.style.opacity = '1';
-            }
-        }
 
-        function truncateText(text, limit) {
-            if (text.length > limit) {
-                return text.substring(0, limit) + '...';
-            }
-            return text;
-        }
-
-        function renderTable(data) {
-            const tableHead = document.getElementById('tableHead');
-            const tableBody = document.getElementById('tableBody');
-            if (data.length === 0) return;
-            const columns = Object.keys(data[0]);
-            const textEditableColumns = ['indirizzo', 'cap', 'provincia', 'città', 'citta'];
-            const modalEditableColumns = ['note', 'prodotto', 'prodotti'];
-            const nonEditableColumns = ['nome', 'cognome', 'telefono'];
-            const truncatedColumns = ['prodotto', 'prodotti', 'indirizzo', 'note'];
-
-            tableHead.innerHTML = `<tr>${columns.map(col => `<th class="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">${escapeHtml(col)}</th>`).join('')}<th class="px-6 py-3 text-center text-xs font-medium text-slate-300 uppercase tracking-wider">Azioni</th></tr>`;
-
-            tableBody.innerHTML = data.map((row, rowIndex) => `
-                <tr class="hover:bg-slate-700/50 transition-colors">
-                    ${columns.map(col => {
-                        const colLower = col.toLowerCase();
-                        const isStatoColumn = colLower === 'stato';
-                        const isModalEditable = modalEditableColumns.includes(colLower);
-                        const isTextEditable = textEditableColumns.includes(colLower);
-                        const isNonEditable = nonEditableColumns.includes(colLower);
-                        const shouldTruncate = truncatedColumns.includes(colLower);
-                        const fullValue = String(row[col] || '');
-                        const displayValue = shouldTruncate ? truncateText(fullValue, 25) : fullValue;
-
-                        if (isStatoColumn) {
-                            return `
-                                <td class="px-6 py-4 text-sm text-white editable-cell cursor-pointer"
-                                    data-row="${rowIndex}"
-                                    data-column="${escapeHtml(col)}"
-                                    data-original-value="${escapeHtml(fullValue)}"
-                                    onclick="editStatusCell(this)">
-                                    ${escapeHtml(displayValue)}
-                                </td>
-                            `;
-                        } else if (isModalEditable) {
-                            return `
-                                <td class="px-6 py-4 text-sm text-white text-editable-cell ${shouldTruncate ? 'truncated-cell' : ''}"
-                                    data-row="${rowIndex}"
-                                    data-column="${escapeHtml(col)}"
-                                    data-original-value="${escapeHtml(fullValue)}"
-                                    ${shouldTruncate ? `data-full-text="${escapeHtml(fullValue)}"` : ''}
-                                    onclick="openEditModal(this)">
-                                    ${escapeHtml(displayValue)}
-                                </td>
-                            `;
-                        } else if (isTextEditable) {
-                            return `
-                                <td class="px-6 py-4 text-sm text-white text-editable-cell ${shouldTruncate ? 'truncated-cell' : ''}"
-                                    data-row="${rowIndex}"
-                                    data-column="${escapeHtml(col)}"
-                                    data-original-value="${escapeHtml(fullValue)}"
-                                    ${shouldTruncate ? `data-full-text="${escapeHtml(fullValue)}"` : ''}
-                                    onclick="editTextCell(this)">
-                                    ${escapeHtml(displayValue)}
-                                </td>
-                            `;
-                        } else {
-                            return `
-                                <td class="px-6 py-4 text-sm text-white ${isNonEditable ? 'opacity-70' : ''} ${shouldTruncate ? 'truncated-cell' : ''}"
-                                    ${shouldTruncate ? `data-full-text="${escapeHtml(fullValue)}"` : ''}>
-                                    ${escapeHtml(displayValue)}
-                                </td>
-                            `;
-                        }
-                    }).join('')}
-                    <td class="px-6 py-4 text-sm text-white text-center">
-                        <button onclick="showDeleteRowModal(${rowIndex})" class="delete-row-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function showDeleteRowModal(rowIndex) {
-            currentEditingRowIndex = rowIndex;
-            document.getElementById('deleteRowModal').classList.remove('hidden');
-        }
-
-        function closeDeleteRowModal() {
-            document.getElementById('deleteRowModal').classList.add('hidden');
-            currentEditingRowIndex = null;
-        }
-
-        async function confirmDeleteRow() {
-            if (currentEditingRowIndex === null) return;
-
-            closeDeleteRowModal();
-            const deleteRowApiUrl = document.getElementById('deleteRowApiUrl');
-            const rowData = currentTableData[currentEditingRowIndex];
-
-            try {
-                const response = await fetch(deleteRowApiUrl.value, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'delete_one_row',
-                        rowIndex: currentEditingRowIndex,
-                        rowData: rowData,
-                        username: currentUser,
-                        timestamp: new Date().toISOString()
-                    })
-                });
-
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-                // Rimuovi la riga dai dati locali e ricarica la tabella
-                currentTableData.splice(currentEditingRowIndex, 1);
-                renderTable(currentTableData);
-                alert('Riga eliminata con successo!');
-
-            } catch (error) {
-                console.error('Delete row error:', error);
-                alert(`❌ Errore durante l'eliminazione della riga:\n${error.message}`);
-            } finally {
-                currentEditingRowIndex = null;
-            }
-        }
-
-        function openEditModal(cell) {
-            currentEditingCell = cell;
-            currentEditingRowIndex = parseInt(cell.getAttribute('data-row'));
-            currentEditingColumnName = cell.getAttribute('data-column');
-            const fullValue = cell.getAttribute('data-original-value');
-
-            const textarea = document.getElementById('editTextarea');
-            textarea.value = fullValue;
-            document.getElementById('editTextModal').classList.remove('hidden');
-            textarea.focus();
-        }
-
-        function closeEditModal() {
-            document.getElementById('editTextModal').classList.add('hidden');
-            currentEditingCell = null;
-            currentEditingRowIndex = null;
-            currentEditingColumnName = null;
-        }
-
-        async function saveEditModal() {
-            if (!currentEditingCell) return;
-
-            const cell = currentEditingCell;
-            const rowIndex = currentEditingRowIndex;
-            const columnName = currentEditingColumnName;
-            const newValue = document.getElementById('editTextarea').value;
-            const originalValue = cell.getAttribute('data-original-value');
-
-            closeEditModal();
-
-            if (newValue === originalValue) return;
-
-            cell.innerHTML = `${truncateText(newValue, 25)}<div class="saving-indicator"></div>`;
-
-            const updateApiUrl = document.getElementById('updateApiUrl');
-            const rowData = { ...currentTableData[rowIndex] };
-            rowData[columnName] = newValue;
-
-            try {
-                const response = await fetch(updateApiUrl.value, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'update',
-                        rowIndex: rowIndex,
-                        columnName: columnName,
-                        newValue: newValue,
-                        rowData: rowData,
-                        username: currentUser,
-                        timestamp: new Date().toISOString()
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+                if (data.status === 'success' && data.data && data.data.length > 0) {
+                    currentTableData = data.data;
+                    renderTable(data.data, data.headers);
+                } else if (data.status === 'success' && (!data.data || data.data.length === 0)) {
+                    tableEmpty.classList.remove('hidden');
+                } else {
+                    document.getElementById('tableErrorText').textContent = data.message || 'Errore sconosciuto nel caricamento dei dati.';
+                    tableError.classList.remove('hidden');
                 }
-
-                currentTableData[rowIndex][columnName] = newValue;
-                cell.innerHTML = `${truncateText(newValue, 25)}<div class="saved-indicator"></div>`;
-                cell.setAttribute('data-original-value', newValue);
-                cell.setAttribute('data-full-text', newValue);
-
-                setTimeout(() => {
-                    cell.innerHTML = truncateText(newValue, 25);
-                }, 1000);
-
             } catch (error) {
-                console.error('Update error:', error);
-                cell.innerHTML = truncateText(originalValue, 25);
-                rowData[columnName] = originalValue;
-                alert(`❌ Errore durante l'aggiornamento:\n${error.message}\n\nControlla la console per più dettagli.`);
+                console.error('Errore nel caricamento della tabella:', error);
+                tableLoading.classList.add('hidden');
+                document.getElementById('tableErrorText').textContent = 'Errore di connessione al server.';
+                tableError.classList.remove('hidden');
             }
         }
 
-        function editStatusCell(cell) {
-            currentEditingCell = cell;
+        // Funzione per renderizzare la tabella
+        function renderTable(data, headers) {
+            const tableHead = document.querySelector('#tableView table thead tr');
+            const tableBody = document.getElementById('tableBody');
+            tableHead.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            // Renderizza le intestazioni
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.className = 'px-4 py-3 text-left text-xs font-medium uppercase tracking-wider';
+                th.textContent = header.label;
+                tableHead.appendChild(th);
+            });
+
+            // Aggiungi l'intestazione per le azioni
+            const thActions = document.createElement('th');
+            thActions.className = 'px-4 py-3 text-left text-xs font-medium uppercase tracking-wider w-24';
+            thActions.textContent = 'Azioni';
+            tableHead.appendChild(thActions);
+
+            // Renderizza le righe
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'table-row';
+                tr.dataset.rowId = row.id;
+
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    td.className = 'px-4 py-3 whitespace-nowrap text-sm editable-cell';
+                    td.dataset.colKey = header.key;
+
+                    let cellContent;
+                    if (header.key === 'status') {
+                        const status = statusOptions.find(opt => opt.key === row[header.key]);
+                        cellContent = `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${status ? status.class : 'bg-slate-600'} text-white">${status ? status.label : row[header.key]}</span>`;
+                        td.onclick = () => openStatusModal(row.id, header.key, row[header.key]);
+                        td.classList.add('cursor-pointer');
+                    } else if (header.key === 'data_creazione' || header.key === 'data_modifica') {
+                        cellContent = new Date(row[header.key]).toLocaleString('it-IT');
+                    } else {
+                        cellContent = row[header.key];
+                        td.onclick = () => openEditCellModal(row.id, header.key, row[header.key]);
+                        td.classList.add('cursor-pointer', 'text-editable-cell');
+                    }
+
+                    td.innerHTML = cellContent;
+                    tr.appendChild(td);
+                });
+
+                // Colonna Azioni
+                const tdActions = document.createElement('td');
+                tdActions.className = 'px-4 py-3 whitespace-nowrap text-sm';
+                tdActions.innerHTML = `
+                    <button class="delete-row-btn" onclick="openDeleteRowModal('${row.id}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                `;
+                tr.appendChild(tdActions);
+
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Funzione per aprire il modal di modifica cella
+        function openEditCellModal(rowId, colKey, value) {
+            editingCell = { rowId, colKey, originalValue: value };
+            document.getElementById('editCellTextarea').value = value;
+            document.getElementById('editCellModal').classList.remove('hidden');
+        }
+
+        // Funzione per salvare la modifica della cella
+        async function saveEditCell() {
+            const newValue = document.getElementById('editCellTextarea').value;
+            const { rowId, colKey, originalValue } = editingCell;
+
+            if (newValue === originalValue) {
+                document.getElementById('editCellModal').classList.add('hidden');
+                return;
+            }
+
+            const cellElement = document.querySelector(`tr[data-row-id="${rowId}"] td[data-col-key="${colKey}"]`);
+            if (!cellElement) return;
+
+            // Indicatore di salvataggio
+            const originalContent = cellElement.innerHTML;
+            cellElement.innerHTML = `${newValue} <span class="saving-indicator"></span>`;
+
+            try {
+                const response = await fetch(apiEndpoints.tableCellEdit, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user: currentUser.username,
+                        rowId: rowId,
+                        colKey: colKey,
+                        newValue: newValue
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    // Aggiorna i dati locali
+                    const rowIndex = currentTableData.findIndex(row => row.id === rowId);
+                    if (rowIndex !== -1) {
+                        currentTableData[rowIndex][colKey] = newValue;
+                    }
+                    cellElement.innerHTML = `${newValue} <span class="saved-indicator"></span>`;
+                    setTimeout(() => {
+                        cellElement.innerHTML = newValue;
+                    }, 1500);
+                } else {
+                    alert('Errore nel salvataggio: ' + (data.message || 'Sconosciuto'));
+                    cellElement.innerHTML = originalContent; // Ripristina il contenuto
+                }
+            } catch (error) {
+                console.error('Errore di salvataggio cella:', error);
+                alert('Errore di connessione al server.');
+                cellElement.innerHTML = originalContent; // Ripristina il contenuto
+            } finally {
+                document.getElementById('editCellModal').classList.add('hidden');
+            }
+        }
+
+        // Funzione per aprire il modal di stato
+        function openStatusModal(rowId, colKey, currentValue) {
+            editingCell = { rowId, colKey, originalValue: currentValue };
+            const statusOptionsContainer = document.getElementById('statusOptions');
+            statusOptionsContainer.innerHTML = '';
+
+            statusOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.className = `status-option-btn ${option.class} ${option.key === currentValue ? 'ring-4 ring-offset-2 ring-offset-slate-800 ring-sky-500' : ''}`;
+                button.textContent = option.label;
+                button.onclick = () => saveStatusChange(rowId, colKey, option.key);
+                statusOptionsContainer.appendChild(button);
+            });
+
             document.getElementById('statusModal').classList.remove('hidden');
         }
 
-        function closeStatusModal() {
+        // Funzione per salvare la modifica dello stato
+        async function saveStatusChange(rowId, colKey, newValue) {
+            const cellElement = document.querySelector(`tr[data-row-id="${rowId}"] td[data-col-key="${colKey}"]`);
+            if (!cellElement) return;
+
             document.getElementById('statusModal').classList.add('hidden');
-            currentEditingCell = null;
-        }
 
-        async function selectStatus(status) {
-            if (!currentEditingCell) return;
-
-            const cell = currentEditingCell;
-            const rowIndex = parseInt(cell.getAttribute('data-row'));
-            const columnName = cell.getAttribute('data-column');
-            const originalValue = cell.getAttribute('data-original-value');
-
-            closeStatusModal();
-            cell.innerHTML = `${escapeHtml(status)}<div class="saving-indicator"></div>`;
-
-            const updateApiUrl = document.getElementById('updateApiUrl');
-            const rowData = { ...currentTableData[rowIndex] };
-            rowData[columnName] = status;
+            // Indicatore di salvataggio
+            const originalContent = cellElement.innerHTML;
+            cellElement.innerHTML = `<div class="flex items-center justify-center"><div class="spinner"></div></div>`;
 
             try {
-                const response = await fetch(updateApiUrl.value, {
+                const response = await fetch(apiEndpoints.tableCellEdit, {
                     method: 'POST',
-                    mode: 'cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        action: 'update',
-                        rowIndex: rowIndex,
-                        columnName: columnName,
-                        newValue: status,
-                        rowData: rowData,
-                        username: currentUser,
-                        timestamp: new Date().toISOString()
-                    })
+                        user: currentUser.username,
+                        rowId: rowId,
+                        colKey: colKey,
+                        newValue: newValue
+                    }),
                 });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                }
+                const data = await response.json();
 
-                currentTableData[rowIndex][columnName] = status;
-                cell.innerHTML = `${escapeHtml(status)}<div class="saved-indicator"></div>`;
-                cell.setAttribute('data-original-value', status);
-
-                setTimeout(() => {
-                    cell.innerHTML = escapeHtml(status);
-                }, 1000);
-
-            } catch (error) {
-                console.error('Update error:', error);
-                cell.innerHTML = escapeHtml(originalValue);
-                rowData[columnName] = originalValue;
-                alert(`❌ Errore durante l'aggiornamento:\n${error.message}\n\nControlla la console per più dettagli.`);
-            }
-        }
-
-        function editTextCell(cell) {
-            const rowIndex = parseInt(cell.getAttribute('data-row'));
-            const columnName = cell.getAttribute('data-column');
-            const originalValue = cell.getAttribute('data-original-value');
-            const shouldTruncate = cell.classList.contains('truncated-cell');
-
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = originalValue;
-
-            const saveValue = async () => {
-                const newValue = input.value.trim();
-                cell.innerHTML = shouldTruncate ? truncateText(originalValue, 25) : originalValue;
-
-                if (newValue === originalValue) return;
-
-                cell.innerHTML = `${shouldTruncate ? truncateText(newValue, 25) : newValue}<div class="saving-indicator"></div>`;
-
-                const updateApiUrl = document.getElementById('updateApiUrl');
-                const rowData = { ...currentTableData[rowIndex] };
-                rowData[columnName] = newValue;
-
-                try {
-                    const response = await fetch(updateApiUrl.value, {
-                        method: 'POST',
-                        mode: 'cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            action: 'update',
-                            rowIndex: rowIndex,
-                            columnName: columnName,
-                            newValue: newValue,
-                            rowData: rowData,
-                            username: currentUser,
-                            timestamp: new Date().toISOString()
-                        })
-                    });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+                if (data.status === 'success') {
+                    // Aggiorna i dati locali
+                    const rowIndex = currentTableData.findIndex(row => row.id === rowId);
+                    if (rowIndex !== -1) {
+                        currentTableData[rowIndex][colKey] = newValue;
                     }
-
-                    currentTableData[rowIndex][columnName] = newValue;
-                    cell.innerHTML = `${shouldTruncate ? truncateText(newValue, 25) : newValue}<div class="saved-indicator"></div>`;
-                    cell.setAttribute('data-original-value', newValue);
-                    if (shouldTruncate) cell.setAttribute('data-full-text', newValue);
-
-                    setTimeout(() => {
-                        cell.innerHTML = shouldTruncate ? truncateText(newValue, 25) : newValue;
-                    }, 1000);
-
-                } catch (error) {
-                    console.error('Update error:', error);
-                    cell.innerHTML = shouldTruncate ? truncateText(originalValue, 25) : originalValue;
-                    rowData[columnName] = originalValue;
-                    alert(`❌ Errore durante l'aggiornamento:\n${error.message}\n\nControlla la console per più dettagli.`);
+                    const status = statusOptions.find(opt => opt.key === newValue);
+                    cellElement.innerHTML = `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${status ? status.class : 'bg-slate-600'} text-white">${status ? status.label : newValue}</span>`;
+                } else {
+                    alert('Errore nel salvataggio: ' + (data.message || 'Sconosciuto'));
+                    cellElement.innerHTML = originalContent; // Ripristina il contenuto
                 }
-            };
-
-            input.addEventListener('blur', saveValue);
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    input.blur();
-                } else if (e.key === 'Escape') {
-                    cell.innerHTML = shouldTruncate ? truncateText(originalValue, 25) : originalValue;
-                    input.removeEventListener('blur', saveValue);
-                }
-            });
-
-            cell.textContent = '';
-            cell.appendChild(input);
-            input.focus();
-            input.select();
+            } catch (error) {
+                console.error('Errore di salvataggio stato:', error);
+                alert('Errore di connessione al server.');
+                cellElement.innerHTML = originalContent; // Ripristina il contenuto
+            }
         }
 
-        function deleteTable() {
-            document.getElementById('confirmModal').classList.remove('hidden');
+        // Funzione per aprire il modal di eliminazione riga
+        function openDeleteRowModal(rowId) {
+            document.getElementById('deleteRowModal').classList.remove('hidden');
+            document.getElementById('confirmDeleteRowBtn').onclick = () => deleteRow(rowId);
         }
 
-        function closeConfirmModal() {
-            document.getElementById('confirmModal').classList.add('hidden');
-        }
+        // Funzione per eliminare una riga
+        async function deleteRow(rowId) {
+            document.getElementById('deleteRowModal').classList.add('hidden');
 
-        async function confirmDelete() {
-            closeConfirmModal();
-            const deleteApiUrl = document.getElementById('deleteApiUrl');
-            const tableLoading = document.getElementById('tableLoading');
-            const tableError = document.getElementById('tableError');
-            tableLoading.classList.remove('hidden');
-            tableError.classList.add('hidden');
+            const rowElement = document.querySelector(`tr[data-row-id="${rowId}"]`);
+            if (!rowElement) return;
+
+            // Animazione di eliminazione
+            rowElement.style.opacity = '0.5';
+            rowElement.style.transition = 'opacity 0.3s ease-out';
 
             try {
-                const response = await fetch(deleteApiUrl.value, {
+                const response = await fetch(apiEndpoints.tableRowDelete, {
                     method: 'POST',
-                    mode: 'cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        action: 'delete_all',
-                        username: currentUser,
-                        timestamp: new Date().toISOString()
-                    })
+                        user: currentUser.username,
+                        rowId: rowId
+                    }),
                 });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                showSuccessModal();
-                currentTableData = [];
-                document.getElementById('emptyState').classList.remove('hidden');
-                document.getElementById('tableHead').innerHTML = '';
-                document.getElementById('tableBody').innerHTML = '';
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    // Rimuovi la riga dalla vista e dai dati locali
+                    rowElement.remove();
+                    currentTableData = currentTableData.filter(row => row.id !== rowId);
+                    if (currentTableData.length === 0) {
+                        document.getElementById('tableEmpty').classList.remove('hidden');
+                    }
+                } else {
+                    alert('Errore nell\'eliminazione della riga: ' + (data.message || 'Sconosciuto'));
+                    rowElement.style.opacity = '1'; // Ripristina l'opacità in caso di errore
+                }
             } catch (error) {
-                console.error('Delete error:', error);
-                tableError.classList.remove('hidden');
-                document.getElementById('tableErrorMessage').textContent = `Impossibile eliminare i dati: ${error.message}`;
-            } finally {
-                tableLoading.classList.add('hidden');
+                console.error('Errore di eliminazione riga:', error);
+                alert('Errore di connessione al server.');
+                rowElement.style.opacity = '1'; // Ripristina l'opacità in caso di errore
             }
         }
 
-        function showSuccessModal() {
-            document.getElementById('successModal').classList.remove('hidden');
-        }
+        // Funzione per eliminare l'intera tabella
+        async function deleteTable() {
+            document.getElementById('deleteTableModal').classList.add('hidden');
 
-        function closeSuccessModal() {
-            document.getElementById('successModal').classList.add('hidden');
-        }
+            const tableContainer = document.getElementById('tableContainer');
+            tableContainer.style.opacity = '0.5';
+            tableContainer.style.transition = 'opacity 0.5s ease-out';
 
-        function exportToCSV() {
-            if (!currentTableData || currentTableData.length === 0) {
-                alert('⚠️ Nessun dato da esportare!');
-                return;
-            }
             try {
-                const columns = Object.keys(currentTableData[0]);
-                let csv = columns.join(',') + '\n';
-                currentTableData.forEach(row => {
-                    const values = columns.map(col => {
-                        let value = String(row[col] || '');
-                        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-                            value = '"' + value.replace(/"/g, '""') + '"';
-                        }
-                        return value;
-                    });
-                    csv += values.join(',') + '\n';
+                const response = await fetch(apiEndpoints.tableDelete, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user: currentUser.username }),
                 });
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                const url = URL.createObjectURL(blob);
-                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-                link.setAttribute('href', url);
-                link.setAttribute('download', `table_export_${timestamp}.csv`);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    currentTableData = [];
+                    document.getElementById('tableBody').innerHTML = '';
+                    document.getElementById('tableEmpty').classList.remove('hidden');
+                    tableContainer.style.opacity = '1';
+                } else {
+                    alert('Errore nell\'eliminazione della tabella: ' + (data.message || 'Sconosciuto'));
+                    tableContainer.style.opacity = '1'; // Ripristina l'opacità in caso di errore
+                }
             } catch (error) {
-                console.error('CSV export error:', error);
-                alert(`❌ Errore durante l'esportazione:\n${error.message}`);
+                console.error('Errore di eliminazione tabella:', error);
+                alert('Errore di connessione al server.');
+                tableContainer.style.opacity = '1'; // Ripristina l'opacità in caso di errore
             }
         }
 
-        // =================================================================
-        // GESTIONE DRAG & DROP E FILE UPLOAD PER EVASORE
-        // =================================================================
-        
-        let uploadedFiles = [];
-
-        function initDragDropHandlers() {
-            const messagesArea = document.getElementById('messagesArea');
-            const fileInput = document.getElementById('fileInput');
-            const fileUploadButton = document.getElementById('fileUploadButton');
-
-            // Gestione drag & drop su tutta la chat (solo per evasore)
-            messagesArea.addEventListener('dragover', (e) => {
-                if (currentChat !== 'evasore') return;
-                e.preventDefault();
-                e.stopPropagation();
-                messagesArea.classList.add('chat-drag-over');
-            });
-
-            messagesArea.addEventListener('dragleave', (e) => {
-                if (currentChat !== 'evasore') return;
-                e.preventDefault();
-                e.stopPropagation();
-                // Verifica se stiamo uscendo dall'area messagesArea
-                if (e.target === messagesArea) {
-                    messagesArea.classList.remove('chat-drag-over');
-                }
-            });
-
-            messagesArea.addEventListener('drop', (e) => {
-                if (currentChat !== 'evasore') return;
-                e.preventDefault();
-                e.stopPropagation();
-                messagesArea.classList.remove('chat-drag-over');
-                
-                const files = Array.from(e.dataTransfer.files);
-                handleFiles(files);
-            });
-
-            // Gestione click sul bottone file
-            fileUploadButton.addEventListener('click', () => {
-                fileInput.click();
-            });
-
-            // Gestione selezione file tramite input
-            fileInput.addEventListener('change', (e) => {
-                const files = Array.from(e.target.files);
-                handleFiles(files);
-                e.target.value = ''; // Reset input
-            });
-        }
-
-        function handleFiles(files) {
-            files.forEach(file => {
-                uploadedFiles.push(file);
-            });
-            updateFilesList();
-            // Mostra la lista se ci sono file
-            const uploadedFilesList = document.getElementById('uploadedFilesList');
-            if (uploadedFiles.length > 0) {
-                uploadedFilesList.classList.remove('hidden');
-            }
-        }
-
-        function addFileToList(file) {
-            const uploadedFilesList = document.getElementById('uploadedFilesList');
-            const fileItem = document.createElement('div');
-            fileItem.className = 'uploaded-file-item';
-            fileItem.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky-500">
-                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-                        <polyline points="13 2 13 9 20 9"></polyline>
-                    </svg>
-                    <span class="text-slate-200 text-sm">${escapeHtml(file.name)}</span>
-                    <span class="text-slate-500 text-xs">(${formatFileSize(file.size)})</span>
-                </div>
-                <button class="remove-file-btn" onclick="removeFile('${escapeHtml(file.name)}')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            `;
-            uploadedFilesList.appendChild(fileItem);
-        }
-
-        function removeFile(fileName) {
-            uploadedFiles = uploadedFiles.filter(f => f.name !== fileName);
-            updateFilesList();
-        }
-
-        function updateFilesList() {
-            const uploadedFilesList = document.getElementById('uploadedFilesList');
-            uploadedFilesList.innerHTML = '';
-            uploadedFiles.forEach(file => addFileToList(file));
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-        }
-
-        function clearUploadedFiles() {
-            uploadedFiles = [];
-            document.getElementById('uploadedFilesList').innerHTML = '';
-        }
-
-        // Inizializza i gestori al caricamento
+        // Inizializzazione e Event Listeners
         document.addEventListener('DOMContentLoaded', () => {
-            initDragDropHandlers();
-        });
+            // Carica le impostazioni all'avvio
+            loadSettingsModal();
 
-        // =================================================================
-        // EVENT LISTENERS
-        // =================================================================
+            // Event Listeners per la navigazione
+            document.getElementById('navChatLella').addEventListener('click', () => switchView('chatLella'));
+            document.getElementById('navChatEvasore').addEventListener('click', () => switchView('chatEvasore'));
+            document.getElementById('navChatGodOfReturns').addEventListener('click', () => switchView('chatGodOfReturns'));
+            document.getElementById('navTableLella').addEventListener('click', () => switchView('tableLella'));
 
-        // Chiusura pannello impostazioni al click esterno
-        document.addEventListener('click', function(e) {
-            const settingsPanel = document.getElementById('settingsPanel');
-            const settingsBtn = document.getElementById('settingsBtn');
-            
-            // Se il pannello è visibile e il click non è sul pannello e non è sul pulsante
-            if (!settingsPanel.classList.contains('hidden') && 
-                !settingsPanel.contains(e.target) && 
-                !settingsBtn.contains(e.target)) {
-                
-                // Controllo aggiuntivo per evitare chiusure accidentali
-                // se il click è su un elemento che non è un input o un link
-                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'A') {
-                    settingsPanel.classList.add('hidden');
+            // Event Listeners per i pulsanti di invio chat
+            document.getElementById('sendButton').addEventListener('click', () => {
+                const message = document.getElementById('messageInput').value;
+                sendMessage(message, apiEndpoints.webhookLella, 'chatMessages', 'messageInput');
+            });
+
+            // Event Listeners per i modali
+            document.getElementById('settingsBtn').addEventListener('click', () => {
+                loadSettingsModal();
+                document.getElementById('settingsModal').classList.remove('hidden');
+            });
+            document.getElementById('closeSettingsModalBtn').addEventListener('click', () => document.getElementById('settingsModal').classList.add('hidden'));
+            document.getElementById('saveSettingsBtn').addEventListener('click', saveSettingsFromModal);
+
+            document.getElementById('closeEditCellModalBtn').addEventListener('click', () => document.getElementById('editCellModal').classList.add('hidden'));
+            document.getElementById('saveEditCellBtn').addEventListener('click', saveEditCell);
+
+            document.getElementById('closeStatusModalBtn').addEventListener('click', () => document.getElementById('statusModal').classList.add('hidden'));
+
+            document.getElementById('cancelDeleteRowBtn').addEventListener('click', () => document.getElementById('deleteRowModal').classList.add('hidden'));
+
+            document.getElementById('cancelDeleteTableBtn').addEventListener('click', () => document.getElementById('deleteTableModal').classList.add('hidden'));
+            document.getElementById('confirmDeleteTableBtn').addEventListener('click', deleteTable);
+
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+            document.getElementById('clearChatBtn').addEventListener('click', () => {
+                if (currentView === 'chatLella') {
+                    document.getElementById('chatMessages').innerHTML = `
+                        <div class="flex justify-center">
+                            <div class="p-3 rounded-lg text-center text-slate-400 bg-slate-800/50">
+                                <span class="text-2xl">👋</span> Benvenuto!
+                                <p class="text-sm mt-1">Invia un messaggio per iniziare a comunicare</p>
+                            </div>
+                        </div>
+                    `;
+                } else if (currentView === 'chatEvasore') {
+                    document.getElementById('evasoreChatMessages').innerHTML = `
+                        <div class="flex justify-center">
+                            <div class="p-3 rounded-lg text-center text-slate-400 bg-slate-800/50">
+                                <span class="text-2xl">🕵️</span> Modalità Evasore
+                                <p class="text-sm mt-1">Invia un messaggio o trascina un file per iniziare l'analisi.</p>
+                            </div>
+                        </div>
+                    `;
+                    uploadedFiles = [];
+                    renderUploadedFiles();
+                } else if (currentView === 'chatGodOfReturns') {
+                    document.getElementById('godOfReturnsChatMessages').innerHTML = `
+                        <div class="flex justify-center">
+                            <div class="p-3 rounded-lg text-center text-slate-400 bg-slate-800/50">
+                                <span class="text-2xl">🌟</span> God of Returns
+                                <p class="text-sm mt-1">Invia un messaggio per analizzare i dati e ottenere previsioni.</p>
+                            </div>
+                        </div>
+                    `;
                 }
-            }
-        });
+            });
 
-        sendButton.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
-        });
-
-        // Gestione chiusura modali con click esterno
-        document.getElementById('confirmModal').addEventListener('click', function(e) {
-            if (e.target === this) closeConfirmModal();
-        });
-        document.getElementById('deleteRowModal').addEventListener('click', function(e) {
-            if (e.target === this) closeDeleteRowModal();
-        });
-        document.getElementById('logoutModal').addEventListener('click', function(e) {
-            if (e.target === this) closeLogoutModal();
-        });
-        document.getElementById('successModal').addEventListener('click', function(e) {
-            if (e.target === this) closeSuccessModal();
-        });
-        document.getElementById('clearChatModal').addEventListener('click', function(e) {
-            if (e.target === this) closeClearChatModal();
-        });
-        document.getElementById('chatClearedModal').addEventListener('click', function(e) {
-            if (e.target === this) closeChatClearedModal();
-        });
-        document.getElementById('statusModal').addEventListener('click', function(e) {
-            if (e.target === this) closeStatusModal();
-        });
-        document.getElementById('editTextModal').addEventListener('click', function(e) {
-            if (e.target === this) closeEditModal();
-        });
-
-        // Gestione chiusura modali con tasto ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                if (!document.getElementById('confirmModal').classList.contains('hidden')) closeConfirmModal();
-                if (!document.getElementById('deleteRowModal').classList.contains('hidden')) closeDeleteRowModal();
-                if (!document.getElementById('logoutModal').classList.contains('hidden')) closeLogoutModal();
-                if (!document.getElementById('successModal').classList.contains('hidden')) closeSuccessModal();
-                if (!document.getElementById('clearChatModal').classList.contains('hidden')) closeClearChatModal();
-                if (!document.getElementById('chatClearedModal').classList.contains('hidden')) closeChatClearedModal();
-                if (!document.getElementById('statusModal').classList.contains('hidden')) closeStatusModal();
-                if (!document.getElementById('editTextModal').classList.contains('hidden')) closeEditModal();
-            }
+            // Tentativo di login automatico per l'analisi
+            // Questo blocco è solo per l'analisi iniziale e verrà rimosso/commentato nel codice finale
+            // if (window.location.href.includes('akaau1.github.io/chat_n8n/')) {
+            //     // Non tentare il login automatico per non interferire con la logica dell'utente
+            // }
         });
     </script>
 </body>
 </html>
-
-
-
-
