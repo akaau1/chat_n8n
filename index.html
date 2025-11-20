@@ -587,7 +587,18 @@
                 <div class="p-4 header-bar flex items-center justify-between">
                     <h2 id="currentViewTitle" class="text-xl font-semibold text-white">Chat - Lella</h2>
                     <div id="headerActions" class="flex items-center space-x-3">
-                        <!-- Actions will be injected here -->
+                        <button id="tableRefreshBtn" class="px-4 py-2 btn-primary text-sm transition-colors flex items-center gap-2 shadow-md hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M21.5 14a10 10 0 0 1-18 0M2.5 10a10 10 0 0 1 18 0"/></svg>
+                            Aggiorna
+                        </button>
+                        <button id="tableExportBtn" class="px-4 py-2 btn-secondary text-sm transition-colors flex items-center gap-2 shadow-md hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15h6"/></svg>
+                            Esporta CSV
+                        </button>
+                        <button id="deleteTableBtn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2 shadow-md hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            Svuota Tabella
+                        </button>
                     </div>
                 </div>
 
@@ -1024,8 +1035,101 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        // Funzione per inviare un messaggio
-        async function sendMessage(message, webhookUrl, containerId, inputId, isFile = false, files = []) {
+    // Funzione per l'invio del messaggio
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            const hasFiles = uploadedFiles.length > 0;
+
+            // Permetti invio solo se c'è testo o file
+            if ((!text && !hasFiles) || isLoading) return;
+
+            const chatConfig = CHAT_MAP[currentChat];
+            // Doppio controllo permessi prima di inviare
+            if (currentUserRole && !chatConfig.requiresRole.includes(currentUserRole)) {
+                alert(`Accesso negato. Non puoi inviare messaggi a ${chatConfig.title}.`);
+                return;
+            }
+
+            // Se ci sono file e siamo in evasore, usa webhook diverso
+            const isEvasoreWithFiles = currentChat === 'evasore' && hasFiles;
+            let webhookUrl;
+
+            if (isEvasoreWithFiles) {
+                // Usa webhook per file dal nuovo campo di configurazione
+                webhookUrl = apiEndpoints.webhookEvasoreFile;
+            } else {
+                webhookUrl = apiEndpoints[chatConfig.webhookKey];
+            }
+
+            if (text) {
+                addMessage(text, 'user');
+            }
+            if (hasFiles) {
+                const fileNames = uploadedFiles.map(f => f.name).join(', ');
+                addMessage(`📎 File allegati: ${fileNames}`, 'user');
+            }
+
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            isLoading = true;
+            sendButton.disabled = true;
+            sendIcon.classList.add('hidden');
+            loadingIcon.classList.remove('hidden');
+            addLoadingMessage();
+
+            try {
+                let response;
+
+                if (isEvasoreWithFiles) {
+                    // Invia con FormData per i file
+                    const formData = new FormData();
+                    formData.append('message', text || '');
+                    formData.append('username', currentUser);
+                    formData.append('timestamp', new Date().toISOString());
+
+                    uploadedFiles.forEach((file, index) => {
+                        formData.append('files', file);
+                    });
+
+                    response = await fetch(webhookUrl, {
+                        method: 'POST',
+                        mode: 'cors',
+                        body: formData
+                    });
+                } else {
+                    // Invio normale JSON
+                    response = await fetch(webhookUrl, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: text,
+                            username: currentUser,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                }
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                removeLoadingMessage();
+                const responseText = data.response || data.message || JSON.stringify(data);
+                addMessage(responseText, 'bot');
+
+                // Pulisci i file dopo l'invio riuscito
+                if (isEvasoreWithFiles) {
+                    clearUploadedFiles();
+                }
+            } catch (error) {
+                removeLoadingMessage();
+                addMessage(`❌ Errore di connessione: ${error.message}\n\nVerifica che il webhook sia in esecuzione su:\n${webhookUrl}`, 'bot', true);
+            } finally {
+                isLoading = false;
+                sendButton.disabled = false;
+                sendIcon.classList.remove('hidden');
+                loadingIcon.classList.add('hidden');
+            }
+        }sFile = false, files = []) {
             if (!message.trim() && !isFile) return;
 
             const input = document.getElementById(inputId);
@@ -1206,43 +1310,53 @@
         function switchView(newView) {
             // Nascondi tutte le viste
             document.getElementById('chatView').classList.add('hidden');
-            document.getElementById('evasoreView').classList.add('hidden');
-            document.getElementById('godOfReturnsView').classList.add('hidden');
             document.getElementById('tableView').classList.add('hidden');
 
             // Rimuovi la classe 'active' da tutti i pulsanti di navigazione
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
 
-            // Mostra la vista selezionata
-            const viewElement = document.getElementById(newView + 'View');
-            if (viewElement) {
-                viewElement.classList.remove('hidden');
-                currentView = newView;
-                document.getElementById('currentViewTitle').textContent = document.getElementById('nav' + newView.charAt(0).toUpperCase() + newView.slice(1)).textContent.trim();
-                document.getElementById('nav' + newView.charAt(0).toUpperCase() + newView.slice(1)).classList.add('active');
+            // Mostra la vista corretta
+            const isChatView = newView.startsWith('chat');
+            const isTableView = newView.startsWith('table');
+
+            if (isChatView) {
+                document.getElementById('chatView').classList.remove('hidden');
+                currentChat = newView.replace('chat', '').toLowerCase();
+                document.getElementById('currentViewTitle').textContent = CHAT_MAP[currentChat].title;
+                loadChatHistory();
+            } else if (isTableView) {
+                document.getElementById('tableView').classList.remove('hidden');
+                currentChat = newView.replace('table', '').toLowerCase();
+                document.getElementById('currentViewTitle').textContent = 'Tabella - Lella';
+                loadTableData();
             }
+
+            // Aggiorna lo stato attivo del pulsante di navigazione
+            const navId = 'nav' + newView.charAt(0).toUpperCase() + newView.slice(1);
+            const navElement = document.getElementById(navId);
+            if (navElement) navElement.classList.add('active');
 
             // Aggiorna le azioni nell'header
             updateHeaderActions(newView);
-
-            // Carica la tabella se la vista è 'tableLella'
-            if (newView === 'tableLella') {
-                loadTableData();
-            }
         }
 
         // Funzione per aggiornare le azioni nell'header
         function updateHeaderActions(view) {
-            const headerActions = document.getElementById('headerActions');
-            headerActions.innerHTML = '';
+            const tableRefreshBtn = document.getElementById('tableRefreshBtn');
+            const tableExportBtn = document.getElementById('tableExportBtn');
+            const deleteTableBtn = document.getElementById('deleteTableBtn');
 
             if (view === 'tableLella') {
-                const deleteTableBtn = document.createElement('button');
-                deleteTableBtn.id = 'deleteTableBtn';
-                deleteTableBtn.className = 'px-3 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition';
-                deleteTableBtn.textContent = '🗑️ Elimina Tabella';
+                tableRefreshBtn.classList.remove('hidden');
+                tableExportBtn.classList.remove('hidden');
+                deleteTableBtn.classList.remove('hidden');
+                tableRefreshBtn.onclick = loadTableData;
+                tableExportBtn.onclick = exportToCSV;
                 deleteTableBtn.onclick = () => document.getElementById('deleteTableModal').classList.remove('hidden');
-                headerActions.appendChild(deleteTableBtn);
+            } else {
+                tableRefreshBtn.classList.add('hidden');
+                tableExportBtn.classList.add('hidden');
+                deleteTableBtn.classList.add('hidden');
             }
         }
 
@@ -1565,10 +1679,42 @@
             document.getElementById('navTableLella').addEventListener('click', () => switchView('tableLella'));
 
             // Event Listeners per i pulsanti di invio chat
-            document.getElementById('sendButton').addEventListener('click', () => {
-                const message = document.getElementById('messageInput').value;
-                sendMessage(message, apiEndpoints.webhookLella, 'chatMessages', 'messageInput');
-            });
+document.getElementById('sendButton').addEventListener('click', sendMessage);
+
+            // Funzione per l'esportazione CSV (ripristinata)
+        function exportToCSV() {
+            if (!currentTableData || currentTableData.length === 0) {
+                alert('⚠️ Nessun dato da esportare!');
+                return;
+            }
+            try {
+                const columns = Object.keys(currentTableData[0]);
+                let csv = columns.join(',') + '\\n';
+                currentTableData.forEach(row => {
+                    const values = columns.map(col => {
+                        let value = String(row[col] || '');
+                        if (value.includes(',') || value.includes('"') || value.includes('\\n')) {
+                            value = '"' + value.replace(/"/g, '""') + '"';
+                        }
+                        return value;
+                    });
+                    csv += values.join(',') + '\\n';
+                });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `table_export_${timestamp}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error('CSV export error:', error);
+                alert(`❌ Errore durante l\\'esportazione:\\n${error.message}`);
+            }
+        }
 
             // Event Listeners per i modali
             document.getElementById('settingsBtn').addEventListener('click', () => {
