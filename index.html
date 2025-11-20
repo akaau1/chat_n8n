@@ -5,505 +5,413 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FenixHome Chat-bot</title>
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Stili Base */
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             overflow: hidden;
         }
-
-        /* Background animato con gradiente dinamico */
-        .login-container {
-            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2d1b69, #1f0f4c);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            position: relative;
-            overflow: hidden;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Elementi decorativi di sfondo */
-        .login-container::before {
-            content: '';
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-            top: -100px;
-            right: -100px;
-            animation: float 20s ease-in-out infinite;
-        }
-
-        .login-container::after {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            bottom: -50px;
-            left: -50px;
-            animation: float 25s ease-in-out infinite reverse;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            33% { transform: translate(30px, -30px); }
-            66% { transform: translate(-20px, 20px); }
-        }
-
-        /* Box di login con glassmorphism */
-        .login-box {
-            position: relative;
-            z-index: 10;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(139, 92, 246, 0.2);
-            padding: 48px;
-            border-radius: 24px;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 
-                0 8px 32px rgba(139, 92, 246, 0.1),
-                inset 0 1px 1px rgba(255, 255, 255, 0.1);
-            animation: slideInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Header della login */
-        .login-header {
-            text-align: center;
-            margin-bottom: 40px;
-            animation: fadeIn 0.8s ease-out 0.2s both;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .logo-container {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #d946ef 100%);
-            border-radius: 20px;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 
-                0 10px 30px rgba(139, 92, 246, 0.4),
-                inset 0 1px 1px rgba(255, 255, 255, 0.2);
-            animation: logoFloat 3s ease-in-out infinite;
-        }
-
-        @keyframes logoFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .logo-container svg {
-            width: 45px;
-            height: 45px;
-            color: white;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-        }
-
-        .login-header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
-
-        .login-header p {
-            color: #a1a5b4;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        /* Messaggio di errore migliorato */
-        .error-message {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
-            padding: 14px 16px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        .error-message::before {
-            content: '⚠';
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .error-message.hidden {
-            display: none;
-        }
-
-        /* Gruppo di input migliorato */
-        .input-group {
-            position: relative;
-            margin-bottom: 18px;
-            animation: fadeIn 0.8s ease-out both;
-        }
-
-        .input-group:nth-child(1) { animation-delay: 0.3s; }
-        .input-group:nth-child(2) { animation-delay: 0.4s; }
-
-        .input-group-wrapper {
-            display: flex;
-            align-items: center;
-            background: rgba(30, 27, 75, 0.5);
-            border: 2px solid rgba(139, 92, 246, 0.2);
-            border-radius: 12px;
-            padding: 0 16px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .input-group-wrapper::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .input-group-wrapper:focus-within::before {
-            left: 100%;
-        }
-
-        .input-group-wrapper:focus-within {
-            border-color: rgba(139, 92, 246, 0.6);
-            background: rgba(30, 27, 75, 0.8);
-            box-shadow: 
-                0 0 0 3px rgba(139, 92, 246, 0.1),
-                inset 0 1px 1px rgba(255, 255, 255, 0.1);
-        }
-
-        .input-group svg {
-            width: 20px;
-            height: 20px;
-            color: #a1a5b4;
-            margin-right: 12px;
-            flex-shrink: 0;
-            transition: color 0.3s;
-        }
-
-        .input-group-wrapper:focus-within svg {
-            color: #8b5cf6;
-        }
-
-        .input-group input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 14px 0;
-            color: white;
-            outline: none;
-            font-size: 15px;
-            transition: color 0.3s;
-        }
-
-        .input-group input::placeholder {
-            color: #6b7280;
-            font-weight: 500;
-        }
-
-        .input-group input:focus::placeholder {
-            color: #4b5563;
-        }
-
-        /* Bottone di login migliorato */
-        .login-button {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #d946ef 100%);
-            background-size: 200% 200%;
-            color: white;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
-            position: relative;
-            overflow: hidden;
-            margin-top: 8px;
-            animation: fadeIn 0.8s ease-out 0.5s both;
-        }
-
-        .login-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .login-button:hover::before {
-            left: 100%;
-        }
-
-        .login-button:hover {
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
-            transform: translateY(-3px);
-            background-position: 200% center;
-        }
-
-        .login-button:active {
-            transform: translateY(-1px);
-        }
-
-        .login-button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Spinner */
-        .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .spinner.hidden {
-            display: none;
-        }
-
-        /* Animazioni e Transizioni generali */
+        /* Animazioni e Transizioni */
         .message-enter {
             animation: slideIn 0.3s ease-out;
         }
-
         @keyframes slideIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(10px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
+        .spinner {
+            border: 2px solid #8b5cf6; /* violet-500 */
+            border-top: 2px solid #1f2937; /* gray-800 */
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         .nav-item {
             transition: all 0.2s ease-in-out;
-            border-radius: 0.75rem;
+            border-radius: 0.75rem; /* Arrotondamento maggiore */
             transform: scale(1);
         }
-
         .nav-item:hover {
-            background-color: rgba(139, 92, 246, 0.1);
+            background-color: rgba(139, 92, 246, 0.1); /* violet-500 con opacità */
             transform: scale(1.01);
         }
-
         .nav-item.active {
             background-color: rgba(139, 92, 246, 0.2);
-            border-left: 3px solid #8b5cf6;
+            border-left: 3px solid #8b5cf6; /* violet-500 */
         }
-
         .nav-item.active:hover {
             background-color: rgba(139, 92, 246, 0.25);
             transform: scale(1.01);
         }
-
         /* Stili Chat */
         #messageInput {
             min-height: 48px;
             max-height: 150px;
             transition: all 0.2s;
         }
-
         .chat-bubble-user {
-            background-color: #8b5cf6;
+            background-color: #8b5cf6; /* violet-500 */
             color: white;
             border-radius: 1rem 1rem 0.25rem 1rem;
             transition: transform 0.1s ease-out;
         }
-
         .chat-bubble-user:hover {
             transform: scale(1.01);
         }
-
         .chat-bubble-bot {
-            background-color: #1f2937;
-            color: #e5e7eb;
+            background-color: #1f2937; /* gray-800 */
+            color: #e5e7eb; /* gray-200 */
             border-radius: 1rem 1rem 1rem 0.25rem;
             transition: transform 0.1s ease-out;
         }
-
         .chat-bubble-bot:hover {
             transform: scale(1.01);
         }
-
         .chat-bubble-error {
-            background-color: #ef4444;
+            background-color: #ef4444; /* red-500 */
             color: white;
         }
-
         /* Stili Tabella */
         .editable-cell {
             transition: background-color 0.2s;
         }
-
         .editable-cell:hover {
             background-color: rgba(139, 92, 246, 0.1);
         }
-
         .text-editable-cell input:focus {
             background: #1f2937;
             border-color: #8b5cf6;
         }
-
         .saving-indicator {
-            background: #f59e0b;
+            background: #f59e0b; /* amber-500 */
         }
-
         .saved-indicator {
-            background: #10b981;
+            background: #10b981; /* emerald-500 */
         }
-
-        /* Stili Login - Compatibilità */
+        /* Stili Login - INIZIO MODIFICHE GRAFICHE MANUS */
         .login-container {
-            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2d1b69, #1f0f4c);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
+    background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2d1b69, #1f0f4c);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    position: relative;
+    overflow: hidden;
+}
 
-        .input-group input {
-            background: transparent;
-            border: none;
-            color: white;
-        }
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
-        .input-group input:focus {
-            background: transparent;
-        }
+/* Elementi decorativi di sfondo */
+.login-container::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    top: -100px;
+    right: -100px;
+    animation: float 20s ease-in-out infinite;
+}
 
-        .btn-custom-blue {
-            background-color: #4b5563;
-        }
+.login-container::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    bottom: -50px;
+    left: -50px;
+    animation: float 25s ease-in-out infinite reverse;
+}
 
-        .btn-custom-blue:hover {
-            background-color: #374151;
-        }
+@keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    33% { transform: translate(30px, -30px); }
+    66% { transform: translate(-20px, 20px); }
+}
+        .login-box {
+    position: relative;
+    z-index: 10;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    padding: 48px;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 
+        0 8px 32px rgba(139, 92, 246, 0.1),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    animation: slideInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
-        /* Stili File Upload */
-        .chat-drag-over {
-            background-color: rgba(6, 182, 212, 0.05);
-            border: 2px dashed #8b5cf6;
-            border-radius: 12px;
-        }
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-        .uploaded-file-item {
-            background-color: #1f2937;
-            border: 1px solid #374151;
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.2s;
-        }
+/* Header della login */
+.login-header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeIn 0.8s ease-out 0.2s both;
+}
 
-        .uploaded-file-item:hover {
-            background-color: #374151;
-        }
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 
-        .remove-file-btn {
-            color: #ef4444;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
+.logo-container {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #d946ef 100%);
+    border-radius: 20px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        0 10px 30px rgba(139, 92, 246, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    animation: logoFloat 3s ease-in-out infinite;
+}
 
-        .remove-file-btn:hover {
-            color: #dc2626;
-        }
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
 
-        /* Animazione cambio vista */
-        .view-transition {
-            animation: fadeInSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+.logo-container svg {
+    width: 45px;
+    height: 45px;
+    color: white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
 
-        @keyframes fadeInSlide {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.98);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
+.login-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
 
-        /* Modal */
+.login-header p {
+    color: #a1a5b4;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Messaggio di errore migliorato */
+.error-message {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    padding: 14px 16px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideDown 0.3s ease-out;
+}
+
+.error-message::before {
+    content: '⚠';
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.error-message.hidden {
+    display: none;
+}
+
+/* Gruppo di input migliorato */
+.input-group {
+    position: relative;
+    margin-bottom: 18px;
+    animation: fadeIn 0.8s ease-out both;
+}
+
+.input-group:nth-child(1) { animation-delay: 0.3s; }
+.input-group:nth-child(2) { animation-delay: 0.4s; }
+
+.input-group-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(30, 27, 75, 0.5);
+    border: 2px solid rgba(139, 92, 246, 0.2);
+    border-radius: 12px;
+    padding: 0 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.input-group-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.input-group-wrapper:focus-within::before {
+    left: 100%;
+}
+
+.input-group-wrapper:focus-within {
+    border-color: rgba(139, 92, 246, 0.6);
+    background: rgba(30, 27, 75, 0.8);
+    box-shadow: 
+        0 0 0 3px rgba(139, 92, 246, 0.1),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.input-group svg {
+    width: 20px;
+    height: 20px;
+    color: #a1a5b4;
+    margin-right: 12px;
+    flex-shrink: 0;
+    transition: color 0.3s;
+}
+
+.input-group-wrapper:focus-within svg {
+    color: #8b5cf6;
+}
+
+.input-group input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 14px 0;
+    color: white;
+    outline: none;
+    font-size: 15px;
+    transition: color 0.3s;
+}
+
+.input-group input::placeholder {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.input-group input:focus::placeholder {
+    color: #4b5563;
+}
+
+/* Bottone di login migliorato */
+.login-button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #d946ef 100%);
+    background-size: 200% 200%;
+    color: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    position: relative;
+    overflow: hidden;
+    margin-top: 8px;
+    animation: fadeIn 0.8s ease-out 0.5s both;
+}
+
+.login-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.login-button:hover::before {
+    left: 100%;
+}
+
+.login-button:hover {
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
+    transform: translateY(-3px);
+    background-position: 200% center;
+}
+
+.login-button:active {
+    transform: translateY(-1px);
+}
+
+.login-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Spinner */
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.spinner.hidden {
+    display: none;
+}
+
+/* Stili Login - FINE MODIFICHE GRAFICHE MANUS */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -517,7 +425,6 @@
             z-index: 50;
             backdrop-filter: blur(4px);
         }
-
         .modal-content {
             background-color: #1f2937;
             padding: 30px;
@@ -527,7 +434,6 @@
             width: 90%;
             border: 1px solid #374151;
         }
-
         .edit-modal-content {
             background-color: #1f2937;
             padding: 30px;
@@ -540,7 +446,6 @@
             flex-direction: column;
             border: 1px solid #374151;
         }
-
         .edit-textarea {
             flex-grow: 1;
             padding: 10px;
@@ -551,7 +456,6 @@
             color: white;
             transition: border-color 0.2s;
         }
-
         .status-option-btn {
             width: 100%;
             padding: 10px;
@@ -561,40 +465,31 @@
             transition: background-color 0.2s;
             margin-bottom: 8px;
         }
-
         .status-annullare {
-            background-color: #ef4444;
+            background-color: #ef4444; /* red-500 */
         }
-
         .status-annullare:hover {
-            background-color: #dc2626;
+            background-color: #dc2626; /* red-600 */
         }
-
         .status-rispedire {
-            background-color: #77dd77;
+            background-color: #77dd77; /* verde-500 */
         }
-
         .status-rispedire:hover {
-            background-color: #03c03c;
+            background-color: #03c03c; /* verde-600 */
         }
-
         .status-attesa {
-            background-color: #eab308;
+            background-color: #eab308; /* yellow-500 */
         }
-
         .status-attesa:hover {
-            background-color: #d97706;
+            background-color: #d97706; /* yellow-600 */
         }
-
         .delete-row-btn {
-            color: #f87171;
+            color: #f87171; /* red-400 */
             transition: color 0.2s;
         }
-
         .delete-row-btn:hover {
-            color: #ef4444;
+            color: #ef4444; /* red-500 */
         }
-
         .saving-indicator, .saved-indicator {
             display: inline-block;
             width: 8px;
@@ -603,15 +498,81 @@
             margin-left: 5px;
             animation: pulse 1s infinite;
         }
-
         .saved-indicator {
             animation: none;
         }
-
         @keyframes pulse {
             0% { transform: scale(0.8); opacity: 0.7; }
             50% { transform: scale(1.2); opacity: 1; }
             100% { transform: scale(0.8); opacity: 0.7; }
+        }
+        .login-box {
+            background: rgba(31, 41, 55, 0.9); /* gray-800 */
+            border: 1px solid rgba(75, 85, 99, 0.5); /* gray-600 */
+        }
+        .input-group input {
+            background: #111827; /* gray-900 */
+            border: 2px solid rgba(75, 85, 99, 0.3);
+        }
+        .input-group input:focus {
+            border-color: #8b5cf6; /* violet-500 */
+            background: #111827;
+        }
+        .login-button {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); /* violet-500 to violet-600 */
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+        .login-button:hover {
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+            transform: translateY(-2px);
+        }
+        .btn-custom-blue {
+            background-color: #4b5563; /* gray-600 */
+        }
+        .btn-custom-blue:hover {
+            background-color: #374151; /* gray-700 */
+        }
+        /* Stili File Upload per Evasore */
+        .chat-drag-over {
+            background-color: rgba(6, 182, 212, 0.05);
+            border: 2px dashed #8b5cf6;
+            border-radius: 12px;
+        }
+        .uploaded-file-item {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+        .uploaded-file-item:hover {
+            background-color: #374151;
+        }
+        .remove-file-btn {
+            color: #ef4444;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .remove-file-btn:hover {
+            color: #dc2626;
+        }
+        /* Animazione cambio vista */
+        .view-transition {
+            animation: fadeInSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
     </style>
 </head>
@@ -668,53 +629,1523 @@
 
                 <button type="submit" id="loginButton" class="login-button">
                     <span id="loginButtonText">Accedi</span>
-                    <div id="loginSpinner" class="spinner hidden"></div>
+                    <div id="loginSpinner" class="spinner hidden mx-auto"></div>
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Main App (placeholder) -->
+    <!-- Main App -->
     <div id="mainApp" class="hidden">
-        <!-- Il resto dell'applicazione rimane invariato -->
+        <div class="flex h-screen">
+            <!-- Sidebar Navigation -->
+            <div class="w-64 bg-gray-800 border-r border-gray-700 flex flex-col p-3">
+                <div class="p-3 border-b border-gray-700 mb-3">
+                    <h1 class="text-xl font-extrabold text-white flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                        FenixHome
+                    </h1>
+                    <p class="text-xs text-gray-400 mt-1">Utente: <span id="currentUsername" class="text-sky-400 font-medium"></span></p>
+                </div>
+                <nav class="flex-1 space-y-1">
+                    <!-- Chat Lella (Visibilità condizionata) -->
+                    <button onclick="switchView('chat-lella')" id="navChatLella" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3 hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span class="font-medium">Chat - Lella</span>
+                    </button>
+                    <!-- Chat Evasore -->
+                    <button onclick="switchView('chat-evasore')" id="navChatEvasore" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2a10 10 0 0 0-9 5.5 10 10 0 0 0 18 0A10 10 0 0 0 12 2z"></path>
+                            <path d="M12 16v-4"></path>
+                            <path d="M12 8h.01"></path>
+                        </svg>
+                        <span class="font-medium">Evasore</span>
+                    </button>
+                    <!-- Chat God of Returns -->
+                    <button onclick="switchView('chat-godofreturns')" id="navChatGodOfReturns" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path>
+                        </svg>
+                        <span class="font-medium">God of Returns</span>
+                    </button>
+
+                    <!-- Separatore Visivo -->
+                    <div class="my-4 border-t border-gray-700 mx-4"></div>
+
+                    <!-- Table Lella (Visibilità condizionata) -->
+                    <button onclick="switchView('table-lella')" id="navTableLella" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3 hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                            <line x1="9" y1="21" x2="9" y2="9"></line>
+                        </svg>
+                        <span class="font-medium">Tabella - Lella</span>
+                    </button>
+                </nav>
+                <div class="p-3 border-t border-gray-700 space-y-2">
+                    <button id="settingsBtn" onclick="toggleSettings()" class="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition-colors hidden">
+                        ⚙️ Impostazioni
+                    </button>
+                    <button id="clearChatBtn" onclick="showClearChatModal()" class="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition-colors">
+                        🗑️ Cancella Chat
+                    </button>
+                    <button onclick="showLogoutModal()" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors">
+                        🚪 Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1 flex flex-col relative bg-gray-900">
+                <!-- Settings Panel -->
+                <div id="settingsPanel" class="hidden bg-gray-800/95 backdrop-blur-sm border-b border-gray-700 p-6 absolute top-0 left-0 right-0 z-10 shadow-2xl">
+                    <h2 class="text-white font-extrabold mb-5 text-2xl border-b border-gray-700 pb-3 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-violet-500"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.73l-.15.1a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1 0-2.73l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                        Configurazione API
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="col-span-full">
+                            <h3 class="text-lg font-semibold text-sky-400 mb-3">Autenticazione</h3>
+                            <label class="text-xs text-gray-400 block mb-1">API Login:</label>
+                            <input type="text" id="loginApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/sing-up" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
+
+                        <div class="col-span-full">
+                            <h3 class="text-lg font-semibold text-sky-400 mb-3">Webhooks Chat</h3>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">Webhook Chat Lella:</label>
+                            <input type="text" id="webhookUrlLella" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/chat" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">Webhook Chat Evasore (Testo):</label>
+                            <input type="text" id="webhookUrlEvasore" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/evasore-ordini" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
+                        <!-- NUOVO: Webhook Chat Evasore (File) -->
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">Webhook Chat Evasore (File):</label>
+                            <input type="text" id="webhookUrlEvasoreFile" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/evasore-ordini-file" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">Webhook Chat God of Returns:</label>
+                            <input type="text" id="webhookUrlGodOfReturns" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/god-of-returns" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
+
+                        <div class="col-span-full">
+                            <h3 class="text-lg font-semibold text-sky-400 mb-3 mt-3">API Tabella</h3>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">API Tabella (Caricamento Dati):</label>
+                            <input type="text" id="tableApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/data" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">API Modifica Cella:</label>
+                            <input type="text" id="updateApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/edit-tab" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">API Elimina Tabella:</label>
+                            <input type="text" id="deleteApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/deletetab" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">API Elimina Riga:</label>
+                            <input type="text" id="deleteRowApiUrl" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/delete-one-row" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat View -->
+                <div id="chatView" class="absolute inset-0 flex flex-col">
+                    <div class="bg-gray-800/95 backdrop-blur-sm border-b border-gray-700 p-4 flex-shrink-0 shadow-lg">
+                        <h2 class="text-xl font-bold text-white">💬 <span id="currentChatTitle">Chat - Lella</span></h2>
+                    </div>
+                    <div id="messagesArea" class="flex-1 overflow-y-auto p-4 space-y-4">
+                        <div id="welcomeMessage" class="text-center text-gray-400 mt-20">
+                            <p class="text-lg mb-2">👋 Benvenuto!</p>
+                            <p class="text-sm">Invia un messaggio per iniziare a comunicare</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800/95 backdrop-blur-sm border-t border-gray-700 p-4 flex-shrink-0 shadow-2xl">
+                        <!-- Lista file caricati per Evasore -->
+                        <div id="uploadedFilesList" class="hidden max-w-4xl mx-auto mb-3"></div>
+                        <div class="flex gap-3 max-w-4xl mx-auto">
+                            <!-- Bottone per caricare file (solo per Evasore) -->
+                            <button id="fileUploadButton" class="hidden w-12 h-12 flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white rounded-xl transition-all flex-shrink-0 shadow-lg" title="Carica file">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </button>
+                            <input type="file" id="fileInput" class="hidden" multiple />
+                            <textarea id="messageInput" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 bg-gray-700 text-white rounded-xl border border-gray-600 focus:border-violet-500 focus:outline-none resize-none transition-colors" rows="1"></textarea>
+                            <button id="sendButton" class="w-12 h-12 flex items-center justify-center bg-violet-500 hover:bg-violet-600 text-white rounded-xl transition-all flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-violet-500/50">
+                                <svg id="sendIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                                <div id="loadingIcon" class="spinner hidden"></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table View -->
+                <div id="tableView" class="hidden absolute inset-0 flex flex-col">
+                    <div class="bg-gray-800/95 backdrop-blur-sm border-b border-gray-700 p-4 flex-shrink-0 flex justify-between items-center shadow-lg">
+                        <h2 class="text-xl font-bold text-white">📊 Tabella - Lella</h2>
+                        <div class="flex space-x-3">
+                            <button onclick="loadTableData()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2 shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M21.5 14a10 10 0 0 1-18 0M2.5 10a10 10 0 0 1 18 0"/></svg>
+                                Aggiorna
+                            </button>
+                            <button onclick="exportToCSV()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2 shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15h6"/></svg>
+                                Esporta CSV
+                            </button>
+                            <button onclick="deleteTable()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors flex items-center gap-2 shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                Svuota Tabella
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 relative">
+                        <div id="tableLoading" class="absolute inset-0 bg-gray-900/70 flex items-center justify-center hidden">
+                            <div class="flex flex-col items-center">
+                                <div class="spinner w-8 h-8 border-4 border-t-4 border-violet-500 mb-3"></div>
+                                <p class="text-white text-lg">Caricamento dati...</p>
+                            </div>
+                        </div>
+                        <div id="tableError" class="bg-red-900/50 border border-red-700 text-red-300 p-4 rounded-lg mb-4 hidden">
+                            <p class="font-bold mb-2">Errore nel caricamento della tabella:</p>
+                            <pre id="tableErrorMessage" class="whitespace-pre-wrap text-sm"></pre>
+                        </div>
+                        <div id="emptyState" class="text-center text-gray-400 mt-20 hidden">
+                            <p class="text-2xl mb-2">📭 Nessun dato trovato</p>
+                            <p class="text-md">La tabella è vuota. Invia un messaggio alla chat per popolarla.</p>
+                        </div>
+                        <div class="shadow-xl overflow-x-auto border border-gray-700 rounded-xl">
+                            <table class="min-w-full divide-y divide-gray-700">
+                                <thead class="bg-gray-800" id="tableHead">
+                                    <!-- Table headers will be injected here -->
+                                </thead>
+                                <tbody class="bg-gray-900 divide-y divide-gray-700" id="tableBody">
+                                    <!-- Table rows will be injected here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="modal-overlay hidden">
+        <div class="modal-content bg-gray-800 border-gray-700">
+            <h3 class="text-xl font-bold text-white mb-4">Conferma Logout</h3>
+            <p class="text-slate-300 mb-6">Sei sicuro di voler effettuare il logout?</p>
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeLogoutModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">Annulla</button>
+                <button onclick="handleLogout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Table Modal -->
+    <div id="confirmModal" class="modal-overlay hidden">
+        <div class="modal-content bg-gray-800 border-gray-700">
+            <h3 class="text-xl font-bold text-white mb-4">Conferma Svuota Tabella</h3>
+            <p class="text-slate-300 mb-6">Sei sicuro di voler eliminare TUTTI i dati dalla tabella? Questa azione è irreversibile.</p>
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeConfirmModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">Annulla</button>
+                <button onclick="confirmDelete()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Svuota</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal-overlay hidden">
+        <div class="modal-content text-center bg-gray-800 border-gray-700">
+            <div class="text-emerald-500 text-5xl mb-4">✅</div>
+            <h3 class="text-xl font-bold text-white mb-2">Successo!</h3>
+            <p class="text-slate-300">La tabella è stata svuotata con successo.</p>
+            <button onclick="closeSuccessModal()" class="mt-6 px-4 py-2 bg-violet-500 hover:bg-violet-600 text-white rounded-lg transition-colors">Chiudi</button>
+        </div>
+    </div>
+
+    <!-- Clear Chat Modal -->
+    <div id="clearChatModal" class="modal-overlay hidden">
+        <div class="modal-content bg-gray-800 border-gray-700">
+            <h3 class="text-xl font-bold text-white mb-4">Conferma Cancellazione Chat</h3>
+            <p class="text-slate-300 mb-6">Sei sicuro di voler cancellare la cronologia della chat corrente? Questa azione è irreversibile.</p>
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeClearChatModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">Annulla</button>
+                <button onclick="confirmClearChat()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Cancella</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Cleared Modal -->
+    <div id="chatClearedModal" class="modal-overlay hidden">
+        <div class="modal-content text-center bg-gray-800 border-gray-700">
+            <div class="text-emerald-500 text-5xl mb-4">🗑️</div>
+            <h3 class="text-xl font-bold text-white mb-2">Chat Cancellata!</h3>
+            <p class="text-slate-300">La cronologia della chat è stata cancellata con successo.</p>
+            <button onclick="closeChatClearedModal()" class="mt-6 px-4 py-2 bg-violet-500 hover:bg-violet-600 text-white rounded-lg transition-colors">Chiudi</button>
+        </div>
+    </div>
+
+    <!-- Status Edit Modal -->
+    <div id="statusModal" class="modal-overlay hidden">
+        <div class="modal-content bg-gray-800 border-gray-700">
+            <h3 class="text-xl font-bold text-white mb-4">Modifica Stato</h3>
+            <p class="text-slate-300 mb-6">Seleziona il nuovo stato per l'ordine:</p>
+            <div class="space-y-3">
+                <button onclick="selectStatus('Annullare')" class="status-option-btn status-annullare">Annullare</button>
+                <button onclick="selectStatus('Rispedire')" class="status-option-btn status-rispedire">Rispedire</button>
+                <button onclick="selectStatus('Attesa')" class="status-option-btn status-attesa">Attesa</button>
+            </div>
+            <div class="flex justify-end mt-6">
+                <button onclick="closeStatusModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text Edit Modal -->
+    <div id="editTextModal" class="modal-overlay hidden">
+        <div class="edit-modal-content bg-gray-800 border-gray-700">
+            <h3 class="text-xl font-bold text-white mb-4">Modifica Cella</h3>
+            <textarea id="editTextarea" class="edit-textarea flex-1 mb-4 bg-gray-900 border-gray-600 focus:border-violet-500"></textarea>
+            <div class="flex justify-end space-x-3 flex-shrink-0">
+                <button onclick="closeEditModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">Annulla</button>
+                <button onclick="saveEditModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">Salva</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Row Modal -->
+    <div id="deleteRowModal" class="modal-overlay hidden">
+        <div class="modal-content bg-gray-800 border-gray-700">
+            <h3 class="text-xl font-bold text-white mb-4">Conferma Eliminazione Riga</h3>
+            <p class="text-slate-300 mb-6">Sei sicuro di voler eliminare questa riga dalla tabella? Questa azione è irreversibile.</p>
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeDeleteRowModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">Annulla</button>
+                <button onclick="confirmDeleteRow()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Elimina</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Funzione di login placeholder
+        // =================================================================
+        // VARIABILI GLOBALI
+        // =================================================================
+        let currentUser = localStorage.getItem('currentUser');
+        let currentUserRole = localStorage.getItem('currentUserRole');
+        let currentView = 'chat-lella';
+        let currentChat = 'lella';
+        let isLoading = false;
+        let currentTableData = [];
+        let currentEditingCell = null;
+        let currentEditingRowIndex = null;
+        let currentEditingColumnName = null;
+
+        // =================================================================
+        // MAPPATURA CHAT
+        // =================================================================
+        const CHAT_MAP = {
+            'lella': {
+                title: 'Chat - Lella',
+                webhookId: 'webhookUrlLella',
+                navId: 'navChatLella',
+                historyKey: 'chatHistory_lella',
+                requiresRole: ['admin', 'caller']
+            },
+            'evasore': {
+                title: 'Evasore',
+                webhookId: 'webhookUrlEvasore',
+                navId: 'navChatEvasore',
+                historyKey: 'chatHistory_evasore',
+                requiresRole: ['admin', 'caller', 'user']
+            },
+            'godofreturns': {
+                title: 'God of Returns',
+                webhookId: 'webhookUrlGodOfReturns',
+                navId: 'navChatGodOfReturns',
+                historyKey: 'chatHistory_godofreturns',
+                requiresRole: ['admin', 'caller', 'user']
+            }
+        };
+
+        // =================================================================
+        // ELEMENTI DOM
+        // =================================================================
+        const mainApp = document.getElementById('mainApp');
+        const loginScreen = document.getElementById('loginScreen');
+        const currentUsernameSpan = document.getElementById('currentUsername');
+        const messagesArea = document.getElementById('messagesArea');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const sendIcon = document.getElementById('sendIcon');
+        const loadingIcon = document.getElementById('loadingIcon');
+        const currentChatTitle = document.getElementById('currentChatTitle');
+        const navChatLella = document.getElementById('navChatLella');
+        const navTableLella = document.getElementById('navTableLella');
+        const settingsBtn = document.getElementById('settingsBtn');
+
+        // =================================================================
+        // FUNZIONI DI INIZIALIZZAZIONE E LOGIN
+        // =================================================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (currentUser) {
+                showMainApp(currentUser, currentUserRole);
+                // Se l'utente non ha i diritti per 'lella', reindirizza alla prima chat disponibile
+                if (currentUserRole && !['admin', 'caller'].includes(currentUserRole) && currentView === 'chat-lella') {
+                    currentView = 'chat-evasore';
+                    currentChat = 'evasore';
+                }
+                switchView(currentView);
+            } else {
+                showLoginScreen();
+            }
+        });
+
+        function showLoginScreen() {
+            loginScreen.classList.remove('hidden');
+            mainApp.classList.add('hidden');
+        }
+
+        function showMainApp(username, role) {
+            currentUser = username;
+            currentUserRole = role;
+            currentUsernameSpan.textContent = `${username} (${role || 'Nessun Ruolo'})`;
+            loginScreen.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+            updateNavigationVisibility(role);
+        }
+
+        function updateNavigationVisibility(role) {
+            const isLellaVisible = ['admin', 'caller'].includes(role);
+            const isSettingsVisible = role === 'admin';
+
+            // Visibilità Chat Lella e Tabella Lella
+            navChatLella.classList.toggle('hidden', !isLellaVisible);
+            navTableLella.classList.toggle('hidden', !isLellaVisible);
+
+            // Visibilità Impostazioni
+            settingsBtn.classList.toggle('hidden', !isSettingsVisible);
+        }
+
         async function handleLogin(event) {
             event.preventDefault();
+            const usernameInput = document.getElementById('username').value;
+            const passwordInput = document.getElementById('password').value;
             const loginButton = document.getElementById('loginButton');
-            const loginSpinner = document.getElementById('loginSpinner');
             const loginButtonText = document.getElementById('loginButtonText');
+            const loginSpinner = document.getElementById('loginSpinner');
             const loginError = document.getElementById('loginError');
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const loginErrorText = document.getElementById('loginErrorText');
+            const loginApiUrl = document.getElementById('loginApiUrl').value;
 
-            // Mostra spinner
             loginButton.disabled = true;
+            loginButtonText.classList.add('hidden');
             loginSpinner.classList.remove('hidden');
-            loginButtonText.textContent = '';
             loginError.classList.add('hidden');
 
             try {
-                // Simula una richiesta di login
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // Successo
-                console.log('Login successful for:', username);
-                // Qui andrebbe il codice per passare alla schermata principale
-                
+                const response = await fetch(loginApiUrl, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: usernameInput, password: passwordInput })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    let errorData;
+                    try {
+                        errorData = JSON.parse(errorText);
+                    } catch (e) {
+                        throw new Error(`Errore HTTP! Stato: ${response.status}. Risposta: ${errorText}`);
+                    }
+                    throw new Error(errorData.message || `Errore HTTP! Stato: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('RISPOSTA WEBHOOK RICEVUTA:', data); // LOG DI DEBUG
+
+                let userRole = 'user'; // Ruolo di default
+                let loggedInUser = null;
+
+                // Gestione di array (vecchia logica)
+                if (Array.isArray(data) && data.length > 0) {
+                    loggedInUser = data.find(u => u.utente === usernameInput) || data[0];
+                }
+                // Gestione di oggetto singolo (logica attuale)
+                else if (typeof data === 'object' && data !== null) {
+                    // Cerca il nome utente in 'username' o 'utente'
+                    const receivedUsername = data.username || data.utente;
+                    if (receivedUsername && receivedUsername.toLowerCase() === usernameInput.toLowerCase()) {
+                        loggedInUser = data;
+                    }
+                }
+
+                if (!loggedInUser) {
+                    throw new Error('Credenziali non valide o utente non trovato nella risposta.');
+                }
+
+                // Estrazione del ruolo e gestione di 'Null' o mancante (Logica V7/V8)
+                // 1. Tenta di estrarre il ruolo dal campo 'role' (se presente e non nullo)
+                if (loggedInUser.role && loggedInUser.role.toLowerCase() !== 'null') {
+                    userRole = loggedInUser.role.toLowerCase();
+                } else {
+                    // 2. FALLBACK: Se il ruolo è mancante o 'Null', deducilo dal nome utente (più robusto per il tuo webhook)
+                    const receivedUsername = (loggedInUser.username || loggedInUser.utente || usernameInput).toLowerCase();
+                    if (receivedUsername === 'admin') {
+                        userRole = 'admin';
+                    } else if (receivedUsername === 'caller') {
+                        userRole = 'caller';
+                    } else {
+                        userRole = 'user';
+                    }
+                }
+
+                // Se il nome utente è stato ricevuto con una chiave diversa da 'username', usiamo quella
+                const finalUsername = loggedInUser.username || loggedInUser.utente || usernameInput;
+
+                localStorage.setItem('currentUser', finalUsername);
+                localStorage.setItem('currentUserRole', userRole);
+                showMainApp(finalUsername, userRole);
+
+                // Dopo il login, reindirizza alla vista corretta
+                if (['admin', 'caller'].includes(userRole)) {
+                    switchView('chat-lella');
+                } else {
+                    switchView('chat-evasore');
+                }
+
             } catch (error) {
-                // Errore
-                document.getElementById('loginErrorText').textContent = 'Credenziali non valide. Riprova.';
+                console.error('Errore di login:', error);
+                loginErrorText.textContent = error.message;
                 loginError.classList.remove('hidden');
             } finally {
-                // Nascondi spinner
                 loginButton.disabled = false;
+                loginButtonText.classList.remove('hidden');
                 loginSpinner.classList.add('hidden');
-                loginButtonText.textContent = 'Accedi';
             }
         }
+
+        function showLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('hidden');
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.add('hidden');
+        }
+
+        function handleLogout() {
+            closeLogoutModal();
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('currentUserRole');
+            currentUser = null;
+            currentUserRole = null;
+            showLoginScreen();
+            window.location.reload();
+        }
+
+        // =================================================================
+        // FUNZIONI DI GESTIONE CHAT
+        // =================================================================
+
+        function getChatHistoryKey() {
+            return CHAT_MAP[currentChat].historyKey;
+        }
+
+        function loadChatHistory() {
+            const history = localStorage.getItem(getChatHistoryKey());
+            messagesArea.innerHTML = '';
+            if (history) {
+                const messages = JSON.parse(history);
+                messages.forEach(msg => addMessage(msg.text, msg.sender, msg.isError, false));
+            } else {
+                messagesArea.innerHTML = `
+                    <div id="welcomeMessage" class="text-center text-gray-400 mt-20">
+                        <p class="text-lg mb-2">👋 Benvenuto!</p>
+                        <p class="text-sm">Invia un messaggio per iniziare a comunicare</p>
+                    </div>
+                `;
+            }
+        }
+
+        function saveChatHistory() {
+            const messages = [];
+            messagesArea.querySelectorAll('.message-enter').forEach(msgDiv => {
+                const text = msgDiv.querySelector('p:first-child').textContent;
+                const sender = msgDiv.classList.contains('justify-end') ? 'user' : 'bot';
+                const isError = msgDiv.querySelector('.chat-bubble-error') !== null;
+                messages.push({ text, sender, isError });
+            });
+            localStorage.setItem(getChatHistoryKey(), JSON.stringify(messages));
+        }
+
+        function showClearChatModal() {
+            document.getElementById('clearChatModal').classList.remove('hidden');
+        }
+
+        function closeClearChatModal() {
+            document.getElementById('clearChatModal').classList.add('hidden');
+        }
+
+        function confirmClearChat() {
+            closeClearChatModal();
+            localStorage.removeItem(getChatHistoryKey());
+            messagesArea.innerHTML = `
+                <div id="welcomeMessage" class="text-center text-gray-400 mt-20">
+                    <p class="text-lg mb-2">👋 Benvenuto!</p>
+                    <p class="text-sm">Invia un messaggio per iniziare a comunicare</p>
+                </div>
+            `;
+            showChatClearedModal();
+        }
+
+        function showChatClearedModal() {
+            document.getElementById('chatClearedModal').classList.remove('hidden');
+        }
+
+        function closeChatClearedModal() {
+            document.getElementById('chatClearedModal').classList.add('hidden');
+        }
+
+        function switchView(view) {
+            currentView = view;
+            const isChatView = view.startsWith('chat-');
+            const isTableView = view.startsWith('table-');
+
+            // Aggiorna lo stato attivo della navigazione
+            Object.values(CHAT_MAP).forEach(chat => {
+                const navElement = document.getElementById(chat.navId);
+                if (navElement) navElement.classList.remove('active');
+            });
+            const navTableElement = document.getElementById('navTableLella');
+            if (navTableElement) navTableElement.classList.remove('active');
+
+            if (isChatView) {
+                currentChat = view.split('-')[1];
+                const chatConfig = CHAT_MAP[currentChat];
+
+                // Controllo dei permessi
+                if (currentUserRole && !chatConfig.requiresRole.includes(currentUserRole)) {
+                    alert(`Accesso negato. Solo gli utenti con ruolo ${chatConfig.requiresRole.join(' o ')} possono accedere a ${chatConfig.title}.`);
+                    // Reindirizza alla prima chat disponibile per l'utente (Evasore)
+                    switchView('chat-evasore');
+                    return;
+                }
+
+                document.getElementById(chatConfig.navId).classList.add('active');
+                currentChatTitle.textContent = chatConfig.title;
+                loadChatHistory();
+            } else if (isTableView) {
+                // Per ora, solo la tabella Lella è supportata
+                currentChat = 'lella';
+                // Controllo dei permessi per la tabella Lella
+                if (currentUserRole && !['admin', 'caller'].includes(currentUserRole)) {
+                    alert(`Accesso negato. Solo gli utenti con ruolo admin o caller possono accedere alla Tabella - Lella.`);
+                    // Reindirizza alla prima chat disponibile per l'utente (Evasore)
+                    switchView('chat-evasore');
+                    return;
+                }
+                document.getElementById('navTableLella').classList.add('active');
+            }
+
+            // Mostra/nascondi le aree principali con animazione
+            const chatView = document.getElementById('chatView');
+            const tableView = document.getElementById('tableView');
+            
+            chatView.classList.toggle('hidden', !isChatView);
+            tableView.classList.toggle('hidden', !isTableView);
+            
+            // Aggiungi animazione alla vista attiva
+            if (isChatView) {
+                chatView.classList.remove('view-transition');
+                void chatView.offsetWidth; // Trigger reflow
+                chatView.classList.add('view-transition');
+            } else if (isTableView) {
+                tableView.classList.remove('view-transition');
+                void tableView.offsetWidth; // Trigger reflow
+                tableView.classList.add('view-transition');
+            }
+
+            // Mostra/nascondi il pulsante "Cancella Chat"
+            const clearChatBtn = document.getElementById('clearChatBtn');
+            if (isChatView) {
+                clearChatBtn.classList.remove('hidden');
+            } else {
+                clearChatBtn.classList.add('hidden');
+            }
+
+            // Mostra/nascondi bottone file e lista solo per evasore
+            const fileUploadButton = document.getElementById('fileUploadButton');
+            const uploadedFilesList = document.getElementById('uploadedFilesList');
+            if (currentChat === 'evasore' && isChatView) {
+                fileUploadButton.classList.remove('hidden');
+                if (uploadedFiles.length > 0) {
+                    uploadedFilesList.classList.remove('hidden');
+                }
+            } else {
+                fileUploadButton.classList.add('hidden');
+                uploadedFilesList.classList.add('hidden');
+            }
+
+            // Carica i dati della tabella se si passa alla vista tabella
+            if (isTableView) loadTableData();
+        }
+
+        function toggleSettings() {
+            // Controllo dei permessi per le Impostazioni
+            if (currentUserRole !== 'admin') {
+                alert('Accesso negato. Solo gli amministratori possono accedere alle impostazioni.');
+                return;
+            }
+            document.getElementById('settingsPanel').classList.toggle('hidden');
+        }
+
+        function scrollToBottom() {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function addMessage(text, sender, isError = false, saveHistory = true) {
+            const timestamp = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+            const welcomeMsg = document.getElementById('welcomeMessage');
+            if (welcomeMsg && welcomeMsg.parentNode) welcomeMsg.remove();
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} message-enter`;
+            const bubbleClass = sender === 'user' ? 'chat-bubble-user' :
+                isError ? 'chat-bubble-error' :
+                'chat-bubble-bot';
+            const timeClass = sender === 'user' ? 'text-sky-100' : 'text-gray-400';
+            messageDiv.innerHTML = `
+                <div class="max-w-[70%] px-4 py-3 shadow-lg ${bubbleClass}">
+                    <p class="whitespace-pre-wrap break-words">${escapeHtml(text)}</p>
+                    <p class="text-xs mt-1 ${timeClass} text-right">${timestamp}</p>
+                </div>
+            `;
+            messagesArea.appendChild(messageDiv);
+            scrollToBottom();
+            if (saveHistory) saveChatHistory();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function addLoadingMessage() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loadingMessage';
+            loadingDiv.className = 'flex justify-start message-enter';
+            loadingDiv.innerHTML = `
+                <div class="chat-bubble-bot text-white px-4 py-3 shadow-lg flex items-center gap-2">
+                    <div class="spinner"></div>
+                    <span>Elaborazione...</span>
+                </div>
+            `;
+            messagesArea.appendChild(loadingDiv);
+            scrollToBottom();
+        }
+
+        function removeLoadingMessage() {
+            const loading = document.getElementById('loadingMessage');
+            if (loading) loading.remove();
+        }
+
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            const hasFiles = uploadedFiles.length > 0;
+            
+            // Permetti invio solo se c'è testo o file
+            if ((!text && !hasFiles) || isLoading) return;
+
+            const chatConfig = CHAT_MAP[currentChat];
+            // Doppio controllo permessi prima di inviare
+            if (currentUserRole && !chatConfig.requiresRole.includes(currentUserRole)) {
+                alert(`Accesso negato. Non puoi inviare messaggi a ${chatConfig.title}.`);
+                return;
+            }
+
+            // Se ci sono file e siamo in evasore, usa webhook diverso
+            const isEvasoreWithFiles = currentChat === 'evasore' && hasFiles;
+            let webhookUrl;
+            
+            if (isEvasoreWithFiles) {
+                // Usa webhook per file dal nuovo campo di configurazione
+                webhookUrl = document.getElementById('webhookUrlEvasoreFile').value;
+            } else {
+                webhookUrl = document.getElementById(chatConfig.webhookId).value;
+            }
+
+            if (text) {
+                addMessage(text, 'user');
+            }
+            if (hasFiles) {
+                const fileNames = uploadedFiles.map(f => f.name).join(', ');
+                addMessage(`📎 File allegati: ${fileNames}`, 'user');
+            }
+            
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            isLoading = true;
+            sendButton.disabled = true;
+            sendIcon.classList.add('hidden');
+            loadingIcon.classList.remove('hidden');
+            addLoadingMessage();
+
+            try {
+                let response;
+                
+                if (isEvasoreWithFiles) {
+                    // Invia con FormData per i file
+                    const formData = new FormData();
+                    formData.append('message', text || '');
+                    formData.append('username', currentUser);
+                    formData.append('timestamp', new Date().toISOString());
+                    
+                    uploadedFiles.forEach((file, index) => {
+                        formData.append('files', file);
+                    });
+                    
+                    response = await fetch(webhookUrl, {
+                        method: 'POST',
+                        mode: 'cors',
+                        body: formData
+                    });
+                } else {
+                    // Invio normale JSON
+                    response = await fetch(webhookUrl, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: text,
+                            username: currentUser,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                }
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                removeLoadingMessage();
+                const responseText = data.response || data.message || JSON.stringify(data);
+                addMessage(responseText, 'bot');
+                
+                // Pulisci i file dopo l'invio riuscito
+                if (isEvasoreWithFiles) {
+                    clearUploadedFiles();
+                }
+            } catch (error) {
+                removeLoadingMessage();
+                addMessage(`❌ Errore di connessione: ${error.message}\n\nVerifica che il webhook sia in esecuzione su:\n${webhookUrl}`, 'bot', true);
+            } finally {
+                isLoading = false;
+                sendButton.disabled = false;
+                sendIcon.classList.remove('hidden');
+                loadingIcon.classList.add('hidden');
+            }
+        }
+
+        // =================================================================
+        // FUNZIONI DI GESTIONE TABELLA (NON MODIFICATE)
+        // =================================================================
+
+        async function loadTableData() {
+            // Controllo permessi per la tabella
+            if (currentUserRole && !['admin', 'caller'].includes(currentUserRole)) {
+                console.error("Tentativo di caricare la tabella senza i permessi necessari.");
+                return;
+            }
+
+            const tableLoading = document.getElementById('tableLoading');
+            const tableError = document.getElementById('tableError');
+            const tableContent = document.getElementById('tableView').querySelector('.flex-1');
+            const emptyState = document.getElementById('emptyState');
+            const tableApiUrl = document.getElementById('tableApiUrl');
+
+            tableLoading.classList.remove('hidden');
+            tableError.classList.add('hidden');
+            tableContent.style.opacity = '0.5';
+
+            try {
+                const response = await fetch(tableApiUrl.value, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = JSON.parse(await response.text());
+                let rows;
+                if (Array.isArray(data)) {
+                    rows = data.length > 0 && data[0].json ? data.map(item => item.json) : data;
+                } else if (data.data && Array.isArray(data.data)) {
+                    rows = data.data;
+                } else if (data.rows && Array.isArray(data.rows)) {
+                    rows = data.rows;
+                } else if (data.json) {
+                    rows = [data.json];
+                } else if (typeof data === 'object' && data !== null) {
+                    rows = [data];
+                } else {
+                    rows = [];
+                }
+                rows = rows.map(row => {
+                    const cleanRow = {};
+                    Object.entries(row).forEach(([key, value]) => {
+                        const cleanKey = key.trim();
+                        if (cleanKey) cleanRow[cleanKey] = value;
+                    });
+                    return cleanRow;
+                });
+                currentTableData = rows;
+                if (rows.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    document.getElementById('tableHead').innerHTML = '';
+                    document.getElementById('tableBody').innerHTML = '';
+                } else {
+                    emptyState.classList.add('hidden');
+                    renderTable(rows);
+                }
+            } catch (error) {
+                console.error('Table loading error:', error);
+                tableError.classList.remove('hidden');
+                document.getElementById('tableErrorMessage').textContent = `Impossibile caricare i dati: ${error.message}\n\nURL: ${tableApiUrl.value}`;
+            } finally {
+                tableLoading.classList.add('hidden');
+                tableContent.style.opacity = '1';
+            }
+        }
+
+        function truncateText(text, limit) {
+            if (text.length > limit) {
+                return text.substring(0, limit) + '...';
+            }
+            return text;
+        }
+
+        function renderTable(data) {
+            const tableHead = document.getElementById('tableHead');
+            const tableBody = document.getElementById('tableBody');
+            if (data.length === 0) return;
+            const columns = Object.keys(data[0]);
+            const textEditableColumns = ['indirizzo', 'cap', 'provincia', 'città', 'citta'];
+            const modalEditableColumns = ['note', 'prodotto', 'prodotti'];
+            const nonEditableColumns = ['nome', 'cognome', 'telefono'];
+            const truncatedColumns = ['prodotto', 'prodotti', 'indirizzo', 'note'];
+
+            tableHead.innerHTML = `<tr>${columns.map(col => `<th class="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">${escapeHtml(col)}</th>`).join('')}<th class="px-6 py-3 text-center text-xs font-medium text-slate-300 uppercase tracking-wider">Azioni</th></tr>`;
+
+            tableBody.innerHTML = data.map((row, rowIndex) => `
+                <tr class="hover:bg-gray-700/50 transition-colors">
+                    ${columns.map(col => {
+                        const colLower = col.toLowerCase();
+                        const isStatoColumn = colLower === 'stato';
+                        const isModalEditable = modalEditableColumns.includes(colLower);
+                        const isTextEditable = textEditableColumns.includes(colLower);
+                        const isNonEditable = nonEditableColumns.includes(colLower);
+                        const shouldTruncate = truncatedColumns.includes(colLower);
+                        const fullValue = String(row[col] || '');
+                        const displayValue = shouldTruncate ? truncateText(fullValue, 25) : fullValue;
+
+                        if (isStatoColumn) {
+                            return `
+                                <td class="px-6 py-4 text-sm text-white editable-cell cursor-pointer"
+                                    data-row="${rowIndex}"
+                                    data-column="${escapeHtml(col)}"
+                                    data-original-value="${escapeHtml(fullValue)}"
+                                    onclick="editStatusCell(this)">
+                                    ${escapeHtml(displayValue)}
+                                </td>
+                            `;
+                        } else if (isModalEditable) {
+                            return `
+                                <td class="px-6 py-4 text-sm text-white text-editable-cell ${shouldTruncate ? 'truncated-cell' : ''}"
+                                    data-row="${rowIndex}"
+                                    data-column="${escapeHtml(col)}"
+                                    data-original-value="${escapeHtml(fullValue)}"
+                                    ${shouldTruncate ? `data-full-text="${escapeHtml(fullValue)}"` : ''}
+                                    onclick="openEditModal(this)">
+                                    ${escapeHtml(displayValue)}
+                                </td>
+                            `;
+                        } else if (isTextEditable) {
+                            return `
+                                <td class="px-6 py-4 text-sm text-white text-editable-cell ${shouldTruncate ? 'truncated-cell' : ''}"
+                                    data-row="${rowIndex}"
+                                    data-column="${escapeHtml(col)}"
+                                    data-original-value="${escapeHtml(fullValue)}"
+                                    ${shouldTruncate ? `data-full-text="${escapeHtml(fullValue)}"` : ''}
+                                    onclick="editTextCell(this)">
+                                    ${escapeHtml(displayValue)}
+                                </td>
+                            `;
+                        } else {
+                            return `
+                                <td class="px-6 py-4 text-sm text-white ${isNonEditable ? 'opacity-70' : ''} ${shouldTruncate ? 'truncated-cell' : ''}"
+                                    ${shouldTruncate ? `data-full-text="${escapeHtml(fullValue)}"` : ''}>
+                                    ${escapeHtml(displayValue)}
+                                </td>
+                            `;
+                        }
+                    }).join('')}
+                    <td class="px-6 py-4 text-sm text-white text-center">
+                        <button onclick="showDeleteRowModal(${rowIndex})" class="delete-row-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showDeleteRowModal(rowIndex) {
+            currentEditingRowIndex = rowIndex;
+            document.getElementById('deleteRowModal').classList.remove('hidden');
+        }
+
+        function closeDeleteRowModal() {
+            document.getElementById('deleteRowModal').classList.add('hidden');
+            currentEditingRowIndex = null;
+        }
+
+        async function confirmDeleteRow() {
+            if (currentEditingRowIndex === null) return;
+
+            closeDeleteRowModal();
+            const deleteRowApiUrl = document.getElementById('deleteRowApiUrl');
+            const rowData = currentTableData[currentEditingRowIndex];
+
+            try {
+                const response = await fetch(deleteRowApiUrl.value, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'delete_one_row',
+                        rowIndex: currentEditingRowIndex,
+                        rowData: rowData,
+                        username: currentUser,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                // Rimuovi la riga dai dati locali e ricarica la tabella
+                currentTableData.splice(currentEditingRowIndex, 1);
+                renderTable(currentTableData);
+                alert('Riga eliminata con successo!');
+
+            } catch (error) {
+                console.error('Delete row error:', error);
+                alert(`❌ Errore durante l'eliminazione della riga:\n${error.message}`);
+            } finally {
+                currentEditingRowIndex = null;
+            }
+        }
+
+        function openEditModal(cell) {
+            currentEditingCell = cell;
+            currentEditingRowIndex = parseInt(cell.getAttribute('data-row'));
+            currentEditingColumnName = cell.getAttribute('data-column');
+            const fullValue = cell.getAttribute('data-original-value');
+
+            const textarea = document.getElementById('editTextarea');
+            textarea.value = fullValue;
+            document.getElementById('editTextModal').classList.remove('hidden');
+            textarea.focus();
+        }
+
+        function closeEditModal() {
+            document.getElementById('editTextModal').classList.add('hidden');
+            currentEditingCell = null;
+            currentEditingRowIndex = null;
+            currentEditingColumnName = null;
+        }
+
+        async function saveEditModal() {
+            if (!currentEditingCell) return;
+
+            const cell = currentEditingCell;
+            const rowIndex = currentEditingRowIndex;
+            const columnName = currentEditingColumnName;
+            const newValue = document.getElementById('editTextarea').value;
+            const originalValue = cell.getAttribute('data-original-value');
+
+            closeEditModal();
+
+            if (newValue === originalValue) return;
+
+            cell.innerHTML = `${truncateText(newValue, 25)}<div class="saving-indicator"></div>`;
+
+            const updateApiUrl = document.getElementById('updateApiUrl');
+            const rowData = { ...currentTableData[rowIndex] };
+            rowData[columnName] = newValue;
+
+            try {
+                const response = await fetch(updateApiUrl.value, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'update',
+                        rowIndex: rowIndex,
+                        columnName: columnName,
+                        newValue: newValue,
+                        rowData: rowData,
+                        username: currentUser,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+                }
+
+                currentTableData[rowIndex][columnName] = newValue;
+                cell.innerHTML = `${truncateText(newValue, 25)}<div class="saved-indicator"></div>`;
+                cell.setAttribute('data-original-value', newValue);
+                cell.setAttribute('data-full-text', newValue);
+
+                setTimeout(() => {
+                    cell.innerHTML = truncateText(newValue, 25);
+                }, 1000);
+
+            } catch (error) {
+                console.error('Update error:', error);
+                cell.innerHTML = truncateText(originalValue, 25);
+                rowData[columnName] = originalValue;
+                alert(`❌ Errore durante l'aggiornamento:\n${error.message}\n\nControlla la console per più dettagli.`);
+            }
+        }
+
+        function editStatusCell(cell) {
+            currentEditingCell = cell;
+            document.getElementById('statusModal').classList.remove('hidden');
+        }
+
+        function closeStatusModal() {
+            document.getElementById('statusModal').classList.add('hidden');
+            currentEditingCell = null;
+        }
+
+        async function selectStatus(status) {
+            if (!currentEditingCell) return;
+
+            const cell = currentEditingCell;
+            const rowIndex = parseInt(cell.getAttribute('data-row'));
+            const columnName = cell.getAttribute('data-column');
+            const originalValue = cell.getAttribute('data-original-value');
+
+            closeStatusModal();
+            cell.innerHTML = `${escapeHtml(status)}<div class="saving-indicator"></div>`;
+
+            const updateApiUrl = document.getElementById('updateApiUrl');
+            const rowData = { ...currentTableData[rowIndex] };
+            rowData[columnName] = status;
+
+            try {
+                const response = await fetch(updateApiUrl.value, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'update',
+                        rowIndex: rowIndex,
+                        columnName: columnName,
+                        newValue: status,
+                        rowData: rowData,
+                        username: currentUser,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+                }
+
+                currentTableData[rowIndex][columnName] = status;
+                cell.innerHTML = `${escapeHtml(status)}<div class="saved-indicator"></div>`;
+                cell.setAttribute('data-original-value', status);
+
+                setTimeout(() => {
+                    cell.innerHTML = escapeHtml(status);
+                }, 1000);
+
+            } catch (error) {
+                console.error('Update error:', error);
+                cell.innerHTML = escapeHtml(originalValue);
+                rowData[columnName] = originalValue;
+                alert(`❌ Errore durante l'aggiornamento:\n${error.message}\n\nControlla la console per più dettagli.`);
+            }
+        }
+
+        function editTextCell(cell) {
+            const rowIndex = parseInt(cell.getAttribute('data-row'));
+            const columnName = cell.getAttribute('data-column');
+            const originalValue = cell.getAttribute('data-original-value');
+            const shouldTruncate = cell.classList.contains('truncated-cell');
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = originalValue;
+
+            const saveValue = async () => {
+                const newValue = input.value.trim();
+                cell.innerHTML = shouldTruncate ? truncateText(originalValue, 25) : originalValue;
+
+                if (newValue === originalValue) return;
+
+                cell.innerHTML = `${shouldTruncate ? truncateText(newValue, 25) : newValue}<div class="saving-indicator"></div>`;
+
+                const updateApiUrl = document.getElementById('updateApiUrl');
+                const rowData = { ...currentTableData[rowIndex] };
+                rowData[columnName] = newValue;
+
+                try {
+                    const response = await fetch(updateApiUrl.value, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'update',
+                            rowIndex: rowIndex,
+                            columnName: columnName,
+                            newValue: newValue,
+                            rowData: rowData,
+                            username: currentUser,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+                    }
+
+                    currentTableData[rowIndex][columnName] = newValue;
+                    cell.innerHTML = `${shouldTruncate ? truncateText(newValue, 25) : newValue}<div class="saved-indicator"></div>`;
+                    cell.setAttribute('data-original-value', newValue);
+                    if (shouldTruncate) cell.setAttribute('data-full-text', newValue);
+
+                    setTimeout(() => {
+                        cell.innerHTML = shouldTruncate ? truncateText(newValue, 25) : newValue;
+                    }, 1000);
+
+                } catch (error) {
+                    console.error('Update error:', error);
+                    cell.innerHTML = shouldTruncate ? truncateText(originalValue, 25) : originalValue;
+                    rowData[columnName] = originalValue;
+                    alert(`❌ Errore durante l'aggiornamento:\n${error.message}\n\nControlla la console per più dettagli.`);
+                }
+            };
+
+            input.addEventListener('blur', saveValue);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    input.blur();
+                } else if (e.key === 'Escape') {
+                    cell.innerHTML = shouldTruncate ? truncateText(originalValue, 25) : originalValue;
+                    input.removeEventListener('blur', saveValue);
+                }
+            });
+
+            cell.textContent = '';
+            cell.appendChild(input);
+            input.focus();
+            input.select();
+        }
+
+        function deleteTable() {
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+
+        async function confirmDelete() {
+            closeConfirmModal();
+            const deleteApiUrl = document.getElementById('deleteApiUrl');
+            const tableLoading = document.getElementById('tableLoading');
+            const tableError = document.getElementById('tableError');
+            tableLoading.classList.remove('hidden');
+            tableError.classList.add('hidden');
+
+            try {
+                const response = await fetch(deleteApiUrl.value, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'delete_all',
+                        username: currentUser,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                showSuccessModal();
+                currentTableData = [];
+                document.getElementById('emptyState').classList.remove('hidden');
+                document.getElementById('tableHead').innerHTML = '';
+                document.getElementById('tableBody').innerHTML = '';
+            } catch (error) {
+                console.error('Delete error:', error);
+                tableError.classList.remove('hidden');
+                document.getElementById('tableErrorMessage').textContent = `Impossibile eliminare i dati: ${error.message}`;
+            } finally {
+                tableLoading.classList.add('hidden');
+            }
+        }
+
+        function showSuccessModal() {
+            document.getElementById('successModal').classList.remove('hidden');
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+
+        function exportToCSV() {
+            if (!currentTableData || currentTableData.length === 0) {
+                alert('⚠️ Nessun dato da esportare!');
+                return;
+            }
+            try {
+                const columns = Object.keys(currentTableData[0]);
+                let csv = columns.join(',') + '\n';
+                currentTableData.forEach(row => {
+                    const values = columns.map(col => {
+                        let value = String(row[col] || '');
+                        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+                            value = '"' + value.replace(/"/g, '""') + '"';
+                        }
+                        return value;
+                    });
+                    csv += values.join(',') + '\n';
+                });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `table_export_${timestamp}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error('CSV export error:', error);
+                alert(`❌ Errore durante l'esportazione:\n${error.message}`);
+            }
+        }
+
+        // =================================================================
+        // GESTIONE DRAG & DROP E FILE UPLOAD PER EVASORE
+        // =================================================================
+        
+        let uploadedFiles = [];
+
+        function initDragDropHandlers() {
+            const messagesArea = document.getElementById('messagesArea');
+            const fileInput = document.getElementById('fileInput');
+            const fileUploadButton = document.getElementById('fileUploadButton');
+
+            // Gestione drag & drop su tutta la chat (solo per evasore)
+            messagesArea.addEventListener('dragover', (e) => {
+                if (currentChat !== 'evasore') return;
+                e.preventDefault();
+                e.stopPropagation();
+                messagesArea.classList.add('chat-drag-over');
+            });
+
+            messagesArea.addEventListener('dragleave', (e) => {
+                if (currentChat !== 'evasore') return;
+                e.preventDefault();
+                e.stopPropagation();
+                // Verifica se stiamo uscendo dall'area messagesArea
+                if (e.target === messagesArea) {
+                    messagesArea.classList.remove('chat-drag-over');
+                }
+            });
+
+            messagesArea.addEventListener('drop', (e) => {
+                if (currentChat !== 'evasore') return;
+                e.preventDefault();
+                e.stopPropagation();
+                messagesArea.classList.remove('chat-drag-over');
+                
+                const files = Array.from(e.dataTransfer.files);
+                handleFiles(files);
+            });
+
+            // Gestione click sul bottone file
+            fileUploadButton.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Gestione selezione file tramite input
+            fileInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target.files);
+                handleFiles(files);
+                e.target.value = ''; // Reset input
+            });
+        }
+
+        function handleFiles(files) {
+            files.forEach(file => {
+                uploadedFiles.push(file);
+            });
+            updateFilesList();
+            // Mostra la lista se ci sono file
+            const uploadedFilesList = document.getElementById('uploadedFilesList');
+            if (uploadedFiles.length > 0) {
+                uploadedFilesList.classList.remove('hidden');
+            }
+        }
+
+        function addFileToList(file) {
+            const uploadedFilesList = document.getElementById('uploadedFilesList');
+            const fileItem = document.createElement('div');
+            fileItem.className = 'uploaded-file-item';
+            fileItem.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-violet-500">
+                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                        <polyline points="13 2 13 9 20 9"></polyline>
+                    </svg>
+                    <span class="text-gray-200 text-sm">${escapeHtml(file.name)}</span>
+                    <span class="text-gray-500 text-xs">(${formatFileSize(file.size)})</span>
+                </div>
+                <button class="remove-file-btn" onclick="removeFile('${escapeHtml(file.name)}')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            `;
+            uploadedFilesList.appendChild(fileItem);
+        }
+
+        function removeFile(fileName) {
+            uploadedFiles = uploadedFiles.filter(f => f.name !== fileName);
+            updateFilesList();
+        }
+
+        function updateFilesList() {
+            const uploadedFilesList = document.getElementById('uploadedFilesList');
+            uploadedFilesList.innerHTML = '';
+            uploadedFiles.forEach(file => addFileToList(file));
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function clearUploadedFiles() {
+            uploadedFiles = [];
+            document.getElementById('uploadedFilesList').innerHTML = '';
+        }
+
+        // Inizializza i gestori al caricamento
+        document.addEventListener('DOMContentLoaded', () => {
+            initDragDropHandlers();
+        });
+
+        // =================================================================
+        // EVENT LISTENERS
+        // =================================================================
+
+        // Chiusura pannello impostazioni al click esterno
+        document.addEventListener('click', function(e) {
+            const settingsPanel = document.getElementById('settingsPanel');
+            const settingsBtn = document.getElementById('settingsBtn');
+            
+            // Se il pannello è visibile e il click non è sul pannello e non è sul pulsante
+            if (!settingsPanel.classList.contains('hidden') && 
+                !settingsPanel.contains(e.target) && 
+                !settingsBtn.contains(e.target)) {
+                
+                // Controllo aggiuntivo per evitare chiusure accidentali
+                // se il click è su un elemento che non è un input o un link
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'A') {
+                    settingsPanel.classList.add('hidden');
+                }
+            }
+        });
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+        });
+
+        // Gestione chiusura modali con click esterno
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) closeConfirmModal();
+        });
+        document.getElementById('deleteRowModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteRowModal();
+        });
+        document.getElementById('logoutModal').addEventListener('click', function(e) {
+            if (e.target === this) closeLogoutModal();
+        });
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) closeSuccessModal();
+        });
+        document.getElementById('clearChatModal').addEventListener('click', function(e) {
+            if (e.target === this) closeClearChatModal();
+        });
+        document.getElementById('chatClearedModal').addEventListener('click', function(e) {
+            if (e.target === this) closeChatClearedModal();
+        });
+        document.getElementById('statusModal').addEventListener('click', function(e) {
+            if (e.target === this) closeStatusModal();
+        });
+        document.getElementById('editTextModal').addEventListener('click', function(e) {
+            if (e.target === this) closeEditModal();
+        });
+
+        // Gestione chiusura modali con tasto ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (!document.getElementById('confirmModal').classList.contains('hidden')) closeConfirmModal();
+                if (!document.getElementById('deleteRowModal').classList.contains('hidden')) closeDeleteRowModal();
+                if (!document.getElementById('logoutModal').classList.contains('hidden')) closeLogoutModal();
+                if (!document.getElementById('successModal').classList.contains('hidden')) closeSuccessModal();
+                if (!document.getElementById('clearChatModal').classList.contains('hidden')) closeClearChatModal();
+                if (!document.getElementById('chatClearedModal').classList.contains('hidden')) closeChatClearedModal();
+                if (!document.getElementById('statusModal').classList.contains('hidden')) closeStatusModal();
+                if (!document.getElementById('editTextModal').classList.contains('hidden')) closeEditModal();
+            }
+        });
     </script>
 </body>
 </html>
