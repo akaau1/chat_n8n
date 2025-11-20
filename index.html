@@ -688,15 +688,15 @@
                     <div class="space-y-4">
                         <div class="bg-app-surface p-4 rounded-lg">
                             <label for="loginApiUrl" class="block text-sm font-medium text-gray-400 mb-2">URL API Login</label>
-                            <input type="text" id="loginApiUrl" class="w-full bg-app-surface border-2 border-app-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent p-2 text-white" value="https://api.example.com/login">
+                            <input type="text" id="loginApiUrl" class="w-full bg-app-surface border-2 border-app-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent p-2 text-white" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/sing-up">
                         </div>
                         <div class="bg-app-surface p-4 rounded-lg">
                             <label for="chatApiUrl" class="block text-sm font-medium text-gray-400 mb-2">URL API Chat</label>
-                            <input type="text" id="chatApiUrl" class="w-full bg-app-surface border-2 border-app-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent p-2 text-white" value="https://api.example.com/chat">
+                            <input type="text" id="chatApiUrl" class="w-full bg-app-surface border-2 border-app-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent p-2 text-white" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/chat">
                         </div>
                         <div class="bg-app-surface p-4 rounded-lg">
                             <label for="tableApiUrl" class="block text-sm font-medium text-gray-400 mb-2">URL API Tabella</label>
-                            <input type="text" id="tableApiUrl" class="w-full bg-app-surface border-2 border-app-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent p-2 text-white" value="https://api.example.com/table">
+                            <input type="text" id="tableApiUrl" class="w-full bg-app-surface border-2 border-app-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent p-2 text-white" value="https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/data">
                         </div>
                         <button onclick="saveSettings()" class="btn-primary font-bold py-2 px-4 rounded-lg flex items-center justify-center transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -881,13 +881,13 @@
 
         // Inizializzazione URL API (con fallback se non salvati)
         if (!localStorage.getItem('loginApiUrl')) {
-            localStorage.setItem('loginApiUrl', 'https://api.example.com/login');
+            localStorage.setItem('loginApiUrl', 'https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/sing-up');
         }
         if (!localStorage.getItem('chatApiUrl')) {
-            localStorage.setItem('chatApiUrl', 'https://api.example.com/chat');
+            localStorage.setItem('chatApiUrl', 'https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/chat');
         }
         if (!localStorage.getItem('tableApiUrl')) {
-            localStorage.setItem('tableApiUrl', 'https://api.example.com/table');
+            localStorage.setItem('tableApiUrl', 'https://thereby-plastics-subjective-michel.trycloudflare.com/webhook/data');
         }
 
         // Carica URL API salvati
