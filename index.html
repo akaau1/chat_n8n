@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -901,6 +900,16 @@
         </div>
     </div>
 
+    <!-- Session Expired Modal -->
+    <div id="sessionExpiredModal" class="modal-overlay hidden">
+        <div class="modal-content text-center bg-gray-800 border-gray-700">
+            <div class="text-amber-500 text-5xl mb-4">⏰</div>
+            <h3 class="text-xl font-bold text-white mb-2">Sessione Scaduta</h3>
+            <p class="text-slate-300">La tua sessione è scaduta per inattività.<br>Effettua nuovamente il login.</p>
+            <button onclick="closeSessionExpiredModal()" class="mt-6 px-4 py-2 bg-violet-500 hover:bg-violet-600 text-white rounded-lg transition-colors">OK</button>
+        </div>
+    </div>
+
     <!-- Status Edit Modal -->
     <div id="statusModal" class="modal-overlay hidden">
         <div class="modal-content bg-gray-800 border-gray-700">
@@ -956,6 +965,89 @@
         let currentEditingColumnName = null;
 
         // =================================================================
+        // VARIABILI PER GESTIONE INATTIVITÀ (AUTO-LOGOUT 6 ORE)
+        // =================================================================
+        const INACTIVITY_TIMEOUT = 6 * 60 * 60 * 1000; // 6 ore in millisecondi
+        let inactivityTimer = null;
+        let lastActivityTime = parseInt(localStorage.getItem('lastActivityTime')) || Date.now();
+
+        // =================================================================
+        // FUNZIONI PER GESTIONE INATTIVITÀ
+        // =================================================================
+
+        function updateLastActivity() {
+            lastActivityTime = Date.now();
+            localStorage.setItem('lastActivityTime', lastActivityTime.toString());
+        }
+
+        function checkInactivity() {
+            const now = Date.now();
+            const timeSinceLastActivity = now - lastActivityTime;
+            
+            if (timeSinceLastActivity >= INACTIVITY_TIMEOUT) {
+                // L'utente è inattivo da più di 6 ore
+                autoLogout();
+            }
+        }
+
+        function autoLogout() {
+            // Pulisci i timer
+            stopActivityTracking();
+            
+            // Rimuovi i dati di sessione
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('currentUserRole');
+            localStorage.removeItem('lastActivityTime');
+            
+            currentUser = null;
+            currentUserRole = null;
+            
+            // Mostra il modal di sessione scaduta
+            showSessionExpiredModal();
+        }
+
+        function showSessionExpiredModal() {
+            document.getElementById('sessionExpiredModal').classList.remove('hidden');
+        }
+
+        function closeSessionExpiredModal() {
+            document.getElementById('sessionExpiredModal').classList.add('hidden');
+            showLoginScreen();
+            window.location.reload();
+        }
+
+        function initActivityTracking() {
+            // Eventi che indicano attività dell'utente
+            const activityEvents = [
+                'mousedown',
+                'mousemove',
+                'keydown',
+                'scroll',
+                'touchstart',
+                'click',
+                'wheel'
+            ];
+            
+            // Aggiungi listener per ogni tipo di evento
+            activityEvents.forEach(eventType => {
+                document.addEventListener(eventType, updateLastActivity, { passive: true });
+            });
+            
+            // Controlla l'inattività ogni minuto
+            inactivityTimer = setInterval(checkInactivity, 60 * 1000); // Controlla ogni minuto
+            
+            // Controlla subito all'avvio se la sessione è già scaduta
+            checkInactivity();
+        }
+
+        function stopActivityTracking() {
+            if (inactivityTimer) {
+                clearInterval(inactivityTimer);
+                inactivityTimer = null;
+            }
+        }
+
+        // =================================================================
         // MAPPATURA CHAT
         // =================================================================
         const CHAT_MAP = {
@@ -1004,6 +1096,9 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             if (currentUser) {
+                // Inizializza il tracking dell'attività
+                initActivityTracking();
+                
                 showMainApp(currentUser, currentUserRole);
                 // Se l'utente non ha i diritti per 'lella', reindirizza alla prima chat disponibile
                 if (currentUserRole && !['admin', 'caller'].includes(currentUserRole) && currentView === 'chat-lella') {
@@ -1014,6 +1109,9 @@
             } else {
                 showLoginScreen();
             }
+            
+            // Inizializza drag & drop
+            initDragDropHandlers();
         });
 
         function showLoginScreen() {
@@ -1121,6 +1219,11 @@
 
                 localStorage.setItem('currentUser', finalUsername);
                 localStorage.setItem('currentUserRole', userRole);
+                
+                // Inizializza il timestamp dell'ultima attività e avvia il tracking
+                localStorage.setItem('lastActivityTime', Date.now().toString());
+                initActivityTracking();
+                
                 showMainApp(finalUsername, userRole);
 
                 // Dopo il login, reindirizza alla vista corretta
@@ -1151,8 +1254,14 @@
 
         function handleLogout() {
             closeLogoutModal();
+            
+            // Ferma il tracking dell'attività
+            stopActivityTracking();
+            
             localStorage.removeItem('currentUser');
             localStorage.removeItem('currentUserRole');
+            localStorage.removeItem('lastActivityTime');
+            
             currentUser = null;
             currentUserRole = null;
             showLoginScreen();
@@ -2069,11 +2178,6 @@
             document.getElementById('uploadedFilesList').innerHTML = '';
         }
 
-        // Inizializza i gestori al caricamento
-        document.addEventListener('DOMContentLoaded', () => {
-            initDragDropHandlers();
-        });
-
         // =================================================================
         // EVENT LISTENERS
         // =================================================================
@@ -2133,6 +2237,9 @@
         document.getElementById('editTextModal').addEventListener('click', function(e) {
             if (e.target === this) closeEditModal();
         });
+        document.getElementById('sessionExpiredModal').addEventListener('click', function(e) {
+            if (e.target === this) closeSessionExpiredModal();
+        });
 
         // Gestione chiusura modali con tasto ESC
         document.addEventListener('keydown', function(e) {
@@ -2145,6 +2252,7 @@
                 if (!document.getElementById('chatClearedModal').classList.contains('hidden')) closeChatClearedModal();
                 if (!document.getElementById('statusModal').classList.contains('hidden')) closeStatusModal();
                 if (!document.getElementById('editTextModal').classList.contains('hidden')) closeEditModal();
+                if (!document.getElementById('sessionExpiredModal').classList.contains('hidden')) closeSessionExpiredModal();
             }
         });
     </script>
