@@ -1653,10 +1653,29 @@
             const tableHead = document.getElementById('tableHead');
             const tableBody = document.getElementById('tableBody');
             if (data.length === 0) return;
-            const columns = Object.keys(data[0]);
+            
+            // Definisci l'ordine esatto delle colonne (ORDINE all'inizio)
+            const columnsOrder = ['ordine', 'nome', 'cognome', 'indirizzo', 'cap', 'citta', 'città', 'provincia', 'prodotto', 'telefono', 'note', 'stato', 'id'];
+            
+            // Prendi le colonne dal dato e ordinale secondo columnsOrder
+            const dataColumns = Object.keys(data[0]).map(col => col.toLowerCase());
+            const columns = columnsOrder
+                .filter(col => dataColumns.includes(col.toLowerCase()))
+                .map(col => {
+                    // Trova il nome originale della colonna (con maiuscole/minuscole corrette)
+                    return Object.keys(data[0]).find(k => k.toLowerCase() === col.toLowerCase()) || col;
+                });
+            
+            // Aggiungi eventuali colonne non presenti in columnsOrder alla fine
+            Object.keys(data[0]).forEach(col => {
+                if (!columns.find(c => c.toLowerCase() === col.toLowerCase())) {
+                    columns.push(col);
+                }
+            });
+            
             const textEditableColumns = ['indirizzo', 'cap', 'provincia', 'città', 'citta'];
             const modalEditableColumns = ['note', 'prodotto', 'prodotti'];
-            const nonEditableColumns = ['nome', 'cognome', 'telefono', 'ordini'];
+            const nonEditableColumns = ['nome', 'cognome', 'telefono', 'ordine', 'id'];
             const truncatedColumns = ['prodotto', 'prodotti', 'indirizzo', 'note'];
 
             tableHead.innerHTML = `<tr>${columns.map(col => `<th class="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">${escapeHtml(col)}</th>`).join('')}<th class="px-6 py-3 text-center text-xs font-medium text-slate-300 uppercase tracking-wider">Azioni</th></tr>`;
@@ -1738,10 +1757,34 @@
 
             // Salva i valori PRIMA di chiudere il modal
             const rowIndex = currentEditingRowIndex;
-            const rowData = currentTableData[rowIndex];
             
             // Debug - controlla nella console del browser
-            console.log('Deleting row:', rowIndex, rowData);
+            console.log('currentTableData:', currentTableData);
+            console.log('rowIndex:', rowIndex);
+            console.log('currentTableData length:', currentTableData.length);
+            
+            // Verifica che i dati esistano
+            if (!currentTableData || currentTableData.length === 0) {
+                alert('❌ Errore: Nessun dato nella tabella. Ricarica la pagina e riprova.');
+                closeDeleteRowModal();
+                return;
+            }
+            
+            if (rowIndex < 0 || rowIndex >= currentTableData.length) {
+                alert(`❌ Errore: Indice riga non valido (${rowIndex}). Ricarica la tabella e riprova.`);
+                closeDeleteRowModal();
+                return;
+            }
+            
+            const rowData = currentTableData[rowIndex];
+            
+            if (!rowData) {
+                alert('❌ Errore: Impossibile recuperare i dati della riga. Ricarica la tabella e riprova.');
+                closeDeleteRowModal();
+                return;
+            }
+            
+            console.log('rowData:', rowData);
             
             closeDeleteRowModal();
             const deleteRowApiUrl = document.getElementById('deleteRowApiUrl');
@@ -2263,4 +2306,3 @@
     </script>
 </body>
 </html>
-
