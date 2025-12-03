@@ -1700,9 +1700,9 @@
             
             if (isEvasoreWithFiles) {
                 // Usa webhook per file dal nuovo campo di configurazione
-                webhookUrl = document.getElementById('webhookUrlEvasoreFile').value;
+                webhookUrl = getFullWebhookUrl('webhookUrlEvasoreFile');
             } else {
-                webhookUrl = document.getElementById(chatConfig.webhookId).value;
+                webhookUrl = getFullWebhookUrl(chatConfig.webhookId);
             }
 
             if (text) {
