@@ -1994,7 +1994,7 @@
             const deleteRowApiUrl = document.getElementById('deleteRowApiUrl');
 
             try {
-                const response = await fetch(deleteRowApiUrl.value, {
+                const response = await fetch(getFullWebhookUrl('deleteRowApiUrl'), {
                     method: 'POST',
                     mode: 'cors',
                     headers: { 'Content-Type': 'application/json' },
@@ -2059,7 +2059,7 @@
             rowData[columnName] = newValue;
 
             try {
-                const response = await fetch(updateApiUrl.value, {
+                const response = await fetch(getFullWebhookUrl('updateApiUrl'), {
                     method: 'POST',
                     mode: 'cors',
                     headers: { 'Content-Type': 'application/json' },
@@ -2122,7 +2122,7 @@
             rowData[columnName] = status;
 
             try {
-                const response = await fetch(updateApiUrl.value, {
+                const response = await fetch(getFullWebhookUrl('updateApiUrl'), {
                     method: 'POST',
                     mode: 'cors',
                     headers: { 'Content-Type': 'application/json' },
@@ -2181,7 +2181,7 @@
                 rowData[columnName] = newValue;
 
                 try {
-                    const response = await fetch(updateApiUrl.value, {
+                    const response = await fetch(getFullWebhookUrl('updateApiUrl'), {
                         method: 'POST',
                         mode: 'cors',
                         headers: { 'Content-Type': 'application/json' },
@@ -2252,7 +2252,7 @@
             tableError.classList.add('hidden');
 
             try {
-                const response = await fetch(deleteApiUrl.value, {
+                const response = await fetch(getFullWebhookUrl('deleteApiUrl'), {
                     method: 'POST',
                     mode: 'cors',
                     headers: { 'Content-Type': 'application/json' },
