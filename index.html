@@ -751,6 +751,18 @@
                         <span class="font-medium">God of Returns</span>
                     </button>
 
+                    <!-- Chat Calcolatore Ferdi (Pop-up) -->
+                    <button onclick="openCalcolatoreFerdiPopup()" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                            <line x1="8" y1="6" x2="16" y2="6"></line>
+                            <line x1="8" y1="10" x2="16" y2="10"></line>
+                            <line x1="8" y1="14" x2="16" y2="14"></line>
+                            <line x1="8" y1="18" x2="16" y2="18"></line>
+                        </svg>
+                        <span class="font-medium">Calcolatore Ferdi</span>
+                    </button>
+
                     <!-- Separatore Visivo -->
                     <div class="my-4 border-t border-gray-700 mx-4"></div>
 
@@ -789,7 +801,7 @@
                         <div class="col-span-full">
                             <h3 class="text-lg font-semibold text-sky-400 mb-3">Autenticazione</h3>
                             <label class="text-xs text-gray-400 block mb-1">API Login:</label>
-                            <input type="text" id="loginApiUrl" value="https://leo-modified-density-collectables.trycloudflare.com/webhook/sing-up" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                            <input type="text" id="loginApiUrl" value="/webhook/sing-up" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
                         </div>
 
                         <div class="col-span-full">
@@ -797,20 +809,24 @@
                         </div>
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">Webhook Chat Lella:</label>
-                            <input type="text" id="webhookUrlLella" value="https://leo-modified-density-collectables.trycloudflare.com/webhook/chat" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                            <input type="text" id="webhookUrlLella" value="/webhook/chat" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">Webhook Chat Evasore (Testo):</label>
-                            <input type="text" id="webhookUrlEvasore" value="https://leo-modified-density-collectables.trycloudflare.com/webhook/evasore-ordini" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                            <input type="text" id="webhookUrlEvasore" value="/webhook/evasore-ordini" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <!-- NUOVO: Webhook Chat Evasore (File) -->
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">Webhook Chat Evasore (File):</label>
-                            <input type="text" id="webhookUrlEvasoreFile" value="https://leo-modified-density-collectables.trycloudflare.com/webhook/evasore-ordini-file" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                            <input type="text" id="webhookUrlEvasoreFile" value="/webhook/evasore-ordini-file" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">Webhook Chat God of Returns:</label>
-                            <input type="text" id="webhookUrlGodOfReturns" value="https://leo-modified-density-collectables.trycloudflare.com/webhook/god-of-returns" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                            <input type="text" id="webhookUrlGodOfReturns" value="/webhook/god-of-returns" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">Webhook Chat Calcolatore Ferdi:</label>
+                            <input type="text" id="webhookUrlCalcolatoreFerdi" value="/webhook/calcolatore-ferdi" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
                         </div>
 
                         <div class="col-span-full">
@@ -818,19 +834,19 @@
                         </div>
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">API Tabella (Caricamento Dati):</label>
-                            <input type="text" id="tableApiUrl" value="https://leo-modified-density-collectables.trycloudflare.com/webhook/data" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                            <input type="text" id="tableApiUrl" value="/webhook/data" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">API Modifica Cella:</label>
-                            <input type="text" id="updateApiUrl" value="https://leo-modified-density-collectables.trycloudflare.com/webhook/edit-tab" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                            <input type="text" id="updateApiUrl" value="/webhook/edit-tab" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">API Elimina Tabella:</label>
-                            <input type="text" id="deleteApiUrl" value="https://leo-modified-density-collectables.trycloudflare.com/webhook/deletetab" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                            <input type="text" id="deleteApiUrl" value="/webhook/deletetab" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">API Elimina Riga:</label>
-                            <input type="text" id="deleteRowApiUrl" value="https://leo-modified-density-collectables.trycloudflare.com/webhook/delete-one-row" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                            <input type="text" id="deleteRowApiUrl" value="/webhook/delete-one-row" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                     </div>
                 </div>
@@ -1028,8 +1044,76 @@
             </div>
         </div>
     </div>
-
+    <!-- Calcolatore Ferdi Pop-up Modal -->
+    <div id="calcolatoreFerdiPopup" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+        <!-- Overlay semi-trasparente che chiude il pop-up al clic -->
+        <div onclick="closeCalcolatoreFerdiPopup()" class="absolute inset-0 bg-black bg-opacity-50"></div>
+        
+        <!-- Contenitore del pop-up -->
+        <div class="relative bg-gray-800 rounded-lg shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col border border-gray-700">
+            <!-- Header del pop-up -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-700">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                        <line x1="8" y1="6" x2="16" y2="6"></line>
+                        <line x1="8" y1="10" x2="16" y2="10"></line>
+                        <line x1="8" y1="14" x2="16" y2="14"></line>
+                        <line x1="8" y1="18" x2="16" y2="18"></line>
+                    </svg>
+                    Calcolatore Ferdi
+                </h2>
+                <button onclick="closeCalcolatoreFerdiPopup()" class="text-gray-400 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Area messaggi del pop-up -->
+            <div id="calcolatoreFerdiMessages" class="flex-1 overflow-y-auto p-4 space-y-3">
+                <!-- I messaggi verranno aggiunti qui dinamicamente -->
+            </div>
+            
+            <!-- Area input del pop-up -->
+            <div class="border-t border-gray-700 p-4 space-y-3">
+                <div class="flex gap-2">
+                    <input 
+                        type="text" 
+                        id="calcolatoreFerdiInput" 
+                        placeholder="Scrivi un messaggio..." 
+                        class="flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none transition-colors"
+                        onkeypress="handleCalcolatoreFerdiKeypress(event)"
+                    />
+                    <button 
+                        onclick="sendCalcolatoreFerdiMessage()" 
+                        class="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg transition-colors font-medium"
+                    >
+                        Invia
+                    </button>
+                </div>
+                <div id="calcolatoreFerdiLoading" class="hidden text-center text-gray-400 text-sm">
+                    <span class="inline-block">Elaborazione...</span>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
+        // =================================================================
+        // VARIABILE GLOBALE PER URL DI BASE
+        // =================================================================
+        const BASE_URL = "https://leo-modified-density-collectables.trycloudflare.com";
+
+        // =================================================================
+        // FUNZIONE DI UTILITY PER URL
+        // =================================================================
+        function getFullWebhookUrl(pathInputId) {
+            const path = document.getElementById(pathInputId).value;
+            // Assicurati che l'URL di base non finisca con / e il percorso inizi con /
+            return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+        }
+
         // =================================================================
         // VARIABILI GLOBALI
         // =================================================================
@@ -2423,8 +2507,109 @@
                 if (!document.getElementById('sessionExpiredModal').classList.contains('hidden')) closeSessionExpiredModal();
             }
         });
+        // =================================================================
+        // GESTIONE POP-UP CALCOLATORE FERDI
+        // =================================================================
+        let calcolatoreFerdiMessages = [];
+        let calcolatoreFerdiLoading = false;
+
+        function openCalcolatoreFerdiPopup() {
+            const popup = document.getElementById('calcolatoreFerdiPopup');
+            popup.classList.remove('hidden');
+            document.getElementById('calcolatoreFerdiInput').focus();
+        }
+
+        function closeCalcolatoreFerdiPopup() {
+            const popup = document.getElementById('calcolatoreFerdiPopup');
+            popup.classList.add('hidden');
+        }
+
+        function addCalcolatoreFerdiMessage(text, sender) {
+            const messagesContainer = document.getElementById('calcolatoreFerdiMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = sender === 'user' 
+                ? 'chat-bubble-user max-w-xs px-3 py-2 rounded-lg'
+                : 'chat-bubble-bot max-w-xs px-3 py-2 rounded-lg';
+            bubble.textContent = text;
+            
+            messageDiv.appendChild(bubble);
+            messagesContainer.appendChild(messageDiv);
+            
+            // Scroll automatico verso il basso
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            calcolatoreFerdiMessages.push({ text, sender });
+        }
+
+        function handleCalcolatoreFerdiKeypress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendCalcolatoreFerdiMessage();
+            }
+        }
+
+        async function sendCalcolatoreFerdiMessage() {
+            const input = document.getElementById('calcolatoreFerdiInput');
+            const message = input.value.trim();
+            
+            if (!message || calcolatoreFerdiLoading) return;
+            
+            // Aggiungi il messaggio dell'utente
+            addCalcolatoreFerdiMessage(message, 'user');
+            input.value = '';
+            
+            // Mostra il caricamento
+            calcolatoreFerdiLoading = true;
+            const loadingDiv = document.getElementById('calcolatoreFerdiLoading');
+            loadingDiv.classList.remove('hidden');
+            
+            try {
+                const webhookUrl = getFullWebhookUrl('webhookUrlCalcolatoreFerdi');
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: message,
+                        username: currentUser,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const responseText = data.response || data.message || JSON.stringify(data);
+                
+                loadingDiv.classList.add('hidden');
+                addCalcolatoreFerdiMessage(responseText, 'bot');
+                
+            } catch (error) {
+                console.error('Calcolatore Ferdi error:', error);
+                loadingDiv.classList.add('hidden');
+                addCalcolatoreFerdiMessage(`Errore di connessione: ${error.message}`, 'bot');
+            } finally {
+                calcolatoreFerdiLoading = false;
+            }
+        }
+
+        // Chiudi il pop-up quando si clicca all'esterno (già gestito dall'overlay)
+        // Ma aggiungiamo il supporto per il tasto Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const popup = document.getElementById('calcolatoreFerdiPopup');
+                if (!popup.classList.contains('hidden')) {
+                    closeCalcolatoreFerdiPopup();
+                }
+            }
+        });
+
     </script>
 </body>
 </html>
-
 
