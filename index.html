@@ -1315,7 +1315,7 @@
             const loginSpinner = document.getElementById('loginSpinner');
             const loginError = document.getElementById('loginError');
             const loginErrorText = document.getElementById('loginErrorText');
-            const loginApiUrl = document.getElementById('loginApiUrl').value;
+            const loginApiUrl = getFullWebhookUrl('loginApiUrl');
 
             loginButton.disabled = true;
             loginButtonText.classList.add('hidden');
