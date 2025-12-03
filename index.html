@@ -1797,7 +1797,7 @@
             tableContent.style.opacity = '0.5';
 
             try {
-                const response = await fetch(tableApiUrl.value, {
+                const response = await fetch(getFullWebhookUrl('tableApiUrl'), {
                     method: 'GET',
                     mode: 'cors',
                     headers: { 'Content-Type': 'application/json' }
