@@ -598,34 +598,9 @@
             padding-left: 0;
             padding-right: 0;
         }
-           .sidebar-collapsed .nav-text {
+        .sidebar-collapsed .nav-item span {
             display: none;
         }
-
-        /* Stili per Drag & Drop */
-        .drag-over {
-            border: 2px dashed #8b5cf6 !important; /* violet-500 */
-            background-color: rgba(139, 92, 246, 0.1) !important;
-        }
-
-        .uploaded-file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 4px 8px;
-            background-color: #374151; /* gray-700 */
-            border-radius: 4px;
-            margin-bottom: 4px;
-        }
-
-        .remove-file-btn {
-            color: #9ca3af; /* gray-400 */
-            transition: color 0.2s;
-        }
-
-        .remove-file-btn:hover {
-            color: #ef4444; /* red-500 */
-        } }
         .sidebar-collapsed .nav-item svg {
             margin: 0;
         }
@@ -1199,88 +1174,6 @@
         let currentEditingCell = null;
         let currentEditingRowIndex = null;
         let currentEditingColumnName = null;
-        
-        // Mappa per gestire i file caricati per ogni chat
-        let uploadedFilesMap = {
-            'evasore': [],
-            'productcreator': []
-        };
-        
-        // Variabile globale per l'array di file caricati della chat corrente
-        let uploadedFiles = uploadedFilesMap[currentChat] || [];
-
-        // Funzione di utilità per ottenere gli elementi specifici della chat
-        function getChatElements(chatName) {
-            const suffix = chatName === 'productcreator' ? '-productcreator' : '';
-            const mainSuffix = chatName === 'evasore' ? '' : suffix; // Evasore usa gli elementi principali
-            
-            return {
-                messagesArea: document.getElementById(`messagesArea${mainSuffix}`),
-                messageInput: document.getElementById(`messageInput${mainSuffix}`),
-                sendButton: document.getElementById(`sendButton${mainSuffix}`),
-                sendIcon: document.getElementById(`sendIcon${mainSuffix}`),
-                loadingIcon: document.getElementById(`loadingIcon${mainSuffix}`),
-                fileUploadButton: document.getElementById(`fileUploadButton${mainSuffix}`),
-                fileInput: document.getElementById(`fileInput${mainSuffix}`),
-                uploadedFilesList: document.getElementById(`uploadedFilesList${mainSuffix}`)
-            };
-        }
-
-        // Funzione per aggiornare la variabile globale uploadedFiles
-        function updateUploadedFiles() {
-            uploadedFiles = uploadedFilesMap[currentChat] || [];
-        }
-
-        // Funzione per rendere la lista dei file caricati
-        function renderUploadedFiles() {
-            const { uploadedFilesList } = getChatElements(currentChat);
-            if (!uploadedFilesList) return;
-
-            uploadedFilesList.innerHTML = uploadedFiles.map((file, index) => `
-                <div class="uploaded-file-item">
-                    <div class="flex items-center gap-2 text-sm text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                        <span>${escapeHtml(file.name)} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-                    </div>
-                    <button onclick="removeFile(${index})" class="remove-file-btn" title="Rimuovi file">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                </div>
-            `).join('');
-
-            if (uploadedFiles.length > 0) {
-                uploadedFilesList.classList.remove('hidden');
-            } else {
-                uploadedFilesList.classList.add('hidden');
-            }
-        }
-
-        // Funzione per aggiungere un file
-        function addFile(file) {
-            if (uploadedFiles.length >= 5) {
-                alert('Puoi caricare un massimo di 5 file alla volta.');
-                return;
-            }
-            if (file.size > 25 * 1024 * 1024) { // 25MB
-                alert(`Il file "${file.name}" è troppo grande (max 25MB).`);
-                return;
-            }
-            uploadedFiles.push(file);
-            renderUploadedFiles();
-        }
-
-        // Funzione per rimuovere un file
-        function removeFile(index) {
-            uploadedFiles.splice(index, 1);
-            renderUploadedFiles();
-        }
-
-        // Funzione per pulire la lista dei file
-        function clearUploadedFiles() {
-            uploadedFilesMap[currentChat] = [];
-            updateUploadedFiles();
-            renderUploadedFiles();
-        }
 
         // =================================================================
         // VARIABILI PER GESTIONE INATTIVITÀ (AUTO-LOGOUT 6 ORE)
@@ -1738,42 +1631,17 @@
                 clearChatBtn.classList.add('hidden');
             }
 
-            // Ottieni gli elementi specifici per la chat corrente
-            const { 
-                messagesArea: currentMessagesArea, 
-                messageInput: currentMessageInput, 
-                sendButton: currentSendButton, 
-                sendIcon: currentSendIcon, 
-                loadingIcon: currentLoadingIcon,
-                fileUploadButton: currentFileUploadButton,
-                uploadedFilesList: currentUploadedFilesList
-            } = getChatElements(currentChat);
-
-            // Aggiorna le variabili globali per le funzioni generiche (addMessage, addLoadingMessage, ecc.)
-            messagesArea = currentMessagesArea;
-            messageInput = currentMessageInput;
-            sendButton = currentSendButton;
-            sendIcon = currentSendIcon;
-            loadingIcon = currentLoadingIcon;
-
-            // Mostra/nascondi il pulsante di upload file e l'area di input per le chat che lo supportano
-            const supportsFileUpload = currentChat === 'evasore' || currentChat === 'productcreator';
-            
-            // Nascondi tutti i pulsanti di upload e le liste di file per default
-            document.getElementById('fileUploadButton').classList.add('hidden');
-            document.getElementById('uploadedFilesList').classList.add('hidden');
-            document.getElementById('fileUploadButton-productcreator').classList.add('hidden');
-            document.getElementById('uploadedFilesList-productcreator').classList.add('hidden');
-
-            if (supportsFileUpload && isChatView) {
-                currentFileUploadButton.classList.remove('hidden');
-                currentUploadedFilesList.classList.toggle('hidden', uploadedFiles.length === 0);
-            }
-            
-            // Aggiorna l'altezza della textarea
-            if (messageInput) {
-                messageInput.style.height = 'auto';
-                messageInput.style.height = messageInput.scrollHeight + 'px';
+            // Mostra/nascondi bottone file e lista solo per evasore
+            const fileUploadButton = document.getElementById('fileUploadButton');
+            const uploadedFilesList = document.getElementById('uploadedFilesList');
+            if (currentChat === 'evasore' && isChatView) {
+                fileUploadButton.classList.remove('hidden');
+                if (uploadedFiles.length > 0) {
+                    uploadedFilesList.classList.remove('hidden');
+                }
+            } else {
+                fileUploadButton.classList.add('hidden');
+                uploadedFilesList.classList.add('hidden');
             }
 
             // Carica i dati della tabella se si passa alla vista tabella
@@ -2795,46 +2663,6 @@
             } finally {
                 calcolatoreFerdiLoading = false;
             }
-        }
-
-        // Funzione per inizializzare gli handler di Drag & Drop
-        function initDragDropHandlers() {
-            const dropAreas = [
-                document.getElementById('chatView'),
-                document.getElementById('chat-productcreator')
-            ].filter(el => el !== null);
-
-            dropAreas.forEach(dropArea => {
-                dropArea.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    // Controlla se la chat corrente supporta l'upload di file
-                    const supportsFileUpload = currentChat === 'evasore' || currentChat === 'productcreator';
-                    if (supportsFileUpload) {
-                        dropArea.classList.add('drag-over');
-                    }
-                });
-
-                dropArea.addEventListener('dragleave', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    dropArea.classList.remove('drag-over');
-                });
-
-                dropArea.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    dropArea.classList.remove('drag-over');
-
-                    const supportsFileUpload = currentChat === 'evasore' || currentChat === 'productcreator';
-                    if (!supportsFileUpload) return;
-
-                    const files = e.dataTransfer.files;
-                    if (files.length > 0) {
-                        Array.from(files).forEach(file => addFile(file));
-                    }
-                });
-            });
         }
 
         // Chiudi il pop-up quando si clicca all'esterno (già gestito dall'overlay)
