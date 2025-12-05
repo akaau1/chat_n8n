@@ -1723,12 +1723,12 @@
             }
 
             // Se ci sono file e siamo in evasore, usa webhook diverso
-            const isEvasoreWithFiles = (currentChat === 'evasore' || currentChat === 'creatoreprodotti') && hasFiles;
+            const isChatWithFiles = (currentChat === 'evasore' || currentChat === 'creatoreprodotti') && hasFiles;
             let webhookUrl;
             
-            if (isEvasoreWithFiles) {
+            if (isChatWithFiles) {
                 // Usa webhook per file dal nuovo campo di configurazione
-                webhookUrl = currentChat === 'evasore' ? getFullWebhookUrl('webhookUrlEvasoreFile') : getFullWebhookUrl('webhookUrlCreatoreProdotti');
+                webhookUrl = currentChat === 'evasore' ? getFullWebhookUrl('webhookUrlEvasoreFile') : getFullWebhookUrl(chatConfig.webhookId);
             } else {
                 webhookUrl = getFullWebhookUrl(chatConfig.webhookId);
             }
@@ -1752,7 +1752,7 @@
             try {
                 let response;
                 
-                if (isEvasoreWithFiles) {
+                if (isChatWithFiles) {
                     // Invia con FormData per i file
                     const formData = new FormData();
                     formData.append('message', text || '');
@@ -1789,7 +1789,7 @@
                 addMessage(responseText, 'bot');
                 
                 // Pulisci i file dopo l'invio riuscito
-                if (isEvasoreWithFiles) {
+                if (isChatWithFiles) {
                     clearUploadedFiles();
                 }
             } catch (error) {
