@@ -1723,12 +1723,12 @@
             }
 
             // Se ci sono file e siamo in evasore, usa webhook diverso
-            const isEvasoreWithFiles = currentChat === 'evasore' && hasFiles;
+            const isEvasoreWithFiles = (currentChat === 'evasore' || currentChat === 'creatoreprodotti') && hasFiles;
             let webhookUrl;
             
             if (isEvasoreWithFiles) {
                 // Usa webhook per file dal nuovo campo di configurazione
-                webhookUrl = getFullWebhookUrl('webhookUrlEvasoreFile');
+                webhookUrl = currentChat === 'evasore' ? getFullWebhookUrl('webhookUrlEvasoreFile') : getFullWebhookUrl('webhookUrlCreatoreProdotti');
             } else {
                 webhookUrl = getFullWebhookUrl(chatConfig.webhookId);
             }
