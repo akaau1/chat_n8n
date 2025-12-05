@@ -2330,16 +2330,16 @@
             const fileInput = document.getElementById('fileInput');
             const fileUploadButton = document.getElementById('fileUploadButton');
 
-            // Gestione drag & drop su tutta la chat (solo per evasore)
+            // Gestione drag & drop su tutta la chat (solo per evasore e product-creator)
             messagesArea.addEventListener('dragover', (e) => {
-                if (currentChat !== 'evasore') return;
+                if (currentChat !== 'evasore' && currentChat !== 'product-creator') return;
                 e.preventDefault();
                 e.stopPropagation();
                 messagesArea.classList.add('chat-drag-over');
             });
 
             messagesArea.addEventListener('dragleave', (e) => {
-                if (currentChat !== 'evasore') return;
+                if (currentChat !== 'evasore' && currentChat !== 'product-creator') return;
                 e.preventDefault();
                 e.stopPropagation();
                 // Verifica se stiamo uscendo dall'area messagesArea
@@ -2349,7 +2349,7 @@
             });
 
             messagesArea.addEventListener('drop', (e) => {
-                if (currentChat !== 'evasore') return;
+                if (currentChat !== 'evasore' && currentChat !== 'product-creator') return;
                 e.preventDefault();
                 e.stopPropagation();
                 messagesArea.classList.remove('chat-drag-over');
@@ -2612,3 +2612,4 @@
     </script>
 </body>
 </html>
+
