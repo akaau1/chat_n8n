@@ -3006,7 +3006,7 @@
                 </div>`;
             });
             
-        } } else if (Array.isArray(data) && data.length > 0 && data[0].TrackingDettaglio && !data[0].tracking_number) {
+         } else if (Array.isArray(data) && data.length > 0 && data[0].TrackingDettaglio && !data[0].tracking_number) {
 			    // GESTISCE TRACKING DETTAGLIATO (formato con cronologia completa)
 			    const trackingData = data[0];
             html += '<div class="flex items-center gap-2 text-emerald-400 font-bold text-lg mb-4">✅ Tracking Trovato</div>';
@@ -3122,6 +3122,7 @@
 
 	</body>
 	</html>
+
 
 
 
