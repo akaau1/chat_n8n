@@ -2961,12 +2961,21 @@
         if (!response.ok) throw new Error('Errore server: ' + response.status);
 
         let data = await response.json();
-        console.log('Risposta tracking ricevuta:', data);
-        
-        // NORMALIZZA: Se è un oggetto singolo, trasformalo in array
-        if (!Array.isArray(data) && typeof data === 'object' && data !== null) {
-            data = [data];
-        }
+console.log('Risposta tracking ricevuta:', data);
+
+// NORMALIZZA: Gestisci il formato con chiave "spedizioni"
+if (Array.isArray(data) && data.length > 0 && data[0].spedizioni) {
+    // Se il primo elemento ha la chiave "spedizioni", estraila
+    data = data[0].spedizioni;
+} else if (!Array.isArray(data) && typeof data === 'object' && data !== null) {
+    // Se è un oggetto singolo con "spedizioni", estraila
+    if (data.spedizioni && Array.isArray(data.spedizioni)) {
+        data = data.spedizioni;
+    } else {
+        // Altrimenti trasformalo in array
+        data = [data];
+    }
+}
         
         // Verifica se ci sono dati
         if (!Array.isArray(data) || data.length === 0) {
@@ -3127,6 +3136,7 @@
 
 	</body>
 	</html>
+
 
 
 
