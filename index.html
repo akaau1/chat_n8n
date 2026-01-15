@@ -412,6 +412,115 @@
     display: none;
 }
 
+/* Stili Sezione Tracking */
+        .tracking-section {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px;
+            margin-top: 20px;
+        }
+        .tracking-section h3 {
+            color: #a1a5b4;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 0 12px 0;
+        }
+        .tracking-description {
+            color: #9ca3af;
+            font-size: 13px;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .tracking-input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .tracking-input {
+            flex: 1;
+            padding: 10px 12px;
+            background: rgba(30, 27, 75, 0.5);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .tracking-input:focus {
+            outline: none;
+            border-color: rgba(139, 92, 246, 0.6);
+            background: rgba(30, 27, 75, 0.8);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+        .tracking-input::placeholder {
+            color: #6b7280;
+        }
+        .tracking-button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .tracking-button:hover {
+            background: linear-gradient(135deg, #0e7490 0%, #0891b2 100%);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+            transform: translateY(-2px);
+        }
+        .tracking-button:active {
+            transform: translateY(0);
+        }
+        .tracking-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .tracking-result {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(30, 27, 75, 0.5);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            color: #e5e7eb;
+            font-size: 13px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        .tracking-result.show {
+            display: block;
+        }
+        .tracking-result.error {
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+        .tracking-result.success {
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #a7f3d0;
+        }
+        .tracking-loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
 /* Stili Login - FINE MODIFICHE GRAFICHE MANUS */
         .modal-overlay {
             position: fixed;
@@ -778,6 +887,33 @@
                         </svg>
                         <span class="font-medium">Calcolatore Ferdi</span>
                     </button>
+
+                    <!-- Sezione Tracking -->
+                    <div class="tracking-section">
+                        <h3>📦 Tracking</h3>
+                        <p class="tracking-description">Inserire il numero di tracking per monitorare il pacco.</p>
+                        <div class="tracking-input-group">
+                            <input 
+                                type="text" 
+                                id="trackingInput" 
+                                placeholder="Numero Tracking" 
+                                class="tracking-input"
+                                onkeypress="handleTrackingKeypress(event)"
+                            />
+                            <button 
+                                onclick="searchTracking()" 
+                                id="trackingButton"
+                                class="tracking-button"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                                <span>CERCA</span>
+                            </button>
+                        </div>
+                        <div id="trackingResult" class="tracking-result"></div>
+                    </div>
 
                     <!-- Separatore 2 -->
                     <div class="h-px bg-gray-700 my-4 mx-4"></div>
@@ -2662,6 +2798,87 @@
 	            }
 	        });
 	
+
+        // =================================================================
+        // GESTIONE SEZIONE TRACKING
+        // =================================================================
+        function handleTrackingKeypress(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                searchTracking();
+            }
+        }
+
+        async function searchTracking() {
+            const trackingInput = document.getElementById('trackingInput');
+            const trackingNumber = trackingInput.value.trim();
+            const trackingResult = document.getElementById('trackingResult');
+            const trackingButton = document.getElementById('trackingButton');
+
+            if (!trackingNumber) {
+                trackingResult.classList.remove('show', 'error', 'success');
+                return;
+            }
+
+            // Disabilita il bottone e mostra il caricamento
+            trackingButton.disabled = true;
+            trackingResult.classList.add('show');
+            trackingResult.innerHTML = '<div style="display: flex; align-items: center; gap: 8px;"><div class="tracking-loading"></div><span>Ricerca in corso...</span></div>';
+
+            try {
+                // Utilizza il webhook di tracking fornito
+                const webhookUrl = 'https://fenixserver.win/webhook/2406bb0a-3650-4cad-b90a-1e48902c2021';
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tracking_number: trackingNumber,
+                        username: currentUser || 'guest',
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+
+                const data = await response.json();
+                
+                // Formatta la risposta
+                let resultHTML = '';
+                if (data.success || data.status === 'success') {
+                    trackingResult.classList.remove('error');
+                    trackingResult.classList.add('success');
+                    resultHTML = '<strong>Tracking trovato:</strong><br>';
+                    
+                    // Se la risposta è un oggetto, mostra i dettagli
+                    if (typeof data === 'object') {
+                        if (data.message) resultHTML += '<div>' + data.message + '</div>';
+                        if (data.data) resultHTML += '<pre style="margin: 8px 0; font-size: 12px; white-space: pre-wrap; word-break: break-word;">' + JSON.stringify(data.data, null, 2) + '</pre>';
+                        if (data.tracking_info) resultHTML += '<pre style="margin: 8px 0; font-size: 12px; white-space: pre-wrap; word-break: break-word;">' + JSON.stringify(data.tracking_info, null, 2) + '</pre>';
+                    } else {
+                        resultHTML += '<div>' + JSON.stringify(data, null, 2) + '</div>';
+                    }
+                } else {
+                    trackingResult.classList.add('error');
+                    trackingResult.classList.remove('success');
+                    resultHTML = '<strong>Errore:</strong><br>';
+                    resultHTML += data.message || data.error || 'Tracking non trovato';
+                }
+
+                trackingResult.innerHTML = resultHTML;
+                
+            } catch (error) {
+                console.error('Tracking search error:', error);
+                trackingResult.classList.add('error');
+                trackingResult.classList.remove('success');
+                trackingResult.innerHTML = '<strong>Errore di connessione:</strong><br>' + error.message;
+            } finally {
+                trackingButton.disabled = false;
+            }
+        }
+
 	        // =================================================================
 	        // GESTIONE MODALE ACCESSO NEGATO
 	        // =================================================================
