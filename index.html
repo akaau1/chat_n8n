@@ -82,6 +82,60 @@
             background-color: #ef4444; /* red-500 */
             color: white;
         }
+        /* Stili Tracking */ 
+        #trackingView { 
+            padding: 2rem; 
+        } 
+        #trackingView h2 { 
+            color: white; 
+            font-size: 1.5rem; 
+            margin-bottom: 1rem; 
+        } 
+        #trackingView p { 
+            color: #a1a5b4; 
+            margin-bottom: 2rem; 
+        } 
+        #trackingInputContainer { 
+            display: flex; 
+            gap: 1rem; 
+            max-width: 500px; 
+        } 
+        #trackingInput { 
+            flex: 1; 
+            padding: 0.75rem 1rem; 
+            background-color: #1f2937; 
+            color: white; 
+            border-radius: 0.5rem; 
+            border: 1px solid #374151; 
+            outline: none; 
+            transition: border-color 0.2s; 
+        } 
+        #trackingInput:focus { 
+            border-color: #8b5cf6; 
+        } 
+        #trackingButton { 
+            padding: 0.75rem 1.5rem; 
+            background-color: #0ea5e9; /* sky-500 */ 
+            color: white; 
+            border: none; 
+            border-radius: 0.5rem; 
+            cursor: pointer; 
+            transition: background-color 0.2s; 
+            display: flex; 
+            align-items: center; 
+            gap: 0.5rem; 
+        } 
+        #trackingButton:hover { 
+            background-color: #0284c7; /* sky-600 */ 
+        } 
+        #trackingResult { 
+            margin-top: 2rem; 
+            padding: 1rem; 
+            background-color: #1f2937; 
+            border-radius: 0.5rem; 
+            color: white; 
+            white-space: pre-wrap; 
+        }
         /* Stili Tabella */
         .editable-cell {
             transition: background-color 0.2s;
@@ -843,6 +897,10 @@
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">Webhook Chat Calcolatore Ferdi:</label>
                             <input type="text" id="webhookUrlCalcolatoreFerdi" value="/webhook/calcolatore-ferdi" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                    </div> 
+                    <div> 
+                        <label class="text-xs text-gray-400 block mb-1">Webhook Tracking:</label> 
+                        <input type="text" id="webhookUrlTracking" value="/webhook/2406bb0a-3650-4cad-b90a-1e48902c2021" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <!-- NUOVO: Webhook Chat Creatore Prodotti -->
                         <div>
@@ -909,6 +967,22 @@
                     </div>
                 </div>
 
+            <!-- Tracking View --> 
+            <div id="trackingView" class="hidden absolute inset-0 flex flex-col items-center justify-center"> 
+                <div class="w-full max-w-lg text-center"> 
+                    <p class="text-gray-400 mb-4">Inserire il numero di tracking, per monitorare il pacco.</p> 
+                    <div class="flex items-center space-x-2"> 
+                        <input type="text" id="trackingInput" placeholder="Numero Tracking" class="w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:border-cyan-500"> 
+                        <button id="trackingButton" onclick="sendTrackingRequest()" class="px-6 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 focus:outline-none flex items-center justify-center"> 
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"> 
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /> 
+                            </svg> 
+                            CERCA 
+                        </button> 
+                    </div> 
+                    <div id="trackingResult" class="mt-4 text-left"></div> 
+                </div> 
+            </div>
                 <!-- Table View -->
                 <div id="tableView" class="hidden absolute inset-0 flex flex-col">
                     <div class="bg-gray-800/95 backdrop-blur-sm border-b border-gray-700 p-4 flex-shrink-0 flex justify-between items-center shadow-lg">
@@ -1525,6 +1599,43 @@
             document.getElementById('chatClearedModal').classList.add('hidden');
         }
 
+        // ================================================================= 
+        // GESTIONE TRACKING 
+        // ================================================================= 
+        async function sendTrackingRequest() { 
+            const input = document.getElementById('trackingInput'); 
+            const trackingNumber = input.value.trim(); 
+            const resultDiv = document.getElementById('trackingResult'); 
+            const button = document.getElementById('trackingButton'); 
+ 
+            if (!trackingNumber) return; 
+ 
+            resultDiv.innerHTML = '<div class="spinner"></div>'; 
+            button.disabled = true; 
+ 
+            try { 
+                const webhookUrl = getFullWebhookUrl('webhookUrlTracking'); 
+                const response = await fetch(webhookUrl, { 
+                    method: 'POST', 
+                    mode: 'cors', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ tracking_number: trackingNumber }) 
+                }); 
+ 
+                if (!response.ok) { 
+                    throw new Error(`HTTP error! status: ${response.status}`); 
+                } 
+ 
+                const data = await response.json(); 
+                resultDiv.textContent = JSON.stringify(data, null, 2); 
+ 
+            } catch (error) { 
+                console.error('Tracking error:', error); 
+                resultDiv.textContent = `Errore: ${error.message}`; 
+            } finally { 
+                button.disabled = false; 
+            } 
+        }
         function switchView(view) {
             currentView = view;
             const isChatView = view.startsWith('chat-');
@@ -2711,10 +2822,3 @@
 
 	</body>
 	</html>
-
-
-
-
-
-
-
