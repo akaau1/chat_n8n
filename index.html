@@ -966,6 +966,10 @@
                             <label class="text-xs text-gray-400 block mb-1">Webhook Chat Calcolatore Ferdi:</label>
                             <input type="text" id="webhookUrlCalcolatoreFerdi" value="/webhook/calcolatore-ferdi" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
                         </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">Webhook Tracking Spedizioni:</label>
+                            <input type="text" id="webhookUrlTracking" value="/webhook/2406bb0a-3650-4cad-b90a-1e48902c2021" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
+                        </div>
                         <!-- NUOVO: Webhook Chat Creatore Prodotti -->
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">Webhook Chat Creatore Prodotti:</label>
@@ -2944,7 +2948,7 @@
             resultDiv.innerHTML = '<div class="flex items-center justify-center py-8"><div class="spinner w-8 h-8 border-violet-500"></div><span class="ml-3 text-gray-400">Ricerca in corso...</span></div>';
 
             try {
-                const response = await fetch('https://fenixserver.win/webhook/2406bb0a-3650-4cad-b90a-1e48902c2021', {
+                const response = await fetch(getFullWebhookUrl('webhookUrlTracking'), {
                     method: 'POST',
                     mode: 'cors',
                     headers: { 'Content-Type': 'application/json' },
