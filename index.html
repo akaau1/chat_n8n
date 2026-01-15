@@ -82,63 +82,6 @@
             background-color: #ef4444; /* red-500 */
             color: white;
         }
-        /* Stili Tracking */ 
-        #trackingView { 
-            padding: 2rem; 
-        } 
-        #trackingView h2 { 
-            color: white; 
-            font-size: 1.5rem; 
-            margin-bottom: 1rem; 
-        } 
-        #trackingView p { 
-            color: #a1a5b4; 
-            margin-bottom: 2rem; 
-        } 
-        #trackingInputContainer { 
-            display: flex; 
-            gap: 1rem; 
-            max-width: 500px; 
-        } 
-        #trackingInput { 
-            flex: 1; 
-            padding: 0.75rem 1rem; 
-            background-color: #1f2937; 
-            color: white; 
-            border-radius: 0.5rem; 
-            border: 1px solid #374151; 
-            outline: none; 
-            transition: border-color 0.2s; 
-        } 
-        #trackingInput:focus { 
-            border-color: #8b5cf6; 
-        } 
-        #trackingButton { 
-            padding: 0.75rem 1.5rem; 
-            background-color: #0ea5e9; /* sky-500 */ 
-            color: white; 
-            border: none; 
-            border-radius: 0.5rem; 
-            cursor: pointer; 
-            transition: background-color 0.2s; 
-            display: flex; 
-            align-items: center; 
-            gap: 0.5rem; 
-        } 
-        #trackingButton:hover { 
-            background-color: #0284c7; /* sky-600 */ 
-        } 
-        #trackingResult { 
-            margin-top: 2rem; 
-            padding: 1.5rem; 
-            background-color: #f8fafc; 
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem; 
-            color: #1e293b; 
-            white-space: pre-wrap; 
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            font-size: 0.875rem;
-        }
         /* Stili Tabella */
         .editable-cell {
             transition: background-color 0.2s;
@@ -793,7 +736,7 @@
                     </button>
 
                     <!-- Tabella Lella -->
-                    <button onclick="switchView("table-lella")" id="navTableLella" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
+                    <button onclick="switchView('table-lella')" id="navTableLella" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                             <line x1="3" y1="9" x2="21" y2="9"></line>
@@ -834,15 +777,6 @@
                             <line x1="8" y1="18" x2="16" y2="18"></line>
                         </svg>
                         <span class="font-medium">Calcolatore Ferdi</span>
-                    </button>
-
-                    <!-- Tracking -->
-                    <button onclick="switchView("tracking")" id="navTracking" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                            <circle cx="12" cy="10" r="3"></circle>
-                        </svg>
-                        <span class="font-medium">Tracking</span>
                     </button>
 
                     <!-- Separatore 2 -->
@@ -909,10 +843,6 @@
                         <div>
                             <label class="text-xs text-gray-400 block mb-1">Webhook Chat Calcolatore Ferdi:</label>
                             <input type="text" id="webhookUrlCalcolatoreFerdi" value="/webhook/calcolatore-ferdi" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
-                    </div> 
-                    <div> 
-                        <label class="text-xs text-gray-400 block mb-1">Webhook Tracking:</label> 
-                        <input type="text" id="webhookUrlTracking" value="/webhook/2406bb0a-3650-4cad-b90a-1e48902c2021" class="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-violet-500 focus:outline-none text-sm transition-colors"/>
                         </div>
                         <!-- NUOVO: Webhook Chat Creatore Prodotti -->
                         <div>
@@ -979,22 +909,6 @@
                     </div>
                 </div>
 
-            <!-- Tracking View --> 
-            <div id="trackingView" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white"> 
-                <div class="w-full max-w-4xl px-4 text-center"> 
-                    <p class="text-gray-500 text-lg mb-8">Inserire il numero di tracking, per monitorare il pacco.</p> 
-                    <div class="flex items-center space-x-4"> 
-                        <input type="text" id="trackingInput" placeholder="Numero Tracking" class="flex-1 px-6 py-4 bg-white text-gray-800 text-xl rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"> 
-                        <button id="trackingButton" onclick="sendTrackingRequest()" class="px-10 py-4 bg-[#22a1c4] text-white text-lg font-bold rounded-lg hover:bg-[#1b8ba9] transition-colors flex items-center justify-center shadow-sm"> 
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg> 
-                            CERCA 
-                        </button> 
-                    </div> 
-                    <div id="trackingResult" class="mt-8 text-left max-h-[50vh] overflow-y-auto"></div> 
-                </div> 
-            </div>
                 <!-- Table View -->
                 <div id="tableView" class="hidden absolute inset-0 flex flex-col">
                     <div class="bg-gray-800/95 backdrop-blur-sm border-b border-gray-700 p-4 flex-shrink-0 flex justify-between items-center shadow-lg">
@@ -1348,13 +1262,6 @@
                 navId: 'navChatGodOfReturns',
                 historyKey: 'chatHistory_godofreturns',
                 requiresRole: ['admin', 'caller', 'user']
-            },
-            'tracking': {
-                title: 'Tracking',
-                webhookId: 'webhookUrlTracking',
-                navId: 'navTracking',
-                historyKey: 'chatHistory_tracking',
-                requiresRole: ['admin', 'editor', 'caller', 'user']
             }
         };
 
@@ -1618,48 +1525,10 @@
             document.getElementById('chatClearedModal').classList.add('hidden');
         }
 
-        // ================================================================= 
-        // GESTIONE TRACKING 
-        // ================================================================= 
-        async function sendTrackingRequest() { 
-            const input = document.getElementById('trackingInput'); 
-            const trackingNumber = input.value.trim(); 
-            const resultDiv = document.getElementById('trackingResult'); 
-            const button = document.getElementById('trackingButton'); 
- 
-            if (!trackingNumber) return; 
- 
-            resultDiv.innerHTML = '<div class="spinner"></div>'; 
-            button.disabled = true; 
- 
-            try { 
-                const webhookUrl = getFullWebhookUrl('webhookUrlTracking'); 
-                const response = await fetch(webhookUrl, { 
-                    method: 'POST', 
-                    mode: 'cors', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ tracking_number: trackingNumber }) 
-                }); 
- 
-                if (!response.ok) { 
-                    throw new Error(`HTTP error! status: ${response.status}`); 
-                } 
- 
-                const data = await response.json(); 
-                resultDiv.textContent = JSON.stringify(data, null, 2); 
- 
-            } catch (error) { 
-                console.error('Tracking error:', error); 
-                resultDiv.textContent = `Errore: ${error.message}`; 
-            } finally { 
-                button.disabled = false; 
-            } 
-        }
         function switchView(view) {
             currentView = view;
             const isChatView = view.startsWith('chat-');
             const isTableView = view.startsWith('table-');
-            const isTrackingView = view === 'tracking';
 
             // Aggiorna lo stato attivo della navigazione
             Object.values(CHAT_MAP).forEach(chat => {
@@ -1668,8 +1537,6 @@
             });
             const navTableElement = document.getElementById('navTableLella');
             if (navTableElement) navTableElement.classList.remove('active');
-            const navTrackingElement = document.getElementById('navTracking');
-            if (navTrackingElement) navTrackingElement.classList.remove('active');
 
             if (isChatView) {
                 currentChat = view.split('-')[1];
@@ -1689,23 +1556,23 @@
             } else if (isTableView) {
                 // Per ora, solo la tabella Lella è supportata
                 currentChat = 'lella';
+                // Controllo dei permessi per la tabella Lella
+                if (currentUserRole && !['admin', 'caller'].includes(currentUserRole)) {
+                    showAccessDeniedModal(`Accesso negato. Solo gli utenti con ruolo admin o caller possono accedere alla Tabella - Lella.`);
+                    // Reindirizza alla prima chat disponibile per l'utente (Evasore)
+                    switchView('chat-evasore');
+                    return;
+                }
                 document.getElementById('navTableLella').classList.add('active');
-                currentChatTitle.textContent = 'Tabella - Lella';
-            } else if (isTrackingView) {
-                currentChat = 'tracking';
-                document.getElementById('navTracking').classList.add('active');
-                currentChatTitle.textContent = 'Tracking';
             }
 
             // Mostra/nascondi le aree principali con animazione
             const chatView = document.getElementById('chatView');
             const tableView = document.getElementById('tableView');
-            const trackingView = document.getElementById('trackingView');
             
             chatView.classList.toggle('hidden', !isChatView);
             tableView.classList.toggle('hidden', !isTableView);
-            trackingView.classList.toggle('hidden', !isTrackingView);
-
+            
             // Aggiungi animazione alla vista attiva
             if (isChatView) {
                 chatView.classList.remove('view-transition');
@@ -1715,10 +1582,6 @@
                 tableView.classList.remove('view-transition');
                 void tableView.offsetWidth; // Trigger reflow
                 tableView.classList.add('view-transition');
-            } else if (isTrackingView) {
-                trackingView.classList.remove('view-transition');
-                void trackingView.offsetWidth; // Trigger reflow
-                trackingView.classList.add('view-transition');
             }
 
             // Mostra/nascondi il pulsante "Cancella Chat"
@@ -2848,4 +2711,3 @@
 
 	</body>
 	</html>
-
