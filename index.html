@@ -2960,12 +2960,17 @@
 
         if (!response.ok) throw new Error('Errore server: ' + response.status);
 
-        const data = await response.json();
+        let data = await response.json();
         console.log('Risposta tracking ricevuta:', data);
+        
+        // NORMALIZZA: Se è un oggetto singolo, trasformalo in array
+        if (!Array.isArray(data) && typeof data === 'object' && data !== null) {
+            data = [data];
+        }
         
         let html = '<div class="space-y-4">';
         
-        // GESTISCE ARRAY DI TRACKING MULTIPLI (nuovo formato)
+        // GESTISCE TRACKING CON tracking_number (formato semplificato)
         if (Array.isArray(data) && data.length > 0 && data[0].tracking_number) {
             html += `<div class="flex items-center gap-2 text-emerald-400 font-bold text-lg mb-4">
                 ✅ Trovati ${data.length} Tracking
@@ -3002,7 +3007,7 @@
             });
             
         } else if (Array.isArray(data) && data.length > 0 && data[0].TrackingDettaglio) {
-            // GESTISCE TRACKING DETTAGLIATO SINGOLO (vecchio formato)
+            // GESTISCE TRACKING DETTAGLIATO (formato con cronologia completa)
             const trackingData = data[0];
             html += '<div class="flex items-center gap-2 text-emerald-400 font-bold text-lg mb-4">✅ Tracking Trovato</div>';
             
@@ -3117,4 +3122,5 @@
 
 	</body>
 	</html>
+
 
