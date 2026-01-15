@@ -790,7 +790,7 @@
                     </button>
 
                     <!-- Tabella Lella -->
-                    <button onclick="switchView('table-lella')" id="navTableLella" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
+                    <button onclick="switchView("table-lella")" id="navTableLella" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                             <line x1="3" y1="9" x2="21" y2="9"></line>
@@ -798,6 +798,15 @@
                             <line x1="12" y1="3" x2="12" y2="21"></line>
                         </svg>
                         <span class="font-medium">Tabella - Lella</span>
+                    </button>
+
+                    <!-- Tracking -->
+                    <button onclick="switchView("tracking")" id="navTracking" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        <span class="font-medium">Tracking</span>
                     </button>
 
                     <!-- Separatore 1 -->
@@ -1340,7 +1349,7 @@
             'tracking': {
                 title: 'Tracking',
                 webhookId: 'webhookUrlTracking',
-                navId: 'tracking',
+                navId: 'navTracking',
                 historyKey: 'chatHistory_tracking',
                 requiresRole: ['admin', 'editor', 'caller', 'user']
             }
@@ -1647,6 +1656,7 @@
             currentView = view;
             const isChatView = view.startsWith('chat-');
             const isTableView = view.startsWith('table-');
+            const isTrackingView = view === 'tracking';
 
             // Aggiorna lo stato attivo della navigazione
             Object.values(CHAT_MAP).forEach(chat => {
@@ -1655,6 +1665,8 @@
             });
             const navTableElement = document.getElementById('navTableLella');
             if (navTableElement) navTableElement.classList.remove('active');
+            const navTrackingElement = document.getElementById('navTracking');
+            if (navTrackingElement) navTrackingElement.classList.remove('active');
 
             if (isChatView) {
                 currentChat = view.split('-')[1];
@@ -1682,15 +1694,22 @@
                     return;
                 }
                 document.getElementById('navTableLella').classList.add('active');
+                currentChatTitle.textContent = 'Tabella - Lella';
+            } else if (isTrackingView) {
+                currentChat = 'tracking';
+                document.getElementById('navTracking').classList.add('active');
+                currentChatTitle.textContent = 'Tracking';
             }
 
             // Mostra/nascondi le aree principali con animazione
             const chatView = document.getElementById('chatView');
             const tableView = document.getElementById('tableView');
+            const trackingView = document.getElementById('trackingView');
             
             chatView.classList.toggle('hidden', !isChatView);
             tableView.classList.toggle('hidden', !isTableView);
-            
+            trackingView.classList.toggle('hidden', !isTrackingView);
+
             // Aggiungi animazione alla vista attiva
             if (isChatView) {
                 chatView.classList.remove('view-transition');
@@ -1700,6 +1719,10 @@
                 tableView.classList.remove('view-transition');
                 void tableView.offsetWidth; // Trigger reflow
                 tableView.classList.add('view-transition');
+            } else if (isTrackingView) {
+                trackingView.classList.remove('view-transition');
+                void trackingView.offsetWidth; // Trigger reflow
+                trackingView.classList.add('view-transition');
             }
 
             // Mostra/nascondi il pulsante "Cancella Chat"
@@ -2829,6 +2852,7 @@
 
 	</body>
 	</html>
+
 
 
 
