@@ -1749,7 +1749,12 @@
             chatView.classList.toggle('hidden', !isChatView);
             tableView.classList.toggle('hidden', !isTableView);
             trackingView.classList.toggle('hidden', !isTrackingView);
-        } else if (isTableView) {
+
+            if (isChatView) {
+                chatView.classList.remove('view-transition');
+                void chatView.offsetWidth; // Trigger reflow
+                chatView.classList.add('view-transition');
+            } else if (isTableView) {
                 tableView.classList.remove('view-transition');
                 void tableView.offsetWidth; // Trigger reflow
                 tableView.classList.add('view-transition');
@@ -1762,7 +1767,6 @@
             } else {
                 clearChatBtn.classList.add('hidden');
             }
-
             // Mostra/nascondi bottone file e lista solo per evasore e creatoreprodotti
             const fileUploadButton = document.getElementById('fileUploadButton');
             const uploadedFilesList = document.getElementById('uploadedFilesList');
