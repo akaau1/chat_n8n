@@ -2968,14 +2968,24 @@
             data = [data];
         }
         
+        // Verifica se ci sono dati
+        if (!Array.isArray(data) || data.length === 0) {
+            resultDiv.innerHTML = `<div class="text-red-400 p-4 bg-red-900/20 border border-red-900/50 rounded-lg">
+                <strong class="block mb-2">❌ Nessun tracking trovato</strong>
+                <div class="text-sm">Verifica i numeri inseriti</div>
+            </div>`;
+            return;
+        }
+        
         let html = '<div class="space-y-4">';
         
         // GESTISCE TRACKING CON tracking_number (formato semplificato)
-        if (Array.isArray(data) && data.length > 0 && data[0].tracking_number) {
+        if (data[0].tracking_number) {
             html += `<div class="flex items-center gap-2 text-emerald-400 font-bold text-lg mb-4">
                 ✅ Trovati ${data.length} Tracking
             </div>`;
             
+            // CICLO SU TUTTI I TRACKING
             data.forEach((tracking, index) => {
                 html += `<div class="bg-gray-800 p-5 rounded-lg border border-gray-700 space-y-3">
                     <div class="flex items-center justify-between border-b border-gray-700 pb-3">
@@ -3005,10 +3015,10 @@
                     </div>
                 </div>`;
             });
-            
-         } else if (Array.isArray(data) && data.length > 0 && data[0].TrackingDettaglio && !data[0].tracking_number) {
-			    // GESTISCE TRACKING DETTAGLIATO (formato con cronologia completa)
-			    const trackingData = data[0];
+        } 
+        // GESTISCE TRACKING DETTAGLIATO (solo se NON è formato semplice)
+        else if (data[0].TrackingDettaglio) {
+            const trackingData = data[0];
             html += '<div class="flex items-center gap-2 text-emerald-400 font-bold text-lg mb-4">✅ Tracking Trovato</div>';
             
             if (trackingData.ldv) {
@@ -3045,14 +3055,9 @@
                 
                 html += '</div></div>';
             }
-            
         } else {
-            // NESSUN DATO TROVATO
-            html += '<div class="flex items-center gap-2 text-red-400 font-bold text-lg mb-2">❌ Tracking non trovato</div>';
-            html += `<div class="text-gray-300 bg-gray-800 p-4 rounded-lg border border-gray-700">
-                Nessuna informazione disponibile per il codice: <strong>${escapeHtml(trackingNumber)}</strong>
-            </div>`;
-            
+            // NESSUN FORMATO RICONOSCIUTO
+            html += '<div class="flex items-center gap-2 text-red-400 font-bold text-lg mb-2">❌ Formato risposta non riconosciuto</div>';
             html += `<details class="mt-4">
                 <summary class="text-gray-500 text-sm cursor-pointer hover:text-gray-400">Debug: Mostra risposta completa</summary>
                 <pre class="text-xs text-gray-400 bg-black/30 p-4 rounded-lg overflow-x-auto mt-2">${JSON.stringify(data, null, 2)}</pre>
@@ -3122,6 +3127,7 @@
 
 	</body>
 	</html>
+
 
 
 
