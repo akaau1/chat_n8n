@@ -130,11 +130,14 @@
         } 
         #trackingResult { 
             margin-top: 2rem; 
-            padding: 1rem; 
-            background-color: #1f2937; 
-            border-radius: 0.5rem; 
-            color: white; 
+            padding: 1.5rem; 
+            background-color: #f8fafc; 
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem; 
+            color: #1e293b; 
             white-space: pre-wrap; 
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.875rem;
         }
         /* Stili Tabella */
         .editable-cell {
@@ -800,15 +803,6 @@
                         <span class="font-medium">Tabella - Lella</span>
                     </button>
 
-                    <!-- Tracking -->
-                    <button onclick="switchView("tracking")" id="navTracking" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                            <circle cx="12" cy="10" r="3"></circle>
-                        </svg>
-                        <span class="font-medium">Tracking</span>
-                    </button>
-
                     <!-- Separatore 1 -->
                     <div class="h-px bg-gray-700 my-4 mx-4"></div>
 
@@ -840,6 +834,15 @@
                             <line x1="8" y1="18" x2="16" y2="18"></line>
                         </svg>
                         <span class="font-medium">Calcolatore Ferdi</span>
+                    </button>
+
+                    <!-- Tracking -->
+                    <button onclick="switchView("tracking")" id="navTracking" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        <span class="font-medium">Tracking</span>
                     </button>
 
                     <!-- Separatore 2 -->
@@ -977,19 +980,19 @@
                 </div>
 
             <!-- Tracking View --> 
-            <div id="trackingView" class="hidden absolute inset-0 flex flex-col items-center justify-center"> 
-                <div class="w-full max-w-lg text-center"> 
-                    <p class="text-gray-400 mb-4">Inserire il numero di tracking, per monitorare il pacco.</p> 
-                    <div class="flex items-center space-x-2"> 
-                        <input type="text" id="trackingInput" placeholder="Numero Tracking" class="w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:border-cyan-500"> 
-                        <button id="trackingButton" onclick="sendTrackingRequest()" class="px-6 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 focus:outline-none flex items-center justify-center"> 
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"> 
-                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /> 
+            <div id="trackingView" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white"> 
+                <div class="w-full max-w-4xl px-4 text-center"> 
+                    <p class="text-gray-500 text-lg mb-8">Inserire il numero di tracking, per monitorare il pacco.</p> 
+                    <div class="flex items-center space-x-4"> 
+                        <input type="text" id="trackingInput" placeholder="Numero Tracking" class="flex-1 px-6 py-4 bg-white text-gray-800 text-xl rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"> 
+                        <button id="trackingButton" onclick="sendTrackingRequest()" class="px-10 py-4 bg-[#22a1c4] text-white text-lg font-bold rounded-lg hover:bg-[#1b8ba9] transition-colors flex items-center justify-center shadow-sm"> 
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg> 
                             CERCA 
                         </button> 
                     </div> 
-                    <div id="trackingResult" class="mt-4 text-left"></div> 
+                    <div id="trackingResult" class="mt-8 text-left max-h-[50vh] overflow-y-auto"></div> 
                 </div> 
             </div>
                 <!-- Table View -->
@@ -1686,13 +1689,6 @@
             } else if (isTableView) {
                 // Per ora, solo la tabella Lella è supportata
                 currentChat = 'lella';
-                // Controllo dei permessi per la tabella Lella
-                if (currentUserRole && !['admin', 'caller'].includes(currentUserRole)) {
-                    showAccessDeniedModal(`Accesso negato. Solo gli utenti con ruolo admin o caller possono accedere alla Tabella - Lella.`);
-                    // Reindirizza alla prima chat disponibile per l'utente (Evasore)
-                    switchView('chat-evasore');
-                    return;
-                }
                 document.getElementById('navTableLella').classList.add('active');
                 currentChatTitle.textContent = 'Tabella - Lella';
             } else if (isTrackingView) {
@@ -2852,12 +2848,4 @@
 
 	</body>
 	</html>
-
-
-
-
-
-
-
-
 
