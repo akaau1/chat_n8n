@@ -888,32 +888,18 @@
                         <span class="font-medium">Calcolatore Ferdi</span>
                     </button>
 
-                    <!-- Sezione Tracking -->
-                    <div class="tracking-section">
-                        <h3>📦 Tracking</h3>
-                        <p class="tracking-description">Inserire il numero di tracking per monitorare il pacco.</p>
-                        <div class="tracking-input-group">
-                            <input 
-                                type="text" 
-                                id="trackingInput" 
-                                placeholder="Numero Tracking" 
-                                class="tracking-input"
-                                onkeypress="handleTrackingKeypress(event)"
-                            />
-                            <button 
-                                onclick="searchTracking()" 
-                                id="trackingButton"
-                                class="tracking-button"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <path d="m21 21-4.35-4.35"></path>
-                                </svg>
-                                <span>CERCA</span>
-                            </button>
-                        </div>
-                        <div id="trackingResult" class="tracking-result"></div>
-                    </div>
+                    <!-- Tracking View -->
+                    <button onclick="switchView('tracking')" id="navTracking" class="nav-item w-full text-left px-4 py-3 text-white flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"></path>
+                            <path d="M16.5 9.4 7.55 4.24"></path>
+                            <polyline points="3.29 7 12 12 20.71 7"></polyline>
+                            <line x1="12" y1="22" x2="12" y2="12"></line>
+                            <circle cx="18.5" cy="15.5" r="2.5"></circle>
+                            <path d="M20.27 17.27 22 19"></path>
+                        </svg>
+                        <span class="font-medium">Tracking</span>
+                    </button>
 
                     <!-- Separatore 2 -->
                     <div class="h-px bg-gray-700 my-4 mx-4"></div>
@@ -1041,6 +1027,57 @@
                                 </svg>
                                 <div id="loadingIcon" class="spinner hidden"></div>
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- Tracking View -->
+                <div id="trackingView" class="hidden absolute inset-0 flex flex-col bg-gray-900 overflow-y-auto">
+                    <div class="bg-gray-800/95 backdrop-blur-sm border-b border-gray-700 p-4 flex-shrink-0 shadow-lg">
+                        <h2 class="text-xl font-bold text-white">📦 Tracking Spedizioni</h2>
+                    </div>
+                    
+                    <div class="flex-1 flex items-center justify-center p-6">
+                        <div class="w-full max-w-2xl bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 p-8 transform transition-all">
+                            <div class="text-center mb-8">
+                                <div class="inline-flex items-center justify-center w-16 h-16 bg-violet-500/20 rounded-full mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"></path>
+                                        <polyline points="3.29 7 12 12 20.71 7"></polyline>
+                                        <line x1="12" y1="22" x2="12" y2="12"></line>
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-bold text-white mb-2">Monitora il tuo pacco</h3>
+                                <p class="text-gray-400">Inserire il numero di tracking per monitorare lo stato della spedizione in tempo reale.</p>
+                            </div>
+
+                            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                                <div class="relative flex-1">
+                                    <input 
+                                        type="text" 
+                                        id="mainTrackingInput" 
+                                        placeholder="Esempio: IT123456789" 
+                                        class="w-full px-5 py-4 bg-gray-900 text-white rounded-xl border-2 border-gray-700 focus:border-violet-500 focus:outline-none text-lg transition-all placeholder-gray-600"
+                                        onkeypress="handleMainTrackingKeypress(event)"
+                                    />
+                                </div>
+                                <button 
+                                    onclick="searchMainTracking()" 
+                                    id="mainTrackingButton"
+                                    class="px-8 py-4 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-cyan-500/30 flex items-center justify-center gap-3 min-w-[160px]"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <path d="m21 21-4.35-4.35"></path>
+                                    </svg>
+                                    CERCA
+                                </button>
+                            </div>
+
+                            <div id="mainTrackingResult" class="hidden bg-gray-900/50 border border-gray-700 rounded-xl p-6 min-h-[100px]">
+                                <!-- Risultati qui -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1665,6 +1702,7 @@
             currentView = view;
             const isChatView = view.startsWith('chat-');
             const isTableView = view.startsWith('table-');
+            const isTrackingView = view === 'tracking';
 
             // Aggiorna lo stato attivo della navigazione
             Object.values(CHAT_MAP).forEach(chat => {
@@ -1673,6 +1711,8 @@
             });
             const navTableElement = document.getElementById('navTableLella');
             if (navTableElement) navTableElement.classList.remove('active');
+            const navTrackingElement = document.getElementById('navTracking');
+            if (navTrackingElement) navTrackingElement.classList.remove('active');
 
             if (isChatView) {
                 currentChat = view.split('-')[1];
@@ -1681,40 +1721,35 @@
                 // Controllo dei permessi
                 if (currentUserRole && !chatConfig.requiresRole.includes(currentUserRole)) {
                     showAccessDeniedModal(`Accesso negato. Solo gli utenti con ruolo ${chatConfig.requiresRole.join(' o ')} possono accedere a ${chatConfig.title}.`);
-                    // Reindirizza alla prima chat disponibile per l'utente (Evasore)
                     switchView('chat-evasore');
                     return;
                 }
 
-                document.getElementById(chatConfig.navId).classList.add('active');
+                if (document.getElementById(chatConfig.navId)) {
+                    document.getElementById(chatConfig.navId).classList.add('active');
+                }
                 currentChatTitle.textContent = chatConfig.title;
                 loadChatHistory();
             } else if (isTableView) {
-                // Per ora, solo la tabella Lella è supportata
                 currentChat = 'lella';
-                // Controllo dei permessi per la tabella Lella
                 if (currentUserRole && !['admin', 'caller'].includes(currentUserRole)) {
                     showAccessDeniedModal(`Accesso negato. Solo gli utenti con ruolo admin o caller possono accedere alla Tabella - Lella.`);
-                    // Reindirizza alla prima chat disponibile per l'utente (Evasore)
                     switchView('chat-evasore');
                     return;
                 }
-                document.getElementById('navTableLella').classList.add('active');
+                if (navTableElement) navTableElement.classList.add('active');
+            } else if (isTrackingView) {
+                if (navTrackingElement) navTrackingElement.classList.add('active');
             }
 
-            // Mostra/nascondi le aree principali con animazione
             const chatView = document.getElementById('chatView');
             const tableView = document.getElementById('tableView');
+            const trackingView = document.getElementById('trackingView');
             
             chatView.classList.toggle('hidden', !isChatView);
             tableView.classList.toggle('hidden', !isTableView);
-            
-            // Aggiungi animazione alla vista attiva
-            if (isChatView) {
-                chatView.classList.remove('view-transition');
-                void chatView.offsetWidth; // Trigger reflow
-                chatView.classList.add('view-transition');
-            } else if (isTableView) {
+            trackingView.classList.toggle('hidden', !isTrackingView);
+        } else if (isTableView) {
                 tableView.classList.remove('view-transition');
                 void tableView.offsetWidth; // Trigger reflow
                 tableView.classList.add('view-transition');
@@ -2880,7 +2915,70 @@
         }
 
 	        // =================================================================
-	        // GESTIONE MODALE ACCESSO NEGATO
+	        
+        // =================================================================
+        // GESTIONE SEZIONE TRACKING (VISTA DEDICATA)
+        // =================================================================
+        function handleMainTrackingKeypress(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                searchMainTracking();
+            }
+        }
+
+        async function searchMainTracking() {
+            const input = document.getElementById('mainTrackingInput');
+            const resultDiv = document.getElementById('mainTrackingResult');
+            const button = document.getElementById('mainTrackingButton');
+            const trackingNumber = input.value.trim();
+
+            if (!trackingNumber) return;
+
+            button.disabled = true;
+            button.innerHTML = '<div class="spinner"></div>';
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = '<div class="flex items-center justify-center py-8"><div class="spinner w-8 h-8 border-violet-500"></div><span class="ml-3 text-gray-400">Ricerca in corso...</span></div>';
+
+            try {
+                const response = await fetch('https://fenixserver.win/webhook/2406bb0a-3650-4cad-b90a-1e48902c2021', {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tracking_number: trackingNumber,
+                        username: currentUser || 'guest',
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (!response.ok) throw new Error('Errore server: ' + response.status);
+
+                const data = await response.json();
+                
+                let html = '<div class="space-y-4">';
+                if (data.success || data.status === 'success') {
+                    html += '<div class="flex items-center gap-2 text-emerald-400 font-bold text-lg mb-2">✅ Tracking Trovato</div>';
+                    if (data.message) html += `<div class="text-white bg-gray-800 p-4 rounded-lg border border-gray-700">${data.message}</div>`;
+                    if (data.data || data.tracking_info) {
+                        const info = data.data || data.tracking_info;
+                        html += `<pre class="text-xs text-gray-400 bg-black/30 p-4 rounded-lg overflow-x-auto">${JSON.stringify(info, null, 2)}</pre>`;
+                    }
+                } else {
+                    html += '<div class="flex items-center gap-2 text-red-400 font-bold text-lg mb-2">❌ Tracking non trovato</div>';
+                    html += `<div class="text-gray-300">${data.message || 'Nessuna informazione disponibile per questo codice.'}</div>`;
+                }
+                html += '</div>';
+                resultDiv.innerHTML = html;
+
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-400 p-4 bg-red-900/20 border border-red-900/50 rounded-lg"><strong>Errore di connessione:</strong><br>${error.message}</div>`;
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg> CERCA';
+            }
+        }
+
+        // GESTIONE MODALE ACCESSO NEGATO
 	        // =================================================================
 	        function showAccessDeniedModal(message) {
 	            document.getElementById('accessDeniedMessage').textContent = message;
