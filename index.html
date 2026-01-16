@@ -1327,7 +1327,7 @@
         // =================================================================
         // VARIABILI PER GESTIONE INATTIVITÀ (AUTO-LOGOUT 6 ORE)
         // =================================================================
-        const INACTIVITY_TIMEOUT = 6 * 60 * 60 * 1000; // 6 ore in millisecondi
+        const INACTIVITY_TIMEOUT = 12 * 24 * 60 * 60 * 1000; // 6 ore in millisecondi
         let inactivityTimer = null;
         let lastActivityTime = parseInt(localStorage.getItem('lastActivityTime')) || Date.now();
 
@@ -3136,6 +3136,7 @@ if (Array.isArray(data) && data.length > 0 && data[0].spedizioni) {
 
 	</body>
 	</html>
+
 
 
 
